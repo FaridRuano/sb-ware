@@ -5,8 +5,28 @@ import CheckIcon from '@public/assets/icons/check-icon.png'
 import CalendarIcon from '@public/assets/icons/calendar-icon.png'
 import DollarIcon from '@public/assets/icons/dollar-icon.png'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+
+const mongoClientData = async () => {
+  try {
+    const uri = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${uri}/api/dashboard`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    if (!res.ok) {
+      throw new Error("Failed")
+    }
+    const ponse = await res.json()
+    return ponse
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 
 const Client = () => {
@@ -14,85 +34,54 @@ const Client = () => {
   /* Navigation */
   const router = useRouter()
 
-  const totalMoney = 1840.52
+  //const totalMoney = 1840.52
   const totalSuppostedMoney = 2460
+  const [totalMoney, setTotalMoney] = useState(0)
 
-  const paids = 154
-  const nopaids = 24
+  const fetchAndLoadData = async () => {
+    try {
+      const fetchData = await mongoClientData()
+     
+      console.log(fetchData)
+      //console.log(paids)
+      
+        setTotalMoney(fetchData.totalAmount)
+        setPaids(fetchData.paids)
+        setRecentClients(fetchData.recentClients)
+        setMonthlyAverage(fetchData.monthlyAverage)
+        setNoPaids(fetchData.nopaids)
+        setRecentPays(fetchData.recentPays)
+        setRecentAsistance(fetchData.recentAsistance)
+        setTotalClients(fetchData.totalClients)
 
-  const recentPays = [
-    {
-      id: 1,
-      name: 'Mario Robalino',
-      plan: 'Plan Guaytambo',
-      date: '16/05/2024',
-      amount: '30'
-    },
-    {
-      id: 2,
-      name: 'Maria Joseco',
-      plan: 'Plan Gold',
-      date: '15/05/2024',
-      amount: '20'
-    },
-    {
-      id: 3,
-      name: 'Julian Robayo',
-      plan: 'Plan Guaytambo',
-      date: '15/05/2024',
-      amount: '34'
-    },
-    {
-      id: 4,
-      name: 'Sofia Cornocopia',
-      plan: 'Plan Kid',
-      date: '14/05/2024',
-      amount: '30'
-    },
-  ]
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    fetchAndLoadData()
+  }, [])
 
-  const recentClients = [
-    {
-      id: 1,
-      name: 'Mario Robalino',
-      plan: 'Plan Guaytambo',
-    },
-    {
-      id: 2,
-      name: 'Maria Joseco',
-      plan: 'Plan Gold',
-    },
-    {
-      id: 3,
-      name: 'Julian Robayo',
-      plan: 'Plan Guaytambo',
-    },
-  ]
+  //const paids = 154
+  const [paids,setPaids]=useState(1)
+  //const nopaids = 24
+  const [nopaids,setNoPaids]=useState(1)
 
-  const recentAsistance = [
-    {
-      id: 1,
-      name: 'Mario Robalino',
-      date: '16/05/2024',
-    },
-    {
-      id: 2,
-      name: 'Maria Joseco',
-      date: '15/05/2024',
-    },
-    {
-      id: 3,
-      name: 'Julian Robayo',
-      date: '15/05/2024',
-    },
-  ]
+  const [recentPays,setRecentPays] =useState( [])
 
-  const totalClients = 278
+  const [recentClients,setRecentClients] = useState([])
+
+  const [recentAsistance,setRecentAsistance] =useState ([])
+
+  //const totalClients = 278
+  const [totalClients,setTotalClients]=useState(1)
   const limitClients = 300
 
-  const monthlyAverage = 1240.45
+  //const monthlyAverage = 1240.45
+  const [monthlyAverage,setMonthlyAverage]=useState(100)
 
   useEffect(()=>{
+    console.log(totalMoney)
     const rootStyles = getComputedStyle(document.documentElement);
 
     const primaryColorLight = rootStyles.getPropertyValue('--primary-color-light').trim()
@@ -210,7 +199,18 @@ const Client = () => {
       
     },10)
 
-  },[])
+  },[totalMoney])
+
+  const handleFormatDate = (isoDate) => {
+    if(isoDate==null){
+      return null
+    }
+    const date = new Date(isoDate);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <div className="home-client">
@@ -251,7 +251,7 @@ const Client = () => {
       <section className='dashboard-part-01'>
         <div className="money-statistics">
           <div className="total-money">
-            <span className="date">16 | Mayo</span>
+          <span className="date">{new Date().getDate()} | {new Date().toLocaleString('default', { month: 'long' })}</span>
             <span className="total">{0}</span>
             <span className="tag">Total Pagos</span>
             <div className="circular-progress"/>
@@ -284,7 +284,7 @@ const Client = () => {
                               {data.plan}
                             </td>
                             <td>
-                              {data.date}
+                              {handleFormatDate(data.date)}
                             </td>
                             <td>
                               ${data.amount}
@@ -399,7 +399,8 @@ const Client = () => {
                               {data.name}
                             </td>
                             <td>
-                              {data.date}
+                              
+                              {handleFormatDate(data.attent)}
                             </td>
                           </tr>
                         ))

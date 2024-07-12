@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.4.4",
+    "mongoose-sequence": "^6.0.1",
     "next": "14.2.3",
     "react": "^18",
     "react-date-picker": "^11.0.0",

@@ -36,16 +36,17 @@ const RenewModal = ({isActive, handleModal, handleResponse, dataModal, dataModal
         const selPlan = dataModal2.find(plan => plan.id === Number(e.target.value))
     
         if(selPlan){
-          setPlan(e.target.value)
+          //setPlan(e.target.value)
+          setPlan(selPlan)
         }else{
-          setPlan(0)
+          setPlan([])
         }
     }
 
     const resetModal = () => {
         setChangeModal(false)
         setStartDate(getFormattedDate(currentDate))
-        setPlan(0)
+        setPlan([])
         handleModal()
     }
     if(changeModal){
