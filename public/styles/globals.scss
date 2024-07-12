@@ -2,6 +2,30 @@
 @import 'mixins';
 @import url('https://fonts.googleapis.com/css2?family=Pathway+Extreme:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap');
 
+::-webkit-scrollbar{
+    width: .5em;
+    display: fixed;
+}
+
+::-webkit-scrollbar-track{
+    background-color: hsl(0, 0%, 87%);
+    border-radius: 100vw;
+    margin-block: 8em;
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: hsl(0, 0%, 31%);
+    border: .1em solid hsl(0, 0%, 87%);
+    border-radius: 100vw;
+    
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: hsl(0, 0%, 13%);
+}
+
+
+
 body{
     margin: 0;
     padding: 0;
@@ -745,6 +769,31 @@ input, select {
             &.active{
                 background-color: rgba($primary-color-light, .3);
             }
+            &.plan-dt{
+                padding: 0 5px;
+                width: calc(100% - 10px);
+                th:nth-child(1),
+                td:nth-child(1){
+                    width: 20px;
+                }
+                th:nth-child(2),
+                td:nth-child(2){
+                    width: 150px; 
+                    white-space: nowrap;
+                }
+                th:nth-child(3),
+                td:nth-child(3){
+                    width: 40px; 
+                }
+                th:nth-child(4),
+                td:nth-child(4){
+                    width: 40px; 
+                }
+                th:nth-child(5),
+                td:nth-child(5){
+                    width: 40px; 
+                }
+            }
         }
     }
     tbody{
@@ -775,6 +824,9 @@ input, select {
             pointer-events: none;
             opacity: .5;
         }
+    }
+    &.dark{
+        filter: invert(1);
     }
 }
 
@@ -897,6 +949,12 @@ input, select {
             width: 150px;
         }
     }
+    &.sm{
+        input, select{
+            width: 160px;
+            max-width: 160px;
+        }
+    }
 }
 
 /* Company Page */
@@ -915,7 +973,6 @@ input, select {
         padding: 20px;
         color: $text-color-bg-light;
         position: relative;
-        overflow: hidden;
         transition: .3s ease-out;
         &.gray{
             background-color: $gray-dark-color-light;
@@ -960,6 +1017,7 @@ input, select {
             transition: .3s ease-out;
             &.a{
                 top: -200px;
+                left: 0;
             }
             &.b{
                 top: 200px;
@@ -982,10 +1040,181 @@ input, select {
                 
             }
         }
+        
         &:nth-child(2){
             color: $text-color-light;
             background-color: $text-color-bg-light;
             width: calc(70% - .5rem - 40px);
+            overflow-y: auto;
+        }
+    }
+}
+
+.screen-overlay{
+ width: 100vw;   
+ height: 100vh;
+ position: fixed;
+ top: 0;
+ left: 0;
+ background-color: rgba($-color-black, 1);
+ z-index: 5;
+ transform: translateY(-100vh);
+ transition: .3s ease-out;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ .overlay-work{
+    width: calc(95% - 80px);
+    height: calc(95% - 80px);
+    padding: 40px;
+    position: relative;
+    .close-overlay{
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        transition: .3s ease-out;
+        &:hover{
+            transform: scale(1.1);
+        }
+    }
+    .dashboard{
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        .title{
+            font-size: 40px;
+            font-weight: 700;
+            color: $text-color-bg-light;
+        }
+        .header{
+            width: 100%;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            .toolbar{
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                .tool-btn{
+                    width: 100px;
+                    cursor: pointer;
+                    padding: 7px 10px;
+                    border-radius: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    gap: .5rem;
+                    align-items: center;
+                    justify-content: flex-start;
+                    color: $text-color-bg-light;
+                    transition: .3s ease-out;
+                    &.add{
+                        background-color: $primary-color-light;
+                    }
+                    &.edit{
+                        background-color: $secondary-color-light;
+                    }
+                    &.del{
+                        background-color: $warning-color-light;
+                    }
+                    &.disabled{
+                        background-color: $gray-color-light;
+                        pointer-events: none;
+                    }
+                    &.cancel{
+                        background-color: $gray-dark-color-light;
+                        
+                    }
+                    &:hover{
+                        transform: scale(1.08);
+                    }
+                }
+                
+            }
+            .deselect{
+                cursor: pointer;
+                transition: .3s ease-out;
+                opacity: 0;
+                pointer-events: none;
+                transform: rotate(180deg);
+                transform-origin: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                &.active{
+                    pointer-events: all;
+                    opacity: 1;
+                    transform: rotate(0);
+                }
+                &:hover{
+                    transform: scale(1.1);
+                }
+            }
+        }
+        .body{
+            color: $text-color-bg-light !important;
+            padding: 20px;
+            border-radius: 20px;
+            &.light{
+                color: $text-color-light !important;
+                background-color: $-color-white;
+            }
+        }
+    }
+ }
+ &.active{
+    transform: translateY(0);
+ }
+}
+
+.form-dt{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    .header-form{
+        background-color: $-color-black;
+        color: $text-color-bg-light;
+        padding: 10px 10px;
+        font-weight: 600;
+    }
+    .cols{
+        display: flex;
+        flex-direction: row;
+        .col{
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            gap: .5rem;
+        }
+    }
+    .submit{
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        transition: .3s ease-out;
+        button{
+            cursor: pointer;
+            outline: none;
+            background-color: $-color-black;
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 6px 11px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: .2s ease-out;
+            &:hover{
+                background-color: $primary-color-light;
+                transform: scale(1.05);
+            }
+        }
+        &.disabled{
+            pointer-events: none;
+            opacity: .5;
         }
     }
 }

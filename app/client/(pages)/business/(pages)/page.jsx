@@ -323,7 +323,6 @@ const Clients = () => {
       [name]: value,
     })
 
-
   }
 
   const handleStartDate = (e) => {
@@ -853,7 +852,11 @@ const Clients = () => {
               <span>
                 {currentPage} de {totalPages}
               </span>
+
               <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+
+
+              <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage}/>
 
             </div>
           </section>
