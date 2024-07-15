@@ -16,6 +16,7 @@ import ConfirmModal from '@public/components/client/ConfirmModal'
 import RenewModal from '@public/components/client/RenewModal'
 import PayModal from '@public/components/client/PayModal'
 import StatusModal from '@public/components/client/StatusModal'
+import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 const mongoClientData = async () => {
   try {
@@ -322,7 +323,6 @@ const Clients = () => {
       ...newClient,
       [name]: value,
     })
-
   }
 
   const handleStartDate = (e) => {
@@ -744,7 +744,7 @@ const Clients = () => {
           </div>
           <div className={selRow.id > 0 ? "btn warning" : "btn warning disabled"} onClick={() => handleConfirm()}>
             <div className="btn-img">
-              <Image src={DelBtn} width={12} height={'auto'} alt="Delete" />
+              <Image src={TrashBtn} width={12} height={'auto'} alt="Delete" />
             </div>
             <div className="btn-name">
               Eliminar
@@ -774,8 +774,8 @@ const Clients = () => {
                   currentItems.length > 0 ? (
                     <table className="dt-all">
                       <thead>
-                        <tr>
-                          <th />
+                        <tr className='client-dt'>
+                          <th/>
                           <th>
                             ID
                           </th>
@@ -802,7 +802,7 @@ const Clients = () => {
                       <tbody>
                         {
                           currentItems.map((cli, id) => (
-                            <tr className={selRow.id === cli.id ? 'active' : ''} key={id} onClick={() => setSelRow(cli)}>
+                            <tr className={selRow.id === cli.id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
                               {
                                 handleClientActive(cli) ? (
                                   <td className='primary' />
@@ -852,12 +852,7 @@ const Clients = () => {
               <span>
                 {currentPage} de {totalPages}
               </span>
-
               <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-
-
-              <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage}/>
-
             </div>
           </section>
         ) : (

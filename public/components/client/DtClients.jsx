@@ -10,103 +10,60 @@ import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 
-const DtPlans = ({isActive, handleActive}) => {
+const DtClients = ({isActive, handleActive}) => {
 
     /* Base Data */
 
-    const [planData, setPlanData] = useState([
+    const [clientData, setClientData] = useState([
         {
           id: 1,
-          name: 'Plan Guaytambo',
-          dura: 30,
-          asis: 30,
-          cost: 30
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
         },
         {
           id: 2,
-          name: 'Plan Guaytambo 2',
-          dura: 40,
-          asis: 40,
-          cost: 40
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
         },
         {
           id: 3,
-          name: 'Plan Guaytambo 3',
-          dura: 50,
-          asis: 50,
-          cost: 50
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
         },
         {
           id: 4,
-          name: 'Plan Guaytambo 4',
-          dura: 50,
-          asis: 50,
-          cost: 50
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
         },
         {
           id: 5,
-          name: 'Plan Guaytambo 5',
-          dura: 50,
-          asis: 50,
-          cost: 50
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
         }, 
         {
           id: 6,
-          name: 'Plan Guaytambo 6',
-          dura: 50,
-          asis: 50,
-          cost: 50
-        },
-        {
-            id: 7,
-            name: 'Plan Guaytambo 6',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        },
-        {
-            id: 8,
-            name: 'Plan Guaytambo 5',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        }, 
-        {
-            id: 9,
-            name: 'Plan Guaytambo 6',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        },
-        {
-            id: 10,
-            name: 'Plan Guaytambo 6',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        },
-        {
-            id: 11,
-            name: 'Plan Guaytambo 5',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        }, 
-        {
-            id: 12,
-            name: 'Plan Guaytambo 6',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        },
-        {
-            id: 13,
-            name: 'Plan Guaytambo 6',
-            dura: 50,
-            asis: 50,
-            cost: 50
-        },
-    ])
+          ced: '1805467527',
+          name: 'Farid Ruano',
+          email: 'fruanocm2777@gmail.com',
+          phone: '0996447884',
+          address: 'Ambato'
+        }
+      ])
 
     /* Datatable */
 
@@ -120,9 +77,9 @@ const DtPlans = ({isActive, handleActive}) => {
 
     const [searchTerm, setSearchTerm] = useState('')
 
-    const [totalPages, setTotalPages] = useState(Math.ceil(planData.length / itemsPerPage))
+    const [totalPages, setTotalPages] = useState(Math.ceil(clientData.length / itemsPerPage))
 
-    const [currentItems, setCurrentItems] = useState(planData.slice(
+    const [currentItems, setCurrentItems] = useState(clientData.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     ))
@@ -133,7 +90,7 @@ const DtPlans = ({isActive, handleActive}) => {
             setCurrentPage(currentPage - 1)
             const nextPage = currentPage - 1
             setCurrentPage(nextPage)
-            setCurrentItems(planData.slice(
+            setCurrentItems(clientData.slice(
                 (nextPage - 1) * itemsPerPage,
                 nextPage * itemsPerPage
           ))
@@ -145,7 +102,7 @@ const DtPlans = ({isActive, handleActive}) => {
         if (currentPage < totalPages) {
             const nextPage = currentPage + 1
             setCurrentPage(nextPage)
-            setCurrentItems(planData.slice(
+            setCurrentItems(clientData.slice(
                 (nextPage - 1) * itemsPerPage,
                 nextPage * itemsPerPage
             ))
@@ -156,14 +113,14 @@ const DtPlans = ({isActive, handleActive}) => {
         setSearchTerm(event.target.value)
         setCurrentPage(1)
         if(event.target.value.length<1){
-          setCurrentItems(planData.slice(
+          setCurrentItems(clientData.slice(
             (currentPage - 1) * itemsPerPage,
             currentPage * itemsPerPage
           ))
-          setTotalPages(Math.ceil(planData.length / itemsPerPage))
+          setTotalPages(Math.ceil(clientData.length / itemsPerPage))
         }else{
           setTotalPages(1)
-          setCurrentItems(planData.filter(cli =>
+          setCurrentItems(clientData.filter(cli =>
             cli.name.toLowerCase().includes(event.target.value.toLowerCase())
           ))
         }
@@ -199,7 +156,7 @@ const DtPlans = ({isActive, handleActive}) => {
         return false
     }
 
-    /* Add Plan */
+    /* Add Client */
 
     const [isAdd, setIsAdd] = useState(false)
 
@@ -215,87 +172,70 @@ const DtPlans = ({isActive, handleActive}) => {
 
     const handleIsAdd = () => {
         setSelRow({id:0})
-        setNewPlan({
+        setNewClient({
+            ced: '',
             name: '',
-            dura: '',
-            asis: '',
-            cost: '',
+            email: '',
+            phone: '',
+            address: ''
         })
         setIsAdd(current => !current)
     }
 
-    const [newPlan, setNewPlan] = useState({
+    const [newClient, setNewClient] = useState({
+        ced: '',
         name: '',
-        dura: '',
-        asis: '',
-        cost: '',
+        email: '',
+        phone: '',
+        address: ''
     })
 
-    const handleNewPlan = (e) => {
+    const handleNewClient = (e) => {
         const { name, value } = e.target
-        
+    
         /* Ced Controller */
-        if(name === 'name'){
-          if (value.length > 50) {
+        if (name === 'ced' || name === 'phone') {
+          if (!/^\d*$/.test(value) || value.length > 10) {
             return
           }
         }
-        if(name === 'dura' || name === 'asis'){
-            if (!/^\d*$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
+        if (name === 'email') {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(value)) {
+            if (value.length < 1) {
+              setErrorEmail(false)
+            } else {
+              setErrorEmail(true)
+              setErrorMsg("Email no válido.")
             }
+          } else {
+            setErrorEmail(false)
+          }
         }
-        if(name === 'cost'){
-            if (!/^\d*\.?\d{0,2}$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
-            }
-        }
-        setNewPlan({
-          ...newPlan,
+        setNewClient({
+          ...newClient,
           [name]: value,
         })
-      }
+    }
 
-    const isPlanSendable = () => {
-        const { name, value } = e.target
-        
-        /* Ced Controller */
-        if(name === 'name'){
-            if (value.length > 50) {
-            return
-            }
-        }
-        if(name === 'dura' || name === 'asis'){
-            if (!/^\d*$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
-            }
-        }
-        if(name === 'cost'){
-            if (!/^\d*\.?\d{0,2}$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
-            }
-        }
-            
+    const isClientSendable = () => {
+        if (newClient.ced.length < 10 || newClient.name.length < 2 || newClient.last.length < 2
+            || errorEmail || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
+            || !planSel > 0
+          ) {
+            return false
+          }else{
+            return true
+          }
     }
 
     const handleSubmitAdd = () => {
-        setNewPlan({
+        setNewClient({
+            ced: '',
             name: '',
-            dura: '',
-            asis: '',
-            cost: '',
+            email: '',
+            phone: '',
+            address: ''
         })
 
         //Send Data Here
@@ -304,36 +244,39 @@ const DtPlans = ({isActive, handleActive}) => {
         handleIsAdd()
     }
 
-    /* Edit Plan */
+    /* Edit Client */
 
     const [isEdit, setIsEdit] = useState(false)
 
     const handleIsEdit = () => {
         if(isEdit){
             setSelRow({id:0})
-            setNewPlan({
+            setNewClient({
+                ced: '',
                 name: '',
-                dura: '',
-                asis: '',
-                cost: '',
+                email: '',
+                phone: '',
+                address: ''
             })
         }
         setIsEdit(current => !current)
     }
 
-    const setEditPlan = (row) => {
+    const setEditClient = (row) => {
+
         setSelRow(row)
-        setNewPlan({
+        setNewClient({
             id: row.id,
+            ced: row.ced,
             name: row.name,
-            dura: row.dura,
-            asis: row.asis,
-            cost: row.cost
+            email: row.email,
+            phone: row.phone,
+            address: row.address
         })
     }
 
     const isEditSendable = () => {
-        if(newPlan.name.length > 0 && Number(newPlan.asis) > 0 &&  Number(newPlan.dura) > 0 &&  Number(newPlan.cost) > 0){
+        if(newClient.name.length > 0 && Number(newClient.asis) > 0 &&  Number(newClient.dura) > 0 &&  Number(newClient.cost) > 0){
             return true
         }else{
             return false
@@ -341,7 +284,7 @@ const DtPlans = ({isActive, handleActive}) => {
     }
 
     const handleSubmitEdit = () => {
-        setNewPlan({
+        setNewClient({
             name: '',
             dura: '',
             asis: '',
@@ -354,7 +297,7 @@ const DtPlans = ({isActive, handleActive}) => {
         handleIsEdit()
     }
 
-    /* Delete Plan */
+    /* Delete Client */
 
     const [deleteModal, setDeleteModal] = useState(false)
 
@@ -401,7 +344,7 @@ const DtPlans = ({isActive, handleActive}) => {
             </div>
             <div className="dashboard">
                 <div className="title">
-                Planes
+                Clientes
                 </div>
                 <div className="header">
                     <div className="toolbar">
@@ -463,7 +406,7 @@ const DtPlans = ({isActive, handleActive}) => {
                                 currentItems.length > 0 ?(
                                 <table className='dt-all'>
                                     <thead>
-                                    <tr className='plan-dt'>
+                                    <tr className='clients-dt'>
                                         <th>
                                         ID
                                         </th>
@@ -471,34 +414,40 @@ const DtPlans = ({isActive, handleActive}) => {
                                         Nombre
                                         </th>
                                         <th>
-                                        Duracion
+                                        Cedula
                                         </th>
                                         <th>
-                                        Asistencias
+                                        Email
                                         </th>
                                         <th>
-                                        Costo
+                                        Telefono
+                                        </th>
+                                        <th>
+                                        Direccion
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            currentItems.map((pla, id)=>(
-                                                <tr key={id} className={selRow.id === pla.id ? 'plan-dt active':'plan-dt'} onClick={()=>setEditPlan(pla)}>
+                                            currentItems.map((cli, id)=>(
+                                                <tr key={id} className={selRow.id === cli.id ? 'clients-dt active':'clients-dt'} onClick={()=>setEditClient(cli)}>
                                                     <td>
-                                                        {pla.id}
+                                                        {cli.id}
                                                     </td>
                                                     <td>
-                                                        {pla.name}
+                                                        {cli.name}
                                                     </td>
                                                     <td>
-                                                        {pla.dura}
+                                                        {cli.ced}
                                                     </td>
                                                     <td>
-                                                        {pla.asis}
+                                                        {cli.email}
                                                     </td>
                                                     <td>
-                                                        ${pla.cost}
+                                                        {cli.phone}
+                                                    </td>
+                                                    <td>
+                                                        {cli.address}
                                                     </td>
                                                 </tr>
                                             ))
@@ -528,31 +477,35 @@ const DtPlans = ({isActive, handleActive}) => {
                                 <div className="body light">
                                     <div className='form-dt'>
                                         <div className="header-form">
-                                        Información del Nuevo Plan
+                                        Información del Nuevo Cliente
                                         </div>
                                         <div className="cols">
                                         <div className="col">
                                             <div className="input-form sm">
-                                            <label>Nombre</label>
-                                            <input type="text" name="name" placeholder='Plan #1' value={newPlan.name} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Cédula</label>
+                                            <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                             <div className="input-form sm">
-                                            <label>Duración</label>
-                                            <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Nombre</label>
+                                            <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
+                                            </div>
+                                            <div className="input-form sm">
+                                            <label>Email</label>
+                                            <input type="text" name="email" placeholder='Dias' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="input-form sm">
-                                            <label>Asistencias</label>
-                                            <input type="text" name="asis" placeholder='30' value={newPlan.asis} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Teléfono</label>
+                                            <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                             <div className="input-form sm">
-                                            <label>Costo</label>
-                                            <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Dirección</label>
+                                            <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                         </div>
                                         </div>
-                                        <div className={isPlanSendable()?"submit":"submit disabled"} onClick={()=>handleSubmitAdd()}>
+                                        <div className={isClientSendable()?"submit":"submit disabled"} onClick={()=>handleSubmitAdd()}>
                                             <button>
                                                 Guardar
                                             </button>
@@ -563,27 +516,31 @@ const DtPlans = ({isActive, handleActive}) => {
                                 <div className="body light">
                                     <div className='form-dt'>
                                         <div className="header-form">
-                                        Editar Información del Plan
+                                        Editar Información del Cliente
                                         </div>
                                         <div className="cols">
                                         <div className="col">
                                             <div className="input-form sm">
-                                            <label>Nombre</label>
-                                            <input type="text" name="name" placeholder='Plan #1' value={newPlan.name} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Cédula</label>
+                                            <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                             <div className="input-form sm">
-                                            <label>Duración</label>
-                                            <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Nombre</label>
+                                            <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
+                                            </div>
+                                            <div className="input-form sm">
+                                            <label>Email</label>
+                                            <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                         </div>
                                         <div className="col">
                                             <div className="input-form sm">
-                                            <label>Asistencias</label>
-                                            <input type="text" name="asis" placeholder='30' value={newPlan.asis} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Teléfono</label>
+                                            <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                             <div className="input-form sm">
-                                            <label>Costo</label>
-                                            <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off'/>
+                                            <label>Dirección</label>
+                                            <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                         </div>
                                         </div>
@@ -608,4 +565,4 @@ const DtPlans = ({isActive, handleActive}) => {
   )
 }
 
-export default DtPlans
+export default DtClients

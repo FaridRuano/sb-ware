@@ -42,9 +42,6 @@ const Client = () => {
     try {
       const fetchData = await mongoClientData()
      
-      console.log(fetchData)
-      //console.log(paids)
-      
         setTotalMoney(fetchData.totalAmount)
         setPaids(fetchData.paids)
         setRecentClients(fetchData.recentClients)
@@ -67,7 +64,7 @@ const Client = () => {
   //const nopaids = 24
   const [nopaids,setNoPaids]=useState(1)
 
-  const [recentPays,setRecentPays] =useState( [])
+  const [recentPays,setRecentPays] =useState([])
 
   const [recentClients,setRecentClients] = useState([])
 
@@ -296,7 +293,7 @@ const Client = () => {
                   </table>
                 </div>
               ):(
-                <div className='nodata'>
+                <div className='datatable'>
                   <span className='nodata-txt'>
                     No existe información aún
                   </span>
@@ -338,7 +335,7 @@ const Client = () => {
                   </table>
                 </div>
               ):(
-                <div className='nodata'>
+                <div className='datatable'>
                   <span className='nodata-txt'>
                     No existe información aún
                   </span>
@@ -409,7 +406,7 @@ const Client = () => {
                   </table>
                 </div>
               ):(
-                <div className='nodata'>
+                <div className='datatable'>
                   <span className='nodata-txt'>
                     No existe información aún
                   </span>

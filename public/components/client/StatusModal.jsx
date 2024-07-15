@@ -4,7 +4,7 @@ import DelBtn from '@public/assets/icons/btn-delete.png'
 import Image from 'next/image'
 
 
-const StatusModal = ({isActive, message, handleModal}) => {
+const StatusModal = ({isActive, message, handleModal, full=false}) => {
 
   useEffect(()=>{
     if(isActive){
@@ -18,7 +18,7 @@ const StatusModal = ({isActive, message, handleModal}) => {
 
   if(isActive){
     return (
-      <div className='status-container'>
+      <div className={full?'status-container full':'status-container'}>
           <span>
             {message}
           </span>
