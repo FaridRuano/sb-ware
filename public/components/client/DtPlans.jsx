@@ -263,31 +263,11 @@ const DtPlans = ({isActive, handleActive}) => {
       }
 
     const isPlanSendable = () => {
-        const { name, value } = e.target
-        
-        /* Ced Controller */
-        if(name === 'name'){
-            if (value.length > 50) {
-            return
-            }
+        if(newPlan.name.length > 0 && Number(newPlan.asis) > 0 &&  Number(newPlan.dura) > 0 &&  Number(newPlan.cost) > 0){
+            return true
+        }else{
+            return false
         }
-        if(name === 'dura' || name === 'asis'){
-            if (!/^\d*$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
-            }
-        }
-        if(name === 'cost'){
-            if (!/^\d*\.?\d{0,2}$/.test(value)) {
-                return
-                }
-            if(value > 999){
-                return
-            }
-        }
-            
     }
 
     const handleSubmitAdd = () => {
