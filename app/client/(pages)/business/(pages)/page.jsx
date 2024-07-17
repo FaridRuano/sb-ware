@@ -56,6 +56,7 @@ const mongoPlanData = async () => {
     console.log(error)
   }
 }
+
 const postNewClient = async (newClient) => {
   try {
     const uri = process.env.NEXT_PUBLIC_API_URL;
@@ -73,42 +74,12 @@ const postNewClient = async (newClient) => {
 
     // Optionally, you can handle the response after posting if needed
     const postedFaculty = await res.json()
-
-    // Fetch updated data after posting
-    //const updatedData = await personData()
-    //return updatedData
   } catch (error) {
     console.error('Error:', error)
     throw error
   }
 }
-const postNewPlan = async (newPlan) => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    console.log(uri)
-    const res = await fetch(`${uri}/api/plan`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newPlan),
-    });
 
-    if (!res.ok) {
-      throw new Error('Failed to post new data')
-    }
-
-    // Optionally, you can handle the response after posting if needed
-    const postedFaculty = await res.json()
-
-    // Fetch updated data after posting
-    //const updatedData = await personData()
-    //return updatedData
-  } catch (error) {
-    console.error('Error:', error)
-    throw error
-  }
-}
 
 const deleteClient = async (client) => {
   try {
