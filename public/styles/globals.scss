@@ -1179,6 +1179,32 @@ input, select {
             gap: .5rem;
         }
     }
+    .form-submit{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        .error-msg{
+            color: $text-color-light;
+            transition: .1s ease-out;
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+            font-size: 15px;
+            white-space: nowrap;
+            span{
+                padding: 0;
+                margin: 0;
+            }
+            &.hidden{
+                opacity: 0;
+            }
+        }
+    }
     .submit{
         width: 100%;
         display: flex;
@@ -1648,6 +1674,11 @@ input, select {
             gap: .5rem;
             .col{
                 width: 100%;
+                .input-form{
+                    label{
+                        font-size: 12px;
+                    }
+                }
             }
         }
     }
@@ -1690,14 +1721,10 @@ input, select {
             }
             .form-dt{
                 gap: .7rem;
-                .cols{
-                    .col{
-                        
-                    }
-                }
             }
         }
     }
+
 }
 
 @media (max-width: 800px) {
@@ -1754,8 +1781,13 @@ input, select {
     }
     .screen-overlay{
         .overlay-work{
+            .close-overlay{
+                top: 10px;
+                right: 10px
+            }
             .dashboard{
                 .header{
+                    gap: .5rem;
                     .toolbar{
                         gap: .5rem;
                         .tool-btn{

@@ -16,9 +16,9 @@ const NavBarMain = () => {
         <div className="logo-navbar">
             {
                 isDarkMode ? (
-                    <Image src={LogoNavBarDark} height={60} width={'auto'}/>    
+                    <Image src={LogoNavBarDark} height={60} width={'auto'} alt="Logo"/>    
                 ):(
-                    <Image src={LogoNavBar} height={60} width={'auto'}/>    
+                    <Image src={LogoNavBar} height={60} width={'auto'} alt="Logo"/>    
                 )
             }
         </div>

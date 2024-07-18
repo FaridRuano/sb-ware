@@ -8,6 +8,8 @@ import { useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
+import WarningIcon from '@public/assets/icons/warning-icon.png'
+
 
 
 const DtClients = ({isActive, handleActive}) => {
@@ -21,7 +23,18 @@ const DtClients = ({isActive, handleActive}) => {
           name: 'Farid Ruano',
           email: 'fruanocm2777@gmail.com',
           phone: '0996447884',
-          address: 'Ambato'
+          address: 'Ambato',
+          plan: [
+            {
+                id: 1,
+                asis: 30,
+                cost: 30,
+                dura: 30,
+                name: 'Plan Guaytambo',
+                ini:  '2024-07-17',
+                end:  '2024-08-17'
+            }
+          ]
         },
         {
           id: 2,
@@ -29,41 +42,20 @@ const DtClients = ({isActive, handleActive}) => {
           name: 'Farid Ruano',
           email: 'fruanocm2777@gmail.com',
           phone: '0996447884',
-          address: 'Ambato'
+          address: 'Ambato',
+          plan: [
+            {
+                id: 2,
+                asis: 35,
+                cost: 35,
+                dura: 35 ,
+                name: 'Plan Guaytambo',
+                ini:  '2024-07-17',
+                end:  '2024-10-14'
+            }
+          ]
         },
-        {
-          id: 3,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato'
-        },
-        {
-          id: 4,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato'
-        },
-        {
-          id: 5,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato'
-        }, 
-        {
-          id: 6,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato'
-        }
-      ])
+    ])
 
     /* Datatable */
 
@@ -160,6 +152,82 @@ const DtClients = ({isActive, handleActive}) => {
 
     const [isAdd, setIsAdd] = useState(false)
 
+    const [planData, setPlanData] = useState([
+        {
+            id: 1,
+            name: 'Plan Guaytambo',
+            asis: 30,
+            dura: 30,
+            cost: 30,
+        },
+        {
+            id: 2,
+            name: 'Plan Guaytambo 2',
+            asis: 35,
+            dura: 35,
+            cost: 35,
+        },
+    ])
+
+    const [planSel, setPlanSel] = useState({id: 0})
+
+    const handlePlan = (e) => {
+        const selPlan = planData.find(plan => plan.id === Number(e.target.value))
+        if (selPlan) {
+            setDurationPlan(selPlan.dura)
+            setAsisPlan(selPlan.asis)
+            const [year, month, day] = startDate.split('-')
+            const date = new Date(year, month - 1, day)
+            setEndDate(getFormattedDate(addDays(date, selPlan.dura)))
+            setPlanSel(selPlan)
+        } else {
+            setDurationPlan(0)
+            setAsisPlan(0)
+            setEndDate(getFormattedDate(addDays(currentDate, 0)))
+            setPlanSel(0)
+        }
+        setNewClient((prev)=>({
+            ...prev,
+            debt: selPlan.cost,
+            plan: {
+                    id: selPlan.id,
+                    name: selPlan.name,
+                    dura: selPlan.dura,
+                    asis: selPlan.asis,
+                }
+        }))
+    }
+
+    const [durationPlan, setDurationPlan] = useState(0)
+
+    const [asisPlan, setAsisPlan] = useState(0)
+  
+    const currentDate = new Date()
+  
+    const getFormattedDate = (date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+  
+    const [startDate, setStartDate] = useState(getFormattedDate(currentDate))
+  
+    const addDays = (date, days) => {
+      const result = new Date(date)
+      result.setDate(result.getDate() + days)
+      return result
+    }
+  
+    const [endDate, setEndDate] = useState(getFormattedDate(addDays(currentDate, durationPlan)))
+
+    const handleStartDate = (e) => {
+        const [year, month, day] = e.target.value.split('-')
+        const date = new Date(year, month - 1, day)
+        setStartDate(getFormattedDate(date))
+        setEndDate(getFormattedDate(addDays(date, durationPlan)))
+      }
+
     const AddButton = () => {
         if(isEdit){
             return false
@@ -177,18 +245,37 @@ const DtClients = ({isActive, handleActive}) => {
             name: '',
             email: '',
             phone: '',
-            address: ''
+            address: '',
+            debt: '',
+            plan: {
+                    id: '',
+                    name: '',
+                    dura: '',
+                    asis: '',
+                }
         })
         setIsAdd(current => !current)
     }
 
     const [newClient, setNewClient] = useState({
+        id: '',
         ced: '',
         name: '',
         email: '',
         phone: '',
-        address: ''
+        address: '',
+        debt: '',
+        plan: {
+                id: '',
+                name: '',
+                dura: '',
+                asis: '',
+            }
     })
+
+    const [errorForm, setErrorForm] = useState(false)
+
+    const [errorMsg, setErrorMsg] = useState('')
 
     const handleNewClient = (e) => {
         const { name, value } = e.target
@@ -203,13 +290,15 @@ const DtClients = ({isActive, handleActive}) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegex.test(value)) {
             if (value.length < 1) {
-              setErrorEmail(false)
+                setErrorMsg("")
+                setErrorForm(false)
             } else {
-              setErrorEmail(true)
-              setErrorMsg("Email no válido.")
+                setErrorForm(true)
+                setErrorMsg("Email no válido.")
             }
           } else {
-            setErrorEmail(false)
+            setErrorForm(false)
+            setErrorMsg("")
           }
         }
         setNewClient({
@@ -219,8 +308,8 @@ const DtClients = ({isActive, handleActive}) => {
     }
 
     const isClientSendable = () => {
-        if (newClient.ced.length < 10 || newClient.name.length < 2 || newClient.last.length < 2
-            || errorEmail || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
+        if (newClient.ced.length < 10 || newClient.name.length < 2
+            || errorForm || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
             || !planSel > 0
           ) {
             return false
@@ -230,15 +319,24 @@ const DtClients = ({isActive, handleActive}) => {
     }
 
     const handleSubmitAdd = () => {
+        console.log(newClient)
+        
+        //Send Data Here
+        
         setNewClient({
             ced: '',
             name: '',
             email: '',
             phone: '',
-            address: ''
+            address: '',
+            debt: '',
+            plan: {
+                    id: '',
+                    name: '',
+                    dura: '',
+                    asis: '',
+                }
         })
-
-        //Send Data Here
 
         handleStatus('Se agrego con exito.')
         handleIsAdd()
@@ -251,47 +349,86 @@ const DtClients = ({isActive, handleActive}) => {
     const handleIsEdit = () => {
         if(isEdit){
             setSelRow({id:0})
+            setPlanSel({id: 0})
+            setDurationPlan(0)
+            setAsisPlan(0)
             setNewClient({
                 ced: '',
                 name: '',
                 email: '',
                 phone: '',
-                address: ''
+                address: '',
+                debt: '',
+                plan: {
+                        id: '',
+                        name: '',
+                        dura: '',
+                        asis: '',
+                    }
             })
         }
         setIsEdit(current => !current)
     }
 
     const setEditClient = (row) => {
-
         setSelRow(row)
+        const selPlan = planData.find(plan => plan.id === Number(row.plan[0].id))
+        if (selPlan) {
+            setDurationPlan(row.plan[0].dura)
+            setAsisPlan(row.plan[0].dura)
+            const [year, month, day] = row.plan[0].ini.split('-')
+            const date = new Date(year, month - 1, day)
+            setStartDate(getFormattedDate(date))
+            const [year2, month2, day2] = row.plan[0].end.split('-')
+            const date2 = new Date(year2, month2 - 1, day2)
+            setEndDate(getFormattedDate(date2))
+            setPlanSel(selPlan)
+        } else {
+            setDurationPlan(0)
+            setAsisPlan(0)
+            setEndDate(getFormattedDate(addDays(currentDate, 0)))
+            setPlanSel(0)
+        }
         setNewClient({
             id: row.id,
             ced: row.ced,
             name: row.name,
             email: row.email,
             phone: row.phone,
-            address: row.address
+            address: row.address,
+            debt: selPlan.cost,
+            plan: {
+                    id: selPlan.id,
+                    name: selPlan.name,
+                    dura: selPlan.dura,
+                    asis: selPlan.asis,
+                }
         })
     }
 
     const isEditSendable = () => {
-        if(newClient.name.length > 0 && Number(newClient.asis) > 0 &&  Number(newClient.dura) > 0 &&  Number(newClient.cost) > 0){
-            return true
-        }else{
-            return false
-        }
+        return true
     }
 
     const handleSubmitEdit = () => {
-        setNewClient({
-            name: '',
-            dura: '',
-            asis: '',
-            cost: '',
-        })
+        console.log(newClient)
         
         //Send Data Here
+
+        setNewClient({
+            ced: '',
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+            debt: '',
+            plan: {
+                    id: '',
+                    name: '',
+                    dura: '',
+                    asis: '',
+                }
+        })
 
         handleStatus('Se edito con exito.')
         handleIsEdit()
@@ -472,92 +609,139 @@ const DtClients = ({isActive, handleActive}) => {
                         </>
                     ):(
                         <>
-                        {
-                            wForm() ? (
-                                <div className="body light">
-                                    <div className='form-dt'>
-                                        <div className="header-form">
-                                        Información del Nuevo Cliente
-                                        </div>
-                                        <div className="cols">
+                            <div className="body light">
+                                <div className="form-dt">
+                                    <div className="header-form">
+                                        {
+                                            wForm() ? (
+                                                <>
+                                                   Información del Nuevo Cliente
+                                                </>
+                                            ):(
+                                                <>
+                                                    Editar Información del Cliente
+                                                </>
+                                            )
+                                        }
+                                    </div>
+                                    <div className="cols">
                                         <div className="col">
-                                            <div className="input-form sm">
-                                            <label>Cédula</label>
-                                            <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Cédula</label>
+                                                <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Nombre</label>
-                                            <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Nombre</label>
+                                                <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Email</label>
-                                            <input type="text" name="email" placeholder='Dias' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
+                                             <div className="input-form">
+                                                <label>Email</label>
+                                                <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
                                         </div>
                                         <div className="col">
-                                            <div className="input-form sm">
-                                            <label>Teléfono</label>
-                                            <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Teléfono</label>
+                                                <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Dirección</label>
-                                            <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Dirección</label>
+                                                <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/> 
                                             </div>
-                                        </div>
-                                        </div>
-                                        <div className={isClientSendable()?"submit":"submit disabled"} onClick={()=>handleSubmitAdd()}>
-                                            <button>
-                                                Guardar
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            ):(
-                                <div className="body light">
-                                    <div className='form-dt'>
-                                        <div className="header-form">
-                                        Editar Información del Cliente
-                                        </div>
-                                        <div className="cols">
+                                    <div className="header-form">
+                                        {
+                                            wForm() ? (
+                                                <>
+                                                   Plan del Nuevo Cliente
+                                                </>
+                                            ):(
+                                                <>
+                                                    Editar Plan del Cliente
+                                                </>
+                                            )
+                                        }
+                                    </div>
+                                    <div className="cols">
                                         <div className="col">
-                                            <div className="input-form sm">
-                                            <label>Cédula</label>
-                                            <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Plan</label>
+                                                <select onChange={handlePlan} value={planSel.id}>
+                                                <option value='0'>
+                                                    Seleccionar
+                                                </option>
+                                                {
+                                                    planData.map((op, id) => (
+                                                    <option key={id} value={op.id}>
+                                                        {op.name}
+                                                    </option>
+                                                    ))
+                                                }
+                                                </select>
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Nombre</label>
-                                            <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Inicio</label>
+                                                <input type="date" value={startDate} onChange={handleStartDate} />
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Email</label>
-                                            <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Duración</label>
+                                                <input type="number" value={durationPlan} onChange={(e)=>setDurationPlan(e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="col">
-                                            <div className="input-form sm">
-                                            <label>Teléfono</label>
-                                            <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>No. Asis</label>
+                                                <input type="number" value={asisPlan} onChange={(e)=>setAsisPlan(e.target.value)} />
                                             </div>
-                                            <div className="input-form sm">
-                                            <label>Dirección</label>
-                                            <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/>
+                                            <div className="input-form">
+                                                <label>Fin</label>
+                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate}/>
                                             </div>
-                                        </div>
-                                        </div>
-                                        <div className={isEditSendable()?"submit":"submit disabled"} onClick={()=>handleSubmitEdit()}>
-                                            <button>
-                                                Guardar
-                                            </button>
                                         </div>
                                     </div>
+                                    <div className="form-submit">
+                                        {
+                                            wForm() ? (
+                                                <>
+                                                    <div className={errorForm ? "error-msg" : "error-msg hidden"}>
+                                                        <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                                                        <span>
+                                                            {
+                                                                errorMsg
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className={isClientSendable()?"submit":"submit disabled"}>
+                                                        <button onClick={()=>handleSubmitAdd()}>
+                                                            Guardar
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            ):(
+                                                <>
+                                                    <div className={errorForm ? "error-msg" : "error-msg hidden"}>
+                                                        <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                                                        <span>
+                                                            {
+                                                                errorMsg
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className={isEditSendable()?"submit":"submit disabled"} >
+                                                        <button onClick={()=>handleSubmitEdit()}>
+                                                            Guardar
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            )
+                                        }
+                                    </div>
                                 </div>
-                            )
-                        }
+                            </div>
                         </>
                     )
                 }
-
-                
             </div>
             </div>
         </div>

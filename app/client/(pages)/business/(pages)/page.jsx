@@ -239,7 +239,6 @@ const Clients = () => {
       const [year, month, day] = startDate.split('-')
       const date = new Date(year, month - 1, day)
       setEndDate(getFormattedDate(addDays(date, selPlan.duration)))
-      //setPlanSel(e.target.value)
       setPlanSel(selPlan)
     } else {
       setDurationPlan(0)
@@ -355,7 +354,6 @@ const Clients = () => {
         payments: []
       }
 
-      console.log(newClientData)
       try {
         await postNewClient(newClientData)
         await fetchAndLoadPersons()
@@ -363,7 +361,6 @@ const Clients = () => {
       } catch (error) {
         console.error('Error posting new person:', error)
       }
-      console.log('Sendable')
       handleAddClient()
     }
   }
@@ -522,6 +519,7 @@ const Clients = () => {
       if (fetchData.length > 0) {
         setBaseData(fetchData)
         setClientData(fetchData)
+        console.log(fetchData)
       }
       if (planData.length > 0) {
         setPlanData(planData)
@@ -610,8 +608,12 @@ const Clients = () => {
   const [payModal, setPayModal] = useState(false)
 
   const handlePay = () => {
-    handleStatusClose()
-    setPayModal(current => !current)
+    if(selRow.debt === 0){
+      return
+    }else{
+      handleStatusClose()
+      setPayModal(current => !current)
+    }
   }
 
   const handlePayResponse = async (response) => {
