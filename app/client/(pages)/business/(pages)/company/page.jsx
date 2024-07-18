@@ -1,8 +1,45 @@
 'use client'
 import DtPlans from '@public/components/client/DtPlans'
 import DtClients from '@public/components/client/DtClients'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+const mongoClientData = async () => {
+  try {
+    const uri = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${uri}/api/client`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
 
+    if (!res.ok) {
+      throw new Error("Failed")
+    }
+    const ponse = await res.json()
+    return ponse.clients
+  } catch (error) {
+    console.log(error)
+  }
+}
+const mongoPlanData = async () => {
+  try {
+    const uri = process.env.NEXT_PUBLIC_API_URL;
+    const res = await fetch(`${uri}/api/plan`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    if (!res.ok) {
+      throw new Error("Failed")
+    }
+    const ponse = await res.json()
+    return ponse.plans
+  } catch (error) {
+    console.log(error)
+  }
+}
 const Company = () => {
 
   /* Clients */
@@ -25,57 +62,31 @@ const Company = () => {
       setDtClient(false)
     }
   }
+  const fetchAndLoadData = async () => {
+    try {
+      const fetchData = await mongoClientData()
+      const planData = await mongoPlanData()
+      if (fetchData.length > 0) {
+        setClientData(fetchData)
+      }
+      if (planData.length > 0) {
+        setPlanData(planData)
+      }
 
-  const [clientData, setClientData] = useState([
-    {
-      id: 1,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
-    },
-    {
-      id: 2,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
-    },
-    {
-      id: 3,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
-    },
-    {
-      id: 4,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
-    },
-    {
-      id: 5,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
-    }, 
-    {
-      id: 6,
-      ced: '1805467527',
-      name: 'Farid Ruano',
-      email: 'fruanocm2777@gmail.com',
-      phone: '0996447884',
-      address: 'Ambato'
+    } catch (e) {
+      console.log(e)
     }
-  ])
+  }
+
+ 
+  useEffect(() => {
+    fetchAndLoadData()
+  }, [])
+
+ 
+
+
+  const [clientData, setClientData] = useState([])
 
   /* Plans */
   const [planCont, setPlanCont] = useState(1)
@@ -98,50 +109,7 @@ const Company = () => {
     }
   }
 
-  const [planData, setPlanData] = useState([
-    {
-      id: 1,
-      name: 'Plan Guaytambo',
-      duration: 30,
-      asis: 30,
-      costo: 30
-    },
-    {
-      id: 2,
-      name: 'Plan Guaytambo 2',
-      duration: 40,
-      asis: 40,
-      costo: 40
-    },
-    {
-      id: 3,
-      name: 'Plan Guaytambo 3',
-      duration: 50,
-      asis: 50,
-      costo: 50
-    },
-    {
-      id: 4,
-      name: 'Plan Guaytambo 4',
-      duration: 50,
-      asis: 50,
-      costo: 50
-    },
-    {
-      id: 5,
-      name: 'Plan Guaytambo 5',
-      duration: 50,
-      asis: 50,
-      costo: 50
-    }, 
-    {
-      id: 6,
-      name: 'Plan Guaytambo 6',
-      duration: 50,
-      asis: 50,
-      costo: 50
-    }
-  ])
+  const [planData, setPlanData] = useState([])
 
 
 
@@ -161,7 +129,7 @@ const Company = () => {
             (
               <div className="dt-body ">
                 {
-                  clientData.length > 1 ? (
+                  clientData.length >= 1 ? (
                     <table className="dt-all">
                       <tbody>
                         {

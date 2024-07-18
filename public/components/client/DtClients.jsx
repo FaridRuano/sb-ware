@@ -4,12 +4,11 @@ import AddBtn from '@public/assets/icons/btn-add.png'
 import Image from 'next/image'
 import RightArrow from '@public/assets/icons/right-arrow.png'
 import LeftArrow from '@public/assets/icons/left-arrow.png'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
-
 
 
 const DtClients = ({isActive, handleActive}) => {
@@ -77,7 +76,7 @@ const DtClients = ({isActive, handleActive}) => {
     ))
 
     const handlePreviousPage = () => {
-        setSelRow({id:0})
+        setSelRow({ id: 0 })
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
             const nextPage = currentPage - 1
@@ -85,12 +84,12 @@ const DtClients = ({isActive, handleActive}) => {
             setCurrentItems(clientData.slice(
                 (nextPage - 1) * itemsPerPage,
                 nextPage * itemsPerPage
-          ))
+            ))
         }
     }
-    
+
     const handleNextPage = () => {
-        setSelRow({id:0})
+        setSelRow({ id: 0 })
         if (currentPage < totalPages) {
             const nextPage = currentPage + 1
             setCurrentPage(nextPage)
@@ -104,44 +103,44 @@ const DtClients = ({isActive, handleActive}) => {
     const handleSearchTerm = (event) => {
         setSearchTerm(event.target.value)
         setCurrentPage(1)
-        if(event.target.value.length<1){
-          setCurrentItems(clientData.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          ))
-          setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-        }else{
-          setTotalPages(1)
-          setCurrentItems(clientData.filter(cli =>
-            cli.name.toLowerCase().includes(event.target.value.toLowerCase())
-          ))
+        if (event.target.value.length < 1) {
+            setCurrentItems(clientData.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ))
+            setTotalPages(Math.ceil(clientData.length / itemsPerPage))
+        } else {
+            setTotalPages(1)
+            setCurrentItems(clientData.filter(cli =>
+                cli.name.toLowerCase().includes(event.target.value.toLowerCase())
+            ))
         }
     }
 
     //Form Display
 
     const openForm = () => {
-        if(isAdd || isEdit){
+        if (isAdd || isEdit) {
             return false
-        }else{
+        } else {
             return true
         }
     }
 
     const wForm = () => {
-        if(isAdd){
+        if (isAdd) {
             return true
         }
-        if(isEdit){
+        if (isEdit) {
             return false
         }
     }
 
-    const deselectBtn = () =>{
-        if(selRow.id > 0){
-            if(isEdit){
+    const deselectBtn = () => {
+        if (selRow.id > 0) {
+            if (isEdit) {
                 return false
-            }else{
+            } else {
                 return true
             }
         }
@@ -229,17 +228,17 @@ const DtClients = ({isActive, handleActive}) => {
       }
 
     const AddButton = () => {
-        if(isEdit){
+        if (isEdit) {
             return false
         }
-        if(isAdd){
+        if (isAdd) {
             return true
         }
         return true
     }
 
     const handleIsAdd = () => {
-        setSelRow({id:0})
+        setSelRow({ id: 0 })
         setNewClient({
             ced: '',
             name: '',
@@ -279,12 +278,12 @@ const DtClients = ({isActive, handleActive}) => {
 
     const handleNewClient = (e) => {
         const { name, value } = e.target
-    
+
         /* Ced Controller */
         if (name === 'ced' || name === 'phone') {
-          if (!/^\d*$/.test(value) || value.length > 10) {
-            return
-          }
+            if (!/^\d*$/.test(value) || value.length > 10) {
+                return
+            }
         }
         if (name === 'email') {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -302,8 +301,8 @@ const DtClients = ({isActive, handleActive}) => {
           }
         }
         setNewClient({
-          ...newClient,
-          [name]: value,
+            ...newClient,
+            [name]: value,
         })
     }
 
@@ -311,11 +310,11 @@ const DtClients = ({isActive, handleActive}) => {
         if (newClient.ced.length < 10 || newClient.name.length < 2
             || errorForm || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
             || !planSel > 0
-          ) {
+        ) {
             return false
-          }else{
+        } else {
             return true
-          }
+        }
     }
 
     const handleSubmitAdd = () => {
@@ -447,7 +446,7 @@ const DtClients = ({isActive, handleActive}) => {
 
         handleStatus('Se elimino con exito.')
         handleDeleteModal()
-        
+
     }
 
     /* Status Modal*/
