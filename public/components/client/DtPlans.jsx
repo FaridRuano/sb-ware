@@ -106,7 +106,7 @@ const DtPlans = ({ isActive, handleActive }) => {
     const fetchAndLoadData = async () => {
         try {
             const planData = await mongoPlanData()
-            if (planData.length > 0) {
+            if (planData.length >= 0) {
                 setPlanData(planData)
             }
 
@@ -237,18 +237,18 @@ const DtPlans = ({ isActive, handleActive }) => {
         setSelRow({ id: 0 })
         setNewPlan({
             name: '',
-            duration: '',
+            dura: '',
             asis: '',
-            costo: '',
+            cost: '',
         })
         setIsAdd(current => !current)
     }
 
     const [newPlan, setNewPlan] = useState({
         name: '',
-        duration: '',
+        dura: '',
         asis: '',
-        costo: '',
+        cost: '',
     })
 
     const handleNewPlan = (e) => {
@@ -260,7 +260,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                 return
             }
         }
-        if (name === 'duration' || name === 'asis') {
+        if (name === 'dura' || name === 'asis') {
             if (!/^\d*$/.test(value)) {
                 return
             }
@@ -268,7 +268,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                 return
             }
         }
-        if (name === 'costo') {
+        if (name === 'cost') {
             if (!/^\d*\.?\d{0,2}$/.test(value)) {
                 return
             }
@@ -283,7 +283,7 @@ const DtPlans = ({ isActive, handleActive }) => {
     }
 
     const isPlanSendable = () => {
-        if (newPlan.name.length > 0 && Number(newPlan.asis) > 0 && Number(newPlan.duration) > 0 && Number(newPlan.costo) > 0) {
+        if (newPlan.name.length > 0 && Number(newPlan.asis) > 0 && Number(newPlan.dura) > 0 && Number(newPlan.cost) > 0) {
             return true
         } else {
             return false
@@ -293,9 +293,9 @@ const DtPlans = ({ isActive, handleActive }) => {
     const handleSubmitAdd = async () => {
         setNewPlan({
             name: '',
-            duration: '',
+            dura: '',
             asis: '',
-            costo: '',
+            cost: '',
         })
 
         //Send Data Here
@@ -315,9 +315,9 @@ const DtPlans = ({ isActive, handleActive }) => {
             setSelRow({ id: 0 })
             setNewPlan({
                 name: '',
-                duration: '',
+                dura: '',
                 asis: '',
-                costo: '',
+                cost: '',
             })
         }
         setIsEdit(current => !current)
@@ -328,14 +328,14 @@ const DtPlans = ({ isActive, handleActive }) => {
         setNewPlan({
             id: row.id,
             name: row.name,
-            duration: row.duration,
+            dura: row.dura,
             asis: row.asis,
-            costo: row.costo
+            cost: row.cost
         })
     }
 
     const isEditSendable = () => {
-        if (newPlan.name.length > 0 && Number(newPlan.asis) > 0 && Number(newPlan.duration) > 0 && Number(newPlan.costo) > 0) {
+        if (newPlan.name.length > 0 && Number(newPlan.asis) > 0 && Number(newPlan.dura) > 0 && Number(newPlan.cost) > 0) {
             return true
         } else {
             return false
@@ -345,9 +345,9 @@ const DtPlans = ({ isActive, handleActive }) => {
     const handleSubmitEdit = async() => {
         setNewPlan({
             name: '',
-            duration: '',
+            dura: '',
             asis: '',
-            costo: '',
+            cost: '',
         })
 
         //Send Data Here
@@ -499,13 +499,13 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                                         {pla.name}
                                                                     </td>
                                                                     <td>
-                                                                        {pla.duration}
+                                                                        {pla.dura}
                                                                     </td>
                                                                     <td>
                                                                         {pla.asis}
                                                                     </td>
                                                                     <td>
-                                                                        ${pla.costo}
+                                                                        ${pla.cost}
                                                                     </td>
                                                                 </tr>
                                                             ))
@@ -545,7 +545,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                             </div>
                                                             <div className="input-form sm">
                                                                 <label>Duración</label>
-                                                                <input type="text" name="duration" placeholder='Dias' value={newPlan.duration} onChange={handleNewPlan} autoComplete='off' />
+                                                                <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                         <div className="col">
@@ -555,7 +555,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                             </div>
                                                             <div className="input-form sm">
                                                                 <label>Costo</label>
-                                                                <input type="text" name="costo" placeholder='$10.00' value={newPlan.costo} onChange={handleNewPlan} autoComplete='off' />
+                                                                <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -580,7 +580,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                             </div>
                                                             <div className="input-form sm">
                                                                 <label>Duración</label>
-                                                                <input type="text" name="duration" placeholder='Dias' value={newPlan.duration} onChange={handleNewPlan} autoComplete='off' />
+                                                                <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                         <div className="col">
@@ -590,7 +590,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                             </div>
                                                             <div className="input-form sm">
                                                                 <label>Costo</label>
-                                                                <input type="text" name="costo" placeholder='$10.00' value={newPlan.costo} onChange={handleNewPlan} autoComplete='off' />
+                                                                <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                     </div>

@@ -41,12 +41,11 @@ const Client = () => {
   const fetchAndLoadData = async () => {
     try {
       const fetchData = await mongoClientData()
-     
         setTotalMoney(fetchData.totalAmount)
         setPaids(fetchData.paids)
+        setNoPaids(fetchData.nopaids)
         setRecentClients(fetchData.recentClients)
         setMonthlyAverage(fetchData.monthlyAverage)
-        setNoPaids(fetchData.nopaids)
         setRecentPays(fetchData.recentPays)
         setRecentAsistance(fetchData.recentAsistance)
         setTotalClients(fetchData.totalClients)
@@ -78,7 +77,7 @@ const Client = () => {
   const [monthlyAverage,setMonthlyAverage]=useState(100)
 
   useEffect(()=>{
-    console.log(totalMoney)
+    console.log(nopaids)
     const rootStyles = getComputedStyle(document.documentElement);
 
     const primaryColorLight = rootStyles.getPropertyValue('--primary-color-light').trim()
@@ -132,6 +131,7 @@ const Client = () => {
       paidsText.textContent = `${paidsStartValue}`
 
       if(paidsStartValue == paidsEndValue){
+       
         clearInterval(progressPaids)
       }
       

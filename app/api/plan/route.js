@@ -3,12 +3,12 @@ import Plan from "@models/planModel"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request) {
-    const { name, duration, asis, costo } = await request.json()
+    const { name, dura, asis, cost } = await request.json()
     await connectMongoDB()
     const highestIdClient = await Plan.findOne().sort({ id: -1 }).exec();
     const newId = highestIdClient ? highestIdClient.id + 1 : 1
 
-    await Plan.create({ id: newId, name, duration, asis, costo })
+    await Plan.create({ id: newId, name, dura, asis, cost })
     return NextResponse.json({ message: "Data created" }, { status: 200 })
 }
 
@@ -31,8 +31,8 @@ export async function DELETE(request) {
 
 
 export async function PUT(request) {
-    const { id,name,duration,asis,costo } = await request.json();
-    console.log(id,name)
+    const { id,name,dura,asis,cost } = await request.json();
+    //console.log(id,name)
     await connectMongoDB();
 
 
@@ -41,9 +41,9 @@ export async function PUT(request) {
         { id: id },
         {
             name: name,
-            duration: duration,
+            dura: dura,
             asis: asis,
-            costo: costo,
+            cost: cost,
         },
         { new: true }
     );

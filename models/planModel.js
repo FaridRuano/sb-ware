@@ -4,15 +4,15 @@ const planSchema = new Schema(
     {
         id:Number,
         name:String,
-        duration:Number,
+        dura:Number,
         asis:Number,
-        costo:Number
+        cost:Number
     },
     {
         timestamps: true,
     }
 )
 
-const Plan = mongoose.models.Plan || mongoose.model("Plan", planSchema)
+const Plan = mongoose.models.Plans || mongoose.model("Plans", planSchema)
 
 export default Plan

@@ -66,11 +66,12 @@ const Company = () => {
     try {
       const fetchData = await mongoClientData()
       const planData = await mongoPlanData()
-      if (fetchData.length > 0) {
+      if (fetchData.length >= 0) {
         setClientData(fetchData)
       }
-      if (planData.length > 0) {
+      if (planData.length >= 0) {
         setPlanData(planData)
+        console.log(planData)
       }
 
     } catch (e) {
@@ -82,6 +83,11 @@ const Company = () => {
   useEffect(() => {
     fetchAndLoadData()
   }, [])
+
+  useEffect(() => {
+    console.log("entro")
+    fetchAndLoadData()
+  }, [isDtPlan])
 
  
 
@@ -216,7 +222,7 @@ const Company = () => {
             (
               <div className="dt-body ">
                 {
-                  planData.length > 1 ? (
+                  planData.length >= 1 ? (
                     <table className="dt-all">
                       <tbody>
                         {
@@ -229,13 +235,13 @@ const Company = () => {
                                 {pla.name}
                               </td>
                               <td>
-                                {pla.duration}
+                                {pla.dura}
                               </td>
                               <td>
                                 {pla.asis}
                               </td>
                               <td>
-                                ${pla.costo}
+                                ${pla.cost}
                               </td>
                             </tr>
                           ))

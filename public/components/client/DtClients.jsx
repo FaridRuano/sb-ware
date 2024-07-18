@@ -11,50 +11,158 @@ import TrashBtn from '@public/assets/icons/trash-btn.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
 
 
-const DtClients = ({isActive, handleActive}) => {
+const mongoClientData = async () => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.clients
+    } catch (error) {
+        console.log(error)
+    }
+}
+const mongoPlanData = async () => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/plan`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.plans
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const postNewClient = async (newClient) => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newClient),
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to post new data')
+        }
+
+        // Optionally, you can handle the response after posting if needed
+        const postedFaculty = await res.json()
+    } catch (error) {
+        console.error('Error:', error)
+        throw error
+    }
+}
+const deleteClient = async (client) => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+
+
+        const res = await fetch(`${uri}/api/client`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify(client),
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to post new data')
+        }
+
+        // Optionally, you can handle the response after posting if needed
+        const postedFaculty = await res.json()
+
+        // Fetch updated data after posting
+        //const updatedData = await personData()
+        //return updatedData
+    } catch (error) {
+        console.error('Error:', error)
+        throw error
+    }
+}
+
+const updateClient = async (data) => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+
+
+        const res = await fetch(`${uri}/api/client`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to post new data')
+        }
+
+        // Optionally, you can handle the response after posting if needed
+        const postedFaculty = await res.json()
+
+        // Fetch updated data after posting
+        //const updatedData = await personData()
+        //return updatedData
+    } catch (error) {
+        console.error('Error:', error)
+        throw error
+    }
+}
+
+const DtClients = ({ isActive, handleActive }) => {
 
     /* Base Data */
 
-    const [clientData, setClientData] = useState([
-        {
-          id: 1,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato',
-          plan: [
-            {
-                id: 1,
-                asis: 30,
-                cost: 30,
-                dura: 30,
-                name: 'Plan Guaytambo',
-                ini:  '2024-07-17',
-                end:  '2024-08-17'
+    const [clientData, setClientData] = useState([])
+
+    const fetchAndLoadData = async () => {
+        try {
+            const clientData = await mongoClientData()
+            const planData = await mongoPlanData()
+            if (clientData.length >= 0) {
+                setClientData(clientData)
             }
-          ]
-        },
-        {
-          id: 2,
-          ced: '1805467527',
-          name: 'Farid Ruano',
-          email: 'fruanocm2777@gmail.com',
-          phone: '0996447884',
-          address: 'Ambato',
-          plan: [
-            {
-                id: 2,
-                asis: 35,
-                cost: 35,
-                dura: 35 ,
-                name: 'Plan Guaytambo',
-                ini:  '2024-07-17',
-                end:  '2024-10-14'
+            if (planData.length >= 0) {
+                setPlanData(planData)
             }
-          ]
-        },
-    ])
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    useEffect(() => {
+        fetchAndLoadData()
+    }, [isActive])
+
+    useEffect(() => {
+        setCurrentItems(clientData.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage))
+    }, [clientData])
 
     /* Datatable */
 
@@ -151,24 +259,9 @@ const DtClients = ({isActive, handleActive}) => {
 
     const [isAdd, setIsAdd] = useState(false)
 
-    const [planData, setPlanData] = useState([
-        {
-            id: 1,
-            name: 'Plan Guaytambo',
-            asis: 30,
-            dura: 30,
-            cost: 30,
-        },
-        {
-            id: 2,
-            name: 'Plan Guaytambo 2',
-            asis: 35,
-            dura: 35,
-            cost: 35,
-        },
-    ])
+    const [planData, setPlanData] = useState([])
 
-    const [planSel, setPlanSel] = useState({id: 0})
+    const [planSel, setPlanSel] = useState({ id: 0 })
 
     const handlePlan = (e) => {
         const selPlan = planData.find(plan => plan.id === Number(e.target.value))
@@ -185,39 +278,38 @@ const DtClients = ({isActive, handleActive}) => {
             setEndDate(getFormattedDate(addDays(currentDate, 0)))
             setPlanSel(0)
         }
-        setNewClient((prev)=>({
+        setNewClient((prev) => ({
             ...prev,
             debt: selPlan.cost,
-            plan: {
-                    id: selPlan.id,
-                    name: selPlan.name,
-                    dura: selPlan.dura,
-                    asis: selPlan.asis,
-                }
+            plan: [{
+                ...selPlan,
+                ini: startDate,
+                end: endDate
+            }]
         }))
     }
 
     const [durationPlan, setDurationPlan] = useState(0)
 
     const [asisPlan, setAsisPlan] = useState(0)
-  
+
     const currentDate = new Date()
-  
+
     const getFormattedDate = (date) => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
     }
-  
+
     const [startDate, setStartDate] = useState(getFormattedDate(currentDate))
-  
+
     const addDays = (date, days) => {
-      const result = new Date(date)
-      result.setDate(result.getDate() + days)
-      return result
+        const result = new Date(date)
+        result.setDate(result.getDate() + days)
+        return result
     }
-  
+
     const [endDate, setEndDate] = useState(getFormattedDate(addDays(currentDate, durationPlan)))
 
     const handleStartDate = (e) => {
@@ -225,7 +317,8 @@ const DtClients = ({isActive, handleActive}) => {
         const date = new Date(year, month - 1, day)
         setStartDate(getFormattedDate(date))
         setEndDate(getFormattedDate(addDays(date, durationPlan)))
-      }
+        //console.log(endDate)
+    }
 
     const AddButton = () => {
         if (isEdit) {
@@ -247,11 +340,11 @@ const DtClients = ({isActive, handleActive}) => {
             address: '',
             debt: '',
             plan: {
-                    id: '',
-                    name: '',
-                    dura: '',
-                    asis: '',
-                }
+                id: '',
+                name: '',
+                dura: '',
+                asis: '',
+            }
         })
         setIsAdd(current => !current)
     }
@@ -265,11 +358,11 @@ const DtClients = ({isActive, handleActive}) => {
         address: '',
         debt: '',
         plan: {
-                id: '',
-                name: '',
-                dura: '',
-                asis: '',
-            }
+            id: '',
+            name: '',
+            dura: '',
+            asis: '',
+        }
     })
 
     const [errorForm, setErrorForm] = useState(false)
@@ -286,19 +379,19 @@ const DtClients = ({isActive, handleActive}) => {
             }
         }
         if (name === 'email') {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(value)) {
-            if (value.length < 1) {
-                setErrorMsg("")
-                setErrorForm(false)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                if (value.length < 1) {
+                    setErrorMsg("")
+                    setErrorForm(false)
+                } else {
+                    setErrorForm(true)
+                    setErrorMsg("Email no válido.")
+                }
             } else {
-                setErrorForm(true)
-                setErrorMsg("Email no válido.")
+                setErrorForm(false)
+                setErrorMsg("")
             }
-          } else {
-            setErrorForm(false)
-            setErrorMsg("")
-          }
         }
         setNewClient({
             ...newClient,
@@ -317,11 +410,31 @@ const DtClients = ({isActive, handleActive}) => {
         }
     }
 
-    const handleSubmitAdd = () => {
-        console.log(newClient)
-        
+    const handleSubmitAdd = async () => {
+
+
+        const newClientData = {
+            ced: newClient.ced,
+            name: newClient.name,
+            plan: [{
+                ...planSel,   // Copia las propiedades existentes de planSel
+                ini: startDate,
+                end: endDate
+            }],
+            ini: startDate,
+            end: endDate,
+            asis: asisPlan,
+            debt: durationPlan,
+            email: newClient.email,
+            phone: newClient.phone,
+            address: newClient.address,
+            payments: []
+        }
+
         //Send Data Here
-        
+        await postNewClient(newClientData)
+        await fetchAndLoadData()
+
         setNewClient({
             ced: '',
             name: '',
@@ -330,11 +443,11 @@ const DtClients = ({isActive, handleActive}) => {
             address: '',
             debt: '',
             plan: {
-                    id: '',
-                    name: '',
-                    dura: '',
-                    asis: '',
-                }
+                id: '',
+                name: '',
+                dura: '',
+                asis: '',
+            }
         })
 
         handleStatus('Se agrego con exito.')
@@ -346,9 +459,9 @@ const DtClients = ({isActive, handleActive}) => {
     const [isEdit, setIsEdit] = useState(false)
 
     const handleIsEdit = () => {
-        if(isEdit){
-            setSelRow({id:0})
-            setPlanSel({id: 0})
+        if (isEdit) {
+            setSelRow({ id: 0 })
+            setPlanSel({ id: 0 })
             setDurationPlan(0)
             setAsisPlan(0)
             setNewClient({
@@ -359,11 +472,11 @@ const DtClients = ({isActive, handleActive}) => {
                 address: '',
                 debt: '',
                 plan: {
-                        id: '',
-                        name: '',
-                        dura: '',
-                        asis: '',
-                    }
+                    id: '',
+                    name: '',
+                    dura: '',
+                    asis: '',
+                }
             })
         }
         setIsEdit(current => !current)
@@ -396,12 +509,12 @@ const DtClients = ({isActive, handleActive}) => {
             phone: row.phone,
             address: row.address,
             debt: selPlan.cost,
-            plan: {
-                    id: selPlan.id,
-                    name: selPlan.name,
-                    dura: selPlan.dura,
-                    asis: selPlan.asis,
-                }
+            plan: [{
+                id: selPlan.id,
+                name: selPlan.name,
+                dura: selPlan.dura,
+                asis: selPlan.asis,
+            }]
         })
     }
 
@@ -409,9 +522,31 @@ const DtClients = ({isActive, handleActive}) => {
         return true
     }
 
-    const handleSubmitEdit = () => {
-        console.log(newClient)
-        
+    const handleSubmitEdit = async () => {
+        //console.log(newClient)
+
+        const data = {
+            action: "update",
+            id: selRow.id,
+            data: [{
+                ced: newClient.ced,
+                name: newClient.name,
+                plan: [{
+                    ...planSel,   // Copia las propiedades existentes de planSel
+                    ini: startDate,
+                    end: endDate
+                }],
+                //ini: startDate,
+                //end: endDate,
+                asis: asisPlan,
+                debt: durationPlan,
+                email: newClient.email,
+                phone: newClient.phone,
+                address: newClient.address,
+            }]
+        };
+        await updateClient(data)
+        await fetchAndLoadData()
         //Send Data Here
 
         setNewClient({
@@ -422,11 +557,11 @@ const DtClients = ({isActive, handleActive}) => {
             address: '',
             debt: '',
             plan: {
-                    id: '',
-                    name: '',
-                    dura: '',
-                    asis: '',
-                }
+                id: '',
+                name: '',
+                dura: '',
+                asis: '',
+            }
         })
 
         handleStatus('Se edito con exito.')
@@ -441,9 +576,13 @@ const DtClients = ({isActive, handleActive}) => {
         setDeleteModal(current => !current)
     }
 
-    const handleSubmitDelete = () => {
+    const handleSubmitDelete =async () => {
         //Send Data Here
-
+        const data = {
+            id: selRow.id
+          }
+        await deleteClient(data)
+        await fetchAndLoadData()
         handleStatus('Se elimino con exito.')
         handleDeleteModal()
 
@@ -469,283 +608,283 @@ const DtClients = ({isActive, handleActive}) => {
         setStatusMsg(msg)
     }
 
-  return (
-    <>
-        <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow}/>
-        <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} full={true}/>
-        <div className={isActive?'screen-overlay active':'screen-overlay'}>
-            <div className="overlay-work">
-            <div className="close-overlay">
-                <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={()=>handleActive('close')}/>
-            </div>
-            <div className="dashboard">
-                <div className="title">
-                Clientes
-                </div>
-                <div className="header">
-                    <div className="toolbar">
-                        <div className={AddButton()?"tool-btn add": "tool-btn disabled"} onClick={()=>handleIsAdd()}>
-                            {
-                                isAdd ? (
-                                    <>
-                                        <Image src={DelBtn} width={15} height={'auto'} alt='Delete'/>
-                                        <span>
-                                            Cancelar
-                                        </span>
-                                    </>
-                                ):(
-                                    <>
-                                        <Image src={AddBtn} width={15} height={'auto'} alt='Delete'/>
-                                        <span>
-                                            Agregar
-                                        </span>
-                                    </>
-                                )
-                            }
-                        </div>
-                        <div className={selRow.id > 0 ? "tool-btn edit" : "tool-btn disabled"} onClick={()=>handleIsEdit()}>
-                            {
-                                isEdit ? (
-                                    <>
-                                        <Image src={DelBtn} width={15} height={'auto'} alt='Delete'/>
-                                        <span>
-                                            Cancelar
-                                        </span>
-                                    </>
-                                ):(
-                                    <>
-                                        <Image src={EditBtn} width={15} height={'auto'} alt='Delete'/>
-                                        <span>
-                                            Editar
-                                        </span>
-                                    </>
-                                )
-                            }
-                            
-                        </div>
-                        <div className={selRow.id > 0 ? "tool-btn del" : "tool-btn disabled"} onClick={()=>handleDeleteModal()}>
-                            <Image src={TrashBtn} width={15} height={'auto'} alt='Delete'/>
-                            <span>
-                            Eliminar
-                            </span>
-                        </div>
+    return (
+        <>
+            <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow} />
+            <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} full={true} />
+            <div className={isActive ? 'screen-overlay active' : 'screen-overlay'}>
+                <div className="overlay-work">
+                    <div className="close-overlay">
+                        <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={() => handleActive('close')} />
                     </div>
-                    <div className={deselectBtn()? "deselect active" : "deselect"} onClick={()=>setSelRow({id: 0})}>
-                        <Image src={DelBtn} width={25} height={'auto'} alt='Deselect'/>
-                    </div>
-                </div>
-                {
-                    openForm() ? (
-                        <>
-                            <div className="body">
-                            {
-                                currentItems.length > 0 ?(
-                                <table className='dt-all'>
-                                    <thead>
-                                    <tr className='clients-dt'>
-                                        <th>
-                                        ID
-                                        </th>
-                                        <th>
-                                        Nombre
-                                        </th>
-                                        <th>
-                                        Cedula
-                                        </th>
-                                        <th>
-                                        Email
-                                        </th>
-                                        <th>
-                                        Telefono
-                                        </th>
-                                        <th>
-                                        Direccion
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            currentItems.map((cli, id)=>(
-                                                <tr key={id} className={selRow.id === cli.id ? 'clients-dt active':'clients-dt'} onClick={()=>setEditClient(cli)}>
-                                                    <td>
-                                                        {cli.id}
-                                                    </td>
-                                                    <td>
-                                                        {cli.name}
-                                                    </td>
-                                                    <td>
-                                                        {cli.ced}
-                                                    </td>
-                                                    <td>
-                                                        {cli.email}
-                                                    </td>
-                                                    <td>
-                                                        {cli.phone}
-                                                    </td>
-                                                    <td>
-                                                        {cli.address}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        }
-                                    </tbody>
-                                </table>
-                                )
-                                :(
-                                <>
-                                    No existen datos
-                                </>
-                                )
-                            }
-                            </div>
-                            <div className="dt-pagination dark">
-                                <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage}/>
-                                <span>
-                                    {currentPage} de {totalPages}
-                                </span>
-                                <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage}/>
-                            </div>
-                        </>
-                    ):(
-                        <>
-                            <div className="body light">
-                                <div className="form-dt">
-                                    <div className="header-form">
-                                        {
-                                            wForm() ? (
-                                                <>
-                                                   Información del Nuevo Cliente
-                                                </>
-                                            ):(
-                                                <>
-                                                    Editar Información del Cliente
-                                                </>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="cols">
-                                        <div className="col">
-                                            <div className="input-form">
-                                                <label>Cédula</label>
-                                                <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off'/>
-                                            </div>
-                                            <div className="input-form">
-                                                <label>Nombre</label>
-                                                <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off'/>
-                                            </div>
-                                             <div className="input-form">
-                                                <label>Email</label>
-                                                <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off'/>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="input-form">
-                                                <label>Teléfono</label>
-                                                <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off'/>
-                                            </div>
-                                            <div className="input-form">
-                                                <label>Dirección</label>
-                                                <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off'/> 
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="header-form">
-                                        {
-                                            wForm() ? (
-                                                <>
-                                                   Plan del Nuevo Cliente
-                                                </>
-                                            ):(
-                                                <>
-                                                    Editar Plan del Cliente
-                                                </>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="cols">
-                                        <div className="col">
-                                            <div className="input-form">
-                                                <label>Plan</label>
-                                                <select onChange={handlePlan} value={planSel.id}>
-                                                <option value='0'>
-                                                    Seleccionar
-                                                </option>
-                                                {
-                                                    planData.map((op, id) => (
-                                                    <option key={id} value={op.id}>
-                                                        {op.name}
-                                                    </option>
-                                                    ))
-                                                }
-                                                </select>
-                                            </div>
-                                            <div className="input-form">
-                                                <label>Inicio</label>
-                                                <input type="date" value={startDate} onChange={handleStartDate} />
-                                            </div>
-                                            <div className="input-form">
-                                                <label>Duración</label>
-                                                <input type="number" value={durationPlan} onChange={(e)=>setDurationPlan(e.target.value)} />
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="input-form">
-                                                <label>No. Asis</label>
-                                                <input type="number" value={asisPlan} onChange={(e)=>setAsisPlan(e.target.value)} />
-                                            </div>
-                                            <div className="input-form">
-                                                <label>Fin</label>
-                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={startDate}/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="form-submit">
-                                        {
-                                            wForm() ? (
-                                                <>
-                                                    <div className={errorForm ? "error-msg" : "error-msg hidden"}>
-                                                        <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
-                                                        <span>
-                                                            {
-                                                                errorMsg
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <div className={isClientSendable()?"submit":"submit disabled"}>
-                                                        <button onClick={()=>handleSubmitAdd()}>
-                                                            Guardar
-                                                        </button>
-                                                    </div>
-                                                </>
-                                            ):(
-                                                <>
-                                                    <div className={errorForm ? "error-msg" : "error-msg hidden"}>
-                                                        <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
-                                                        <span>
-                                                            {
-                                                                errorMsg
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <div className={isEditSendable()?"submit":"submit disabled"} >
-                                                        <button onClick={()=>handleSubmitEdit()}>
-                                                            Guardar
-                                                        </button>
-                                                    </div>
-                                                </>
-                                            )
-                                        }
-                                    </div>
+                    <div className="dashboard">
+                        <div className="title">
+                            Clientes
+                        </div>
+                        <div className="header">
+                            <div className="toolbar">
+                                <div className={AddButton() ? "tool-btn add" : "tool-btn disabled"} onClick={() => handleIsAdd()}>
+                                    {
+                                        isAdd ? (
+                                            <>
+                                                <Image src={DelBtn} width={15} height={'auto'} alt='Delete' />
+                                                <span>
+                                                    Cancelar
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Image src={AddBtn} width={15} height={'auto'} alt='Delete' />
+                                                <span>
+                                                    Agregar
+                                                </span>
+                                            </>
+                                        )
+                                    }
+                                </div>
+                                <div className={selRow.id > 0 ? "tool-btn edit" : "tool-btn disabled"} onClick={() => handleIsEdit()}>
+                                    {
+                                        isEdit ? (
+                                            <>
+                                                <Image src={DelBtn} width={15} height={'auto'} alt='Delete' />
+                                                <span>
+                                                    Cancelar
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Image src={EditBtn} width={15} height={'auto'} alt='Delete' />
+                                                <span>
+                                                    Editar
+                                                </span>
+                                            </>
+                                        )
+                                    }
+
+                                </div>
+                                <div className={selRow.id > 0 ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
+                                    <Image src={TrashBtn} width={15} height={'auto'} alt='Delete' />
+                                    <span>
+                                        Eliminar
+                                    </span>
                                 </div>
                             </div>
-                        </>
-                    )
-                }
+                            <div className={deselectBtn() ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
+                                <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
+                            </div>
+                        </div>
+                        {
+                            openForm() ? (
+                                <>
+                                    <div className="body">
+                                        {
+                                            currentItems.length > 0 ? (
+                                                <table className='dt-all'>
+                                                    <thead>
+                                                        <tr className='clients-dt'>
+                                                            <th>
+                                                                ID
+                                                            </th>
+                                                            <th>
+                                                                Nombre
+                                                            </th>
+                                                            <th>
+                                                                Cedula
+                                                            </th>
+                                                            <th>
+                                                                Email
+                                                            </th>
+                                                            <th>
+                                                                Telefono
+                                                            </th>
+                                                            <th>
+                                                                Direccion
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            currentItems.map((cli, id) => (
+                                                                <tr key={id} className={selRow.id === cli.id ? 'clients-dt active' : 'clients-dt'} onClick={() => setEditClient(cli)}>
+                                                                    <td>
+                                                                        {cli.id}
+                                                                    </td>
+                                                                    <td>
+                                                                        {cli.name}
+                                                                    </td>
+                                                                    <td>
+                                                                        {cli.ced}
+                                                                    </td>
+                                                                    <td>
+                                                                        {cli.email}
+                                                                    </td>
+                                                                    <td>
+                                                                        {cli.phone}
+                                                                    </td>
+                                                                    <td>
+                                                                        {cli.address}
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            )
+                                                : (
+                                                    <>
+                                                        No existen datos
+                                                    </>
+                                                )
+                                        }
+                                    </div>
+                                    <div className="dt-pagination dark">
+                                        <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                                        <span>
+                                            {currentPage} de {totalPages}
+                                        </span>
+                                        <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="body light">
+                                        <div className="form-dt">
+                                            <div className="header-form">
+                                                {
+                                                    wForm() ? (
+                                                        <>
+                                                            Información del Nuevo Cliente
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Editar Información del Cliente
+                                                        </>
+                                                    )
+                                                }
+                                            </div>
+                                            <div className="cols">
+                                                <div className="col">
+                                                    <div className="input-form">
+                                                        <label>Cédula</label>
+                                                        <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off' />
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Nombre</label>
+                                                        <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off' />
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Email</label>
+                                                        <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off' />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className="input-form">
+                                                        <label>Teléfono</label>
+                                                        <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off' />
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Dirección</label>
+                                                        <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off' />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="header-form">
+                                                {
+                                                    wForm() ? (
+                                                        <>
+                                                            Plan del Nuevo Cliente
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Editar Plan del Cliente
+                                                        </>
+                                                    )
+                                                }
+                                            </div>
+                                            <div className="cols">
+                                                <div className="col">
+                                                    <div className="input-form">
+                                                        <label>Plan</label>
+                                                        <select onChange={handlePlan} value={planSel.id}>
+                                                            <option value='0'>
+                                                                Seleccionar
+                                                            </option>
+                                                            {
+                                                                planData.map((op, id) => (
+                                                                    <option key={id} value={op.id}>
+                                                                        {op.name}
+                                                                    </option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Inicio</label>
+                                                        <input type="date" value={startDate} onChange={handleStartDate} />
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Duración</label>
+                                                        <input type="number" value={durationPlan} onChange={(e) => setDurationPlan(e.target.value)} />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className="input-form">
+                                                        <label>No. Asis</label>
+                                                        <input type="number" value={asisPlan} onChange={(e) => setAsisPlan(e.target.value)} />
+                                                    </div>
+                                                    <div className="input-form">
+                                                        <label>Fin</label>
+                                                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="form-submit">
+                                                {
+                                                    wForm() ? (
+                                                        <>
+                                                            <div className={errorForm ? "error-msg" : "error-msg hidden"}>
+                                                                <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                                                                <span>
+                                                                    {
+                                                                        errorMsg
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <div className={isClientSendable() ? "submit" : "submit disabled"}>
+                                                                <button onClick={() => handleSubmitAdd()}>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className={errorForm ? "error-msg" : "error-msg hidden"}>
+                                                                <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                                                                <span>
+                                                                    {
+                                                                        errorMsg
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <div className={isEditSendable() ? "submit" : "submit disabled"} >
+                                                                <button onClick={() => handleSubmitEdit()}>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )
+                        }
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
-    </>
-  )
+        </>
+    )
 }
 
 export default DtClients

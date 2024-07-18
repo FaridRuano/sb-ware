@@ -4,13 +4,13 @@ import Plan from "@models/planModel"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request) {
-    const { ced, name, plan, ini, end, asis, debt, email, phone, address, payments, atten } = await request.json()
+    const { ced, name, plan, asis, debt, email, phone, address, payments, atten } = await request.json()
     await connectMongoDB()
 
     const highestIdClient = await Client.findOne().sort({ id: -1 }).exec();
     const newId = highestIdClient ? highestIdClient.id + 1 : 1
 
-    await Client.create({ ced, name, plan, ini, end, asis, debt, id: newId, email, phone, address, payments, atten })
+    await Client.create({ ced, name, plan, asis, debt, id: newId, email, phone, address, payments, atten })
     return NextResponse.json({ message: "Data created" }, { status: 200 })
 }
 
@@ -69,24 +69,28 @@ export async function PUT(request) {
 
         const lastPlan = client.plan[client.plan.length - 1];
         const debt = client.debt
-        if (!lastPlan || !lastPlan.duration) {
+        if (!lastPlan || !lastPlan.dura) {
             return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
         }
 
         // Calcular la nueva fecha de finalización sumando los días de duración al startDate
         const newIni = new Date(data);
         const newEnd = new Date(newIni);
-        newEnd.setDate(newEnd.getDate() + lastPlan.duration);
+        newEnd.setDate(newEnd.getDate() + lastPlan.dura);
 
+        const updateQuery = {};
+        updateQuery[`plan.${0}.ini`] = newIni;
+        updateQuery[`plan.${0}.end`] = newEnd;
         // Actualizar el cliente con el nuevo plan y fechas
         const updatedClient = await Client.findOneAndUpdate(
             { id: id },
             {
-                duration: lastPlan.duration,
-                ini: newIni,
-                end: newEnd,
+                dura: lastPlan.dura,
+                //ini: newIni,
+                //end: newEnd,
                 asis: lastPlan.asis,
-                debt: debt + lastPlan.costo
+                debt: debt + lastPlan.cost,
+                $set: updateQuery,
             },
             { new: true }
         );
@@ -112,11 +116,11 @@ export async function PUT(request) {
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 
     } else if (action === 'registerAttendance') {
-       
+
         const client = await Client.findOneAndUpdate(
             { id: id },
             {
-                $push: { attent: data } ,
+                $push: { attent: data },
                 $inc: { asis: -1 },
             },
             { new: true }
@@ -137,30 +141,65 @@ export async function PUT(request) {
 
         //const lastPlan = client.plan[client.plan.length - 1];
         const plan = data[0]
-        const date = data[1]
+        console.log(plan)
+        //const date = data[1]
         const debt = client.debt
         // if (!lastPlan || !lastPlan.duration) {
         //     return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
         // }
 
         // Calcular la nueva fecha de finalización sumando los días de duración al startDate
-        const newIni = new Date(date);
+        const newIni = new Date(plan.ini);
         const newEnd = new Date(newIni);
-        newEnd.setDate(newEnd.getDate() + plan.duration);
+        newEnd.setDate(newEnd.getDate() + plan.dura);
+        const updateQuery = {};
+        //updateQuery[`plan.${0}.ini`] = newIni;
+        const newEndString = newEnd.toISOString();
+        updateQuery[`plan.${0}.end`] = newEndString;
 
         // Actualizar el cliente con el nuevo plan y fechas
         const updatedClient = await Client.findOneAndUpdate(
             { id: id },
             {
-                duration: plan.duration,
-                ini: newIni,
-                end: newEnd,
+                dura: plan.dura,
+                //ini: newIni,
+                //end: newEnd,
                 asis: plan.asis,
-                debt: debt + plan.costo,
-                plan: plan
+                debt: debt + plan.cost,
+                plan: plan,
+                //$set: updateQuery,
             },
             { new: true }
         );
+        const updatedClient2 = await Client.findOneAndUpdate(
+            { id: id },
+            {
+                $set: updateQuery,
+            },
+            { new: true }
+        );
+        return NextResponse.json({ message: "Data created" }, { status: 200 })
+
+    }
+    else if (action === "update") {
+        // Actualizar el plan 
+        console.log(data.name)
+        const updatedPlan = await Client.findOneAndUpdate(
+            { id: id },
+            {
+                ced: data[0].ced,
+                name: data[0].name,
+                plan: data[0].plan,
+                asis: data[0].asisPlan,
+                debt: data[0].durationPlan,
+                email: data[0].email,
+                phone: data[0].phone,
+                address: data[0].address,
+            },
+            { new: true }
+        );
+
+        
 
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 
