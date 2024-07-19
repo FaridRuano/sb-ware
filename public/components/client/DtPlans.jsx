@@ -115,19 +115,6 @@ const DtPlans = ({ isActive, handleActive }) => {
         }
     }
 
-
-    useEffect(() => {
-        fetchAndLoadData()
-    }, [isActive])
-
-    useEffect(() => {
-        setCurrentItems(planData.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage))
-    }, [planData])
-
-
-
     /* Datatable */
 
     const [currentPage, setCurrentPage] = useState(1)
@@ -396,6 +383,16 @@ const DtPlans = ({ isActive, handleActive }) => {
     const handleStatusMsg = (msg) => {
         setStatusMsg(msg)
     }
+
+    useEffect(() => {
+        fetchAndLoadData()
+    }, [isActive])
+
+    useEffect(() => {
+        setCurrentItems(planData.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage))
+    }, [planData])
 
     return (
         <>

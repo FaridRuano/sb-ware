@@ -272,21 +272,21 @@ const DtClients = ({ isActive, handleActive }) => {
             const date = new Date(year, month - 1, day)
             setEndDate(getFormattedDate(addDays(date, selPlan.dura)))
             setPlanSel(selPlan)
+            setNewClient((prev) => ({
+                ...prev,
+                debt: selPlan.cost,
+                plan: [{
+                    ...selPlan,
+                    ini: startDate,
+                    end: endDate
+                }]
+            }))
         } else {
             setDurationPlan(0)
             setAsisPlan(0)
             setEndDate(getFormattedDate(addDays(currentDate, 0)))
             setPlanSel(0)
         }
-        setNewClient((prev) => ({
-            ...prev,
-            debt: selPlan.cost,
-            plan: [{
-                ...selPlan,
-                ini: startDate,
-                end: endDate
-            }]
-        }))
     }
 
     const [durationPlan, setDurationPlan] = useState(0)
@@ -581,6 +581,7 @@ const DtClients = ({ isActive, handleActive }) => {
         const data = {
             id: selRow.id
           }
+        setIsEdit(false)
         await deleteClient(data)
         await fetchAndLoadData()
         handleStatus('Se elimino con exito.')
@@ -608,6 +609,15 @@ const DtClients = ({ isActive, handleActive }) => {
         setStatusMsg(msg)
     }
 
+    /* Close Modal */
+
+    const closeModal = () => {
+        handleActive('close')
+        setSelRow({id: 0})
+        setIsEdit(false)
+        setIsAdd(false)
+    }
+
     return (
         <>
             <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow} />
@@ -615,7 +625,7 @@ const DtClients = ({ isActive, handleActive }) => {
             <div className={isActive ? 'screen-overlay active' : 'screen-overlay'}>
                 <div className="overlay-work">
                     <div className="close-overlay">
-                        <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={() => handleActive('close')} />
+                        <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={() => closeModal()} />
                     </div>
                     <div className="dashboard">
                         <div className="title">

@@ -753,6 +753,9 @@ input, select {
                     }
                 }
             }
+            &.active{
+                background-color: rgba($primary-color-light, .3);
+            }
             &.client-dt{
                 padding: 0 5px;
                 width: calc(100% - 10px);
@@ -775,15 +778,12 @@ input, select {
                     justify-content: flex-end;
                 }
             }
-            &.active{
-                background-color: rgba($primary-color-light, .3);
-            }
             &.plan-dt{
                 padding: 0 5px;
                 width: calc(100% - 10px);
                 th:nth-child(1),
                 td:nth-child(1){
-                    width: 20px;
+                    display: none;
                 }
                 th:nth-child(2),
                 td:nth-child(2){
@@ -804,9 +804,12 @@ input, select {
                 }
             }
             &.clients-dt{
+                th,td{
+                    width: 100px;
+                }
                 th:nth-child(1),
                 td:nth-child(1){
-                    width: 20px;
+                    display: none;
                 }
                 th:nth-child(2),
                 td:nth-child(2){
@@ -817,6 +820,28 @@ input, select {
                 td:nth-child(4){
                     width: 250px;
                     overflow: hidden;
+                }
+                th:last-child,
+                td:last-child{
+                    display: flex;
+                    justify-content: flex-end;
+                }
+            }
+            &.asis-dt{
+                th:nth-child(1),
+                td:nth-child(1){
+                    display: none;
+                }
+                th:last-child,
+                td:last-child{
+                    display: flex;
+                    justify-content: flex-end;
+                }
+            }
+            &.paids-dt{
+                th:nth-child(1),
+                td:nth-child(1){
+                    display: none;
                 }
                 th:last-child,
                 td:last-child{

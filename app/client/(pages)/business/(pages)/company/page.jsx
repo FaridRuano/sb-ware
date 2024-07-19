@@ -2,6 +2,8 @@
 import DtPlans from '@public/components/client/DtPlans'
 import DtClients from '@public/components/client/DtClients'
 import React, { useEffect, useState } from 'react'
+import DtAsis from '@public/components/client/DtAsis'
+import Dtpaids from '@public/components/client/DtPaids'
 const mongoClientData = async () => {
   try {
     const uri = process.env.NEXT_PUBLIC_API_URL;
@@ -43,16 +45,6 @@ const mongoPlanData = async () => {
 const Company = () => {
 
   /* Clients */
-  const [clientCont, setClientCont] = useState(1)
-
-  const handleClientConst = (op) => {
-    if(clientCont === op) {
-      return
-    }else{
-      setClientCont(op)
-    }
-  }
-
   const [isDtClient, setDtClient] = useState(false)
 
   const handleDtClient = (action) => {
@@ -71,7 +63,6 @@ const Company = () => {
       }
       if (planData.length >= 0) {
         setPlanData(planData)
-        console.log(planData)
       }
 
     } catch (e) {
@@ -79,32 +70,9 @@ const Company = () => {
     }
   }
 
- 
-  useEffect(() => {
-    fetchAndLoadData()
-  }, [])
-
-  useEffect(() => {
-    console.log("entro")
-    fetchAndLoadData()
-  }, [isDtPlan])
-
- 
-
-
   const [clientData, setClientData] = useState([])
 
   /* Plans */
-  const [planCont, setPlanCont] = useState(1)
-
-  const handlePlanConst = (op) => {
-    if(planCont === op) {
-      return
-    }else{
-      setPlanCont(op)
-    }
-  }
-
   const [isDtPlan, setDtPlan] = useState(false)
 
   const handleDtPlan = (action) => {
@@ -117,12 +85,76 @@ const Company = () => {
 
   const [planData, setPlanData] = useState([])
 
+  /* Asistances */
 
+  const [isDtAsis, setDtAsis] = useState(false)
+
+  const handleDtAsis = (action) => {
+    if(action === 'open'){
+      setDtAsis(true)
+    }else{
+      setDtAsis(false)
+    }
+  }
+
+  const [asisData, setAsisData] = useState([
+    {
+      id: 1,
+      name: 'Farid Ruano',
+      date: '2024-12-09'
+    },
+    {
+        id: 2,
+        name: 'Farid Ruano',
+        date: '2024-12-09'
+    },
+  ])
+
+  /* Paids */
+
+  const [isDtPaids, setDtPaids] = useState(false)
+
+  const handleDtPaids = (action) => {
+    if(action === 'open'){
+      setDtPaids(true)
+    }else{
+      setDtPaids(false)
+    }
+  }
+
+  const [paidsData, setPaidsData] = useState([
+    {
+        id: 1,
+        name: 'Farid Ruano',
+        date: '2024-12-09',
+        amount: 30
+    },
+    {
+        id: 2,
+        name: 'Farid Ruano',
+        date: '2024-12-09',
+        amount: 30
+    },
+  ])
+
+  /* Fetch */
+
+
+  useEffect(() => {
+    fetchAndLoadData()
+  }, [])
+
+  useEffect(() => {
+    console.log("entro")
+    fetchAndLoadData()
+  }, [isDtPlan])
 
   return (
     <div className='company-page'>
       <DtPlans isActive={isDtPlan} handleActive={handleDtPlan}/>
       <DtClients isActive={isDtClient} handleActive={handleDtClient}/>
+      <DtAsis isActive={isDtAsis} handleActive={handleDtAsis}/>
+      <Dtpaids isActive={isDtPaids} handleActive={handleDtPaids}/>
       <section className='charts-section'>
         <div className={"container-option"} onClick={()=>handleDtClient('open')}>
           <span className='title-body'>
@@ -130,84 +162,44 @@ const Company = () => {
           </span>
         </div>
         <div className="container-option" onClick={()=>handleDtClient('open')}>
-          {
-            clientCont === 1 ?
-            (
-              <div className="dt-body ">
-                {
-                  clientData.length >= 1 ? (
-                    <table className="dt-all">
-                      <tbody>
-                        {
-                          clientData.map((cli, id)=>(
-                            <tr key={id} className='clients-dt'>
-                              <td>
-                                {cli.id}
-                              </td>
-                              <td>
-                                {cli.name}
-                              </td>
-                              <td>
-                                {cli.ced}
-                              </td>
-                              <td>
-                                {cli.email}
-                              </td>
-                              <td>
-                                {cli.phone}
-                              </td>
-                              <td>
-                                {cli.address}
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </tbody>
-                    </table>
-                  ):(
-                    <div className="dt-empty">
-                      No existe información para mostrar
-                    </div>
-                  )
-                }
-              </div>
-            ):
-            (
-              <form className='form-dt'>
-                <div className="header-form">
-                  Información del Nuevo Plan
+          <div className="dt-body ">
+            {
+              clientData.length >= 1 ? (
+                <table className="dt-all">
+                  <tbody>
+                    {
+                      clientData.map((cli, id)=>(
+                        <tr key={id} className='clients-dt'>
+                          <td>
+                            {cli.id}
+                          </td>
+                          <td>
+                            {cli.name}
+                          </td>
+                          <td>
+                            {cli.ced}
+                          </td>
+                          <td>
+                            {cli.email}
+                          </td>
+                          <td>
+                            {cli.phone}
+                          </td>
+                          <td>
+                            {cli.address}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              ):(
+                <div className="dt-empty">
+                  No existe información para mostrar
                 </div>
-                <div className="cols">
-                  <div className="col">
-                    <div className="input-form sm">
-                      <label>Nombre</label>
-                      <input type="text" name="name" placeholder='Plan #1'/>
-                    </div>
-                    <div className="input-form sm">
-                      <label>Duración</label>
-                      <input type="number" name="dura" placeholder='Dias'/>
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="input-form sm">
-                      <label>Asistencias</label>
-                      <input type="number" name="asis" placeholder='30'/>
-                    </div>
-                    <div className="input-form sm">
-                      <label>Costo</label>
-                      <input type="number" name="cost" placeholder='$10.00'/>
-                    </div>
-                  </div>
-                </div>
-                <div className="submit">
-                  <button type='submit'>
-                    Guardar
-                  </button>
-                </div>
-              </form>
-            )
-          }
-          
+              )
+            }
+          </div>
         </div>
       </section>
       <section className='charts-section'>
@@ -217,81 +209,120 @@ const Company = () => {
           </span>
         </div>
         <div className="container-option">
-          {
-            planCont === 1 ?
-            (
-              <div className="dt-body ">
-                {
-                  planData.length >= 1 ? (
-                    <table className="dt-all">
-                      <tbody>
-                        {
-                          planData.map((pla, id)=>(
-                            <tr key={id} className='plan-dt' onClick={()=>handleDtPlan('open')}>
-                              <td>
-                                {pla.id}
-                              </td>
-                              <td>
-                                {pla.name}
-                              </td>
-                              <td>
-                                {pla.dura}
-                              </td>
-                              <td>
-                                {pla.asis}
-                              </td>
-                              <td>
-                                ${pla.cost}
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </tbody>
-                    </table>
-                  ):(
-                    <div className="dt-empty">
-                      No existe información para mostrar
-                    </div>
-                  )
-                }
-              </div>
-            ):
-            (
-              <form className='form-dt'>
-                <div className="header-form">
-                  Información del Nuevo Plan
+          <div className="dt-body ">
+            {
+              planData.length >= 1 ? (
+                <table className="dt-all">
+                  <tbody>
+                    {
+                      planData.map((pla, id)=>(
+                        <tr key={id} className='plan-dt' onClick={()=>handleDtPlan('open')}>
+                          <td>
+                            {pla.id}
+                          </td>
+                          <td>
+                            {pla.name}
+                          </td>
+                          <td>
+                            {pla.dura}
+                          </td>
+                          <td>
+                            {pla.asis}
+                          </td>
+                          <td>
+                            ${pla.cost}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              ):(
+                <div className="dt-empty">
+                  No existe información para mostrar
                 </div>
-                <div className="cols">
-                  <div className="col">
-                    <div className="input-form sm">
-                      <label>Nombre</label>
-                      <input type="text" name="name" placeholder='Plan #1'/>
-                    </div>
-                    <div className="input-form sm">
-                      <label>Duración</label>
-                      <input type="number" name="dura" placeholder='Dias'/>
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="input-form sm">
-                      <label>Asistencias</label>
-                      <input type="number" name="asis" placeholder='30'/>
-                    </div>
-                    <div className="input-form sm">
-                      <label>Costo</label>
-                      <input type="number" name="cost" placeholder='$10.00'/>
-                    </div>
-                  </div>
+              )
+            }
+          </div>
+        </div>
+      </section>
+      <section className='charts-section'>
+        <div className={"container-option"} onClick={()=>handleDtAsis('open')}>
+          <span className='title-body'>
+            Asistencias
+          </span>
+        </div>
+        <div className="container-option">
+          <div className="dt-body ">
+            {
+              asisData.length >= 1 ? (
+                <table className="dt-all">
+                  <tbody>
+                    {
+                      asisData.map((asi, id)=>(
+                        <tr key={id} className='asis-dt' onClick={()=>handleDtAsis('open')}>
+                          <td>
+                            {asi.id}
+                          </td>
+                          <td>
+                            {asi.name}
+                          </td>
+                          <td>
+                            {asi.date}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              ):(
+                <div className="dt-empty">
+                  No existe información para mostrar
                 </div>
-                <div className="submit">
-                  <button type='submit'>
-                    Guardar
-                  </button>
+              )
+            }
+          </div>
+        </div>
+      </section>
+      <section className='charts-section'>
+        <div className={"container-option"} onClick={()=>handleDtPaids('open')}>
+          <span className='title-body'>
+            Pagos
+          </span>
+        </div>
+        <div className="container-option">
+          <div className="dt-body ">
+            {
+              paidsData.length >= 1 ? (
+                <table className="dt-all">
+                  <tbody>
+                    {
+                      paidsData.map((pai, id)=>(
+                        <tr key={id} className='paids-dt' onClick={()=>handleDtPaids('open')}>
+                          <td>
+                            {pai.id}
+                          </td>
+                          <td>
+                            {pai.name}
+                          </td>
+                          <td>
+                            {pai.date}
+                          </td>
+                          <td>
+                            {pai.amount}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              ):(
+                <div className="dt-empty">
+                  No existe información para mostrar
                 </div>
-              </form>
-            )
-          }
-          
+              )
+            }
+          </div>
         </div>
       </section>
     </div>
