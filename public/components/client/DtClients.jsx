@@ -154,15 +154,7 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
 
-    useEffect(() => {
-        fetchAndLoadData()
-    }, [isActive])
 
-    useEffect(() => {
-        setCurrentItems(clientData.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage))
-    }, [clientData])
 
     /* Datatable */
 
@@ -576,11 +568,11 @@ const DtClients = ({ isActive, handleActive }) => {
         setDeleteModal(current => !current)
     }
 
-    const handleSubmitDelete =async () => {
+    const handleSubmitDelete = async () => {
         //Send Data Here
         const data = {
             id: selRow.id
-          }
+        }
         setIsEdit(false)
         await deleteClient(data)
         await fetchAndLoadData()
@@ -613,10 +605,20 @@ const DtClients = ({ isActive, handleActive }) => {
 
     const closeModal = () => {
         handleActive('close')
-        setSelRow({id: 0})
+        setSelRow({ id: 0 })
         setIsEdit(false)
         setIsAdd(false)
     }
+
+    useEffect(() => {
+        fetchAndLoadData()
+    }, [isActive])
+
+    useEffect(() => {
+        setCurrentItems(clientData.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage))
+    }, [clientData])
 
     return (
         <>

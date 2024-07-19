@@ -9,24 +9,74 @@ import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
+const mongoPaymentData = async () => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/payment`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.payments
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const deletePayment = async (client) => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+
+
+        const res = await fetch(`${uri}/api/payment`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify(client),
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to post new data')
+        }
+
+        // Optionally, you can handle the response after posting if needed
+        const postedFaculty = await res.json()
+
+        // Fetch updated data after posting
+        //const updatedData = await personData()
+        //return updatedData
+    } catch (error) {
+        console.error('Error:', error)
+        throw error
+    }
+}
+
 const DtPaids = ({ isActive, handleActive }) => {
 
     /* Base Data */
 
-    const [paidsData, setPaidsData] = useState([
-        {
-            id: 1,
-            name: 'Farid Ruano',
-            date: '2024-12-09',
-            amount: '30'
-        },
-        {
-            id: 2,
-            name: 'Farid Ruano',
-            date: '2024-12-09',
-            amount: '30'
-        },
-    ])
+    const [paidsData, setPaidsData] = useState([])
+
+    const fetchAndLoadData = async () => {
+        try {
+
+            const paymentData = await mongoPaymentData()
+            if (paymentData.length >= 0) {
+                setPaidsData(paymentData)
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     /* Datatable */
 
@@ -69,24 +119,35 @@ const DtPaids = ({ isActive, handleActive }) => {
             ))
         }
     }
- 
+
+
+    const handleFormatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
+        const year = date.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
     /* Delete*/
 
     const [deleteModal, setDeleteModal] = useState(false)
 
     const handleDeleteModal = () => {
-        if(statusModal === true) {
+        if (statusModal === true) {
             setStatusModal(false)
         }
         setDeleteModal(current => !current)
     }
 
-    const handleSubmitDelete = async() => {
+    const handleSubmitDelete = async () => {
         //Send Data Here
         const data = {
-            id: selRow.id
+            id: selRow.id,
+            date: selRow.date
         }
-
+        await deletePayment(data)
+        await fetchAndLoadData()
         handleStatus('Se elimino con exito.')
         handleDeleteModal()
 
@@ -111,6 +172,16 @@ const DtPaids = ({ isActive, handleActive }) => {
     const handleStatusMsg = (msg) => {
         setStatusMsg(msg)
     }
+
+    useEffect(() => {
+        fetchAndLoadData()
+    }, [isActive])
+
+    useEffect(() => {
+        setCurrentItems(paidsData.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage))
+    }, [paidsData])
 
     return (
         <>
@@ -138,62 +209,62 @@ const DtPaids = ({ isActive, handleActive }) => {
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
                             </div>
                         </div>
-                            <div className="body">
-                                {
-                                    currentItems.length > 0 ? (
-                                        <table className='dt-all'>
-                                            <thead>
-                                                <tr className='paids-dt'>
-                                                    <th>
-                                                        ID
-                                                    </th>
-                                                    <th>
-                                                        Nombre
-                                                    </th>
-                                                    <th>
-                                                        Fecha
-                                                    </th>
-                                                    <th>
-                                                        Monto
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {
-                                                    currentItems.map((pai, id) => (
-                                                        <tr key={id} className={selRow.id === pai.id ? 'paids-dt active' : 'paids-dt'} onClick={() => setSelRow(pai)}>
-                                                            <td>
-                                                                {pai.id}
-                                                            </td>
-                                                            <td>
-                                                                {pai.name}
-                                                            </td>
-                                                            <td>
-                                                                {pai.date}
-                                                            </td>
-                                                            <td>
-                                                                ${pai.amount}
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                }
-                                            </tbody>
-                                        </table>
+                        <div className="body">
+                            {
+                                currentItems.length > 0 ? (
+                                    <table className='dt-all'>
+                                        <thead>
+                                            <tr className='paids-dt'>
+                                                <th>
+                                                    ID
+                                                </th>
+                                                <th>
+                                                    Nombre
+                                                </th>
+                                                <th>
+                                                    Fecha
+                                                </th>
+                                                <th>
+                                                    Monto
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                currentItems.map((pai, id) => (
+                                                    <tr key={id} className={selRow.id === pai.id && selRow.date === pai.date ? 'paids-dt active' : 'paids-dt'} onClick={() => setSelRow(pai)}>
+                                                        <td>
+                                                            {pai.id}
+                                                        </td>
+                                                        <td>
+                                                            {pai.name}
+                                                        </td>
+                                                        <td>
+                                                            {handleFormatDate(pai.date)}
+                                                        </td>
+                                                        <td>
+                                                            ${pai.amount}
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                )
+                                    : (
+                                        <>
+                                            No existen datos
+                                        </>
                                     )
-                                        : (
-                                            <>
-                                                No existen datos
-                                            </>
-                                        )
-                                }
-                            </div>
-                            <div className="dt-pagination dark">
-                                <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                                <span>
-                                    {currentPage} de {totalPages}
-                                </span>
-                                <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-                            </div>
+                            }
+                        </div>
+                        <div className="dt-pagination dark">
+                            <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                            <span>
+                                {currentPage} de {totalPages}
+                            </span>
+                            <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                        </div>
                     </div>
                 </div>
             </div>

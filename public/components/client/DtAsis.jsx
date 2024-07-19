@@ -9,22 +9,73 @@ import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
+const mongoAttenData = async () => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/atten`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.clients
+    } catch (error) {
+        console.log(error)
+    }
+}
+const deleteAsis = async (client) => {
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+
+
+        const res = await fetch(`${uri}/api/atten`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify(client),
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to post new data')
+        }
+
+        // Optionally, you can handle the response after posting if needed
+        const postedFaculty = await res.json()
+
+        // Fetch updated data after posting
+        //const updatedData = await personData()
+        //return updatedData
+    } catch (error) {
+        console.error('Error:', error)
+        throw error
+    }
+}
+
 const DtAsis = ({ isActive, handleActive }) => {
 
     /* Base Data */
 
-    const [asisData, setAsisData] = useState([
-        {
-            id: 1,
-            name: 'Farid Ruano',
-            date: '2024-12-09'
-        },
-        {
-            id: 2,
-            name: 'Farid Ruano',
-            date: '2024-12-09'
-        },
-    ])
+    const [asisData, setAsisData] = useState([])
+
+    const fetchAndLoadData = async () => {
+        try {
+
+            const attenData = await mongoAttenData()
+            if (attenData.length >= 0) {
+                setAsisData(attenData)
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     /* Datatable */
 
@@ -67,24 +118,34 @@ const DtAsis = ({ isActive, handleActive }) => {
             ))
         }
     }
- 
+    const handleFormatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
+        const year = date.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
     /* Delete*/
 
     const [deleteModal, setDeleteModal] = useState(false)
 
     const handleDeleteModal = () => {
-        if(statusModal === true) {
+        if (statusModal === true) {
             setStatusModal(false)
         }
         setDeleteModal(current => !current)
     }
 
-    const handleSubmitDelete = async() => {
+    const handleSubmitDelete = async () => {
         //Send Data Here
         const data = {
-            id: selRow.id
+            id: selRow.id,
+            date: selRow.date
         }
-
+        //console.log(data)
+        await deleteAsis(data)
+        await fetchAndLoadData()
         handleStatus('Se elimino con exito.')
         handleDeleteModal()
 
@@ -109,6 +170,16 @@ const DtAsis = ({ isActive, handleActive }) => {
     const handleStatusMsg = (msg) => {
         setStatusMsg(msg)
     }
+
+    useEffect(() => {
+        fetchAndLoadData()
+    }, [isActive])
+
+    useEffect(() => {
+        setCurrentItems(asisData.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage))
+    }, [asisData])
 
     return (
         <>
@@ -136,56 +207,56 @@ const DtAsis = ({ isActive, handleActive }) => {
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
                             </div>
                         </div>
-                            <div className="body">
-                                {
-                                    currentItems.length > 0 ? (
-                                        <table className='dt-all'>
-                                            <thead>
-                                                <tr className='asis-dt'>
-                                                    <th>
-                                                        ID
-                                                    </th>
-                                                    <th>
-                                                        Nombre
-                                                    </th>
-                                                    <th>
-                                                        Fecha
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {
-                                                    currentItems.map((asi, id) => (
-                                                        <tr key={id} className={selRow.id === asi.id ? 'asis-dt active' : 'asis-dt'} onClick={() => setSelRow(asi)}>
-                                                            <td>
-                                                                {asi.id}
-                                                            </td>
-                                                            <td>
-                                                                {asi.name}
-                                                            </td>
-                                                            <td>
-                                                                {asi.date}
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                }
-                                            </tbody>
-                                        </table>
+                        <div className="body">
+                            {
+                                currentItems.length > 0 ? (
+                                    <table className='dt-all'>
+                                        <thead>
+                                            <tr className='asis-dt'>
+                                                <th>
+                                                    ID
+                                                </th>
+                                                <th>
+                                                    Nombre
+                                                </th>
+                                                <th>
+                                                    Fecha
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                currentItems.map((asi, id) => (
+                                                    <tr key={id} className={selRow.id === asi.id && selRow.date === asi.date ? 'asis-dt active' : 'asis-dt'} onClick={() => setSelRow(asi)}>
+                                                        <td>
+                                                            {asi.id}
+                                                        </td>
+                                                        <td>
+                                                            {asi.name}
+                                                        </td>
+                                                        <td>
+                                                            {handleFormatDate(asi.date)}
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                )
+                                    : (
+                                        <>
+                                            No existen datos
+                                        </>
                                     )
-                                        : (
-                                            <>
-                                                No existen datos
-                                            </>
-                                        )
-                                }
-                            </div>
-                            <div className="dt-pagination dark">
-                                <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                                <span>
-                                    {currentPage} de {totalPages}
-                                </span>
-                                <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-                            </div>
+                            }
+                        </div>
+                        <div className="dt-pagination dark">
+                            <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                            <span>
+                                {currentPage} de {totalPages}
+                            </span>
+                            <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                        </div>
                     </div>
                 </div>
             </div>

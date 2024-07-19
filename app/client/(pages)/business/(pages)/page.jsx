@@ -651,7 +651,8 @@ const handleFormatDate = (isoDate) => {
   const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
   const year = date.getUTCFullYear();
   return `${day}/${month}/${year}`;
-};
+}
+
 return (
   <div className="company-page">
     <section className={addClient ? "stats-bar disabled" : "stats-bar"}>
