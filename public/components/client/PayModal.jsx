@@ -2,7 +2,7 @@
 
 import RenewIcon from '@public/assets/icons/renew-icon.png'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import DelBtn from '@public/assets/icons/btn-delete.png'
 
 
@@ -11,7 +11,6 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
     const [changeModal, setChangeModal] = useState(false)
 
     const handleChangeModal =async () => {
-     
         setChangeModal(current => !current)
     }
 
@@ -52,6 +51,10 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
         }
     }
 
+    useEffect(()=>{
+        setActual(dataModal.debt)
+    },[])
+
     if (changeModal) {
         return (
             <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>
@@ -75,7 +78,7 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
                                 </>
                             ) : (
                                 <>
-                                    La deuda de actual es de ${actual}
+                                    La deuda de actual es de ${actual || dataModal.debt}
                                 </>
                             )
                         }
@@ -118,7 +121,7 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
                             Otro
                         </button>
                         <button className='option confirm' onClick={() => handleResponse(dataModal.debt)}>
-                            Total: ${dataModal.debt}
+                            Total ${dataModal.debt}
                         </button>
                     </div>
                     <div className="modal-options">

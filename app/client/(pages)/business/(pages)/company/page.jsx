@@ -262,7 +262,7 @@ const Company = () => {
                             {pla.asis}
                           </td>
                           <td>
-                            ${pla.cost}
+                            <b>${pla.cost}</b>
                           </td>
                         </tr>
                       ))
@@ -341,7 +341,7 @@ const Company = () => {
                             {handleFormatDate(pai.date)}
                           </td>
                           <td>
-                            {pai.amount}
+                            <b>${pai.amount}</b>
                           </td>
                         </tr>
                       ))

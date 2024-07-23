@@ -338,6 +338,10 @@ const DtClients = ({ isActive, handleActive }) => {
                 asis: '',
             }
         })
+        setAsisPlan('')
+        setDurationPlan('')
+        setEndDate(currentDate)
+        setPlanSel({id:0})
         setIsAdd(current => !current)
     }
 
@@ -555,6 +559,7 @@ const DtClients = ({ isActive, handleActive }) => {
                 asis: '',
             }
         })
+        setPlanSel({ id: 0 })
 
         handleStatus('Se edito con exito.')
         handleIsEdit()
@@ -836,13 +841,13 @@ const DtClients = ({ isActive, handleActive }) => {
                                                     </div>
                                                     <div className="input-form">
                                                         <label>Duración</label>
-                                                        <input type="number" value={durationPlan} onChange={(e) => setDurationPlan(e.target.value)} />
+                                                        <input type="number" value={durationPlan} onChange={(e) => setDurationPlan(e.target.value)} placeholder='0'/>
                                                     </div>
                                                 </div>
                                                 <div className="col">
                                                     <div className="input-form">
                                                         <label>No. Asis</label>
-                                                        <input type="number" value={asisPlan} onChange={(e) => setAsisPlan(e.target.value)} />
+                                                        <input type="number" value={asisPlan} onChange={(e) => setAsisPlan(e.target.value)} placeholder='0'/>
                                                     </div>
                                                     <div className="input-form">
                                                         <label>Fin</label>

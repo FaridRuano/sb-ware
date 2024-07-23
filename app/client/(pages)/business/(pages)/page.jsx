@@ -254,7 +254,6 @@ const Clients = () => {
   const [newClient, setNewClient] = useState({
     ced: '',
     name: '',
-    last: '',
     email: '',
     phone: '',
     address: '',
@@ -303,7 +302,7 @@ const Clients = () => {
   }
 
   const handleSubmit = async () => {
-    if (newClient.ced.length < 10 || newClient.name.length < 2 || newClient.last.length < 2
+    if (newClient.ced.length < 10 || newClient.name.length < 2
       || errorEmail || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
       || !planSel > 0
     ) {
@@ -313,14 +312,12 @@ const Clients = () => {
       setSendable(false)
       const newClientData = {
         ced: newClient.ced,
-        name: newClient.name + ' ' + newClient.last,
+        name: newClient.name,
         plan: [{
           ...planSel,   // Copia las propiedades existentes de planSel
           ini: startDate,
           end: endDate
         }],
-        //ini: startDate,
-        //end: endDate,
         asis: asisPlan,
         debt: durationPlan,
         email: newClient.email,
@@ -862,10 +859,6 @@ return (
                     <div className="input-form">
                       <label>Nombre</label>
                       <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
-                    </div>
-                    <div className="input-form">
-                      <label>Apellido</label>
-                      <input type="text" name='last' onChange={handleNewClient} value={newClient.last} />
                     </div>
                     <div className="input-form">
                       <label>Email</label>

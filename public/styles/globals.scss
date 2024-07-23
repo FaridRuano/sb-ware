@@ -33,7 +33,7 @@ body{
     background-color: $background-color-light;
 }
 
-ul, h1{
+ul, h1, p{
     margin: 0;
     padding: 0;
 }
@@ -733,6 +733,9 @@ input, select {
                 font-size: 14px;
             }
             td{
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -750,6 +753,53 @@ input, select {
                     background-color: $gray-dark-color-light;
                     &.full{
                         background-color: $primary-color-light;
+                    }
+                }
+            }
+            .actions{
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                .tool-btn{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: relative;
+                    border: solid 1px $-color-black;
+                    border-radius: 3px;
+                    padding: 5px;
+                    transition: .3s ease-out;
+                    .tool-tip{
+                        position: absolute;
+                        white-space: nowrap;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: .2s ease-out;
+                        top: -10px;
+                        background-color: $-color-black;
+                        padding: 2px 5px;
+                        font-size: 10px;
+                        color: $text-color-bg-light;
+                        border-radius: 5px;
+                    }
+                    .tool-icon{
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 20px;
+                        height: 20px;
+                        transition: .2s ease-out;
+                    }
+                    &:hover{
+                        transform: scale(1.1);
+                        background-color: $-color-black;
+                        .tool-tip{
+                            top: -20px;
+                            opacity: 1;
+                        }
+                        .tool-icon{
+                            filter: invert(1);
+                        }
                     }
                 }
             }
@@ -1323,6 +1373,7 @@ input, select {
                 border-radius: 5px;
                 font-family: "Pathway Extreme", sans-serif;
                 font-weight: 600;
+                white-space: nowrap;
                 cursor: pointer;
                 transition: .3s ease-out;
                 &.confirm{
@@ -1334,6 +1385,7 @@ input, select {
                 &.disabled{
                     pointer-events: none;
                     opacity: .5;
+                    background-color: $gray-color-light;
                 }
                 &:hover{
                     transform: scale(1.05);
@@ -1390,6 +1442,115 @@ input, select {
     }
 
 }
+
+/* Config Page */
+
+.business-options{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-bottom: 20px;
+    .business-card{
+        display: flex;
+        flex-direction: row;
+        background-color: $-color-black;
+        border-radius: 20px;
+        width: 400px;
+        height: 150px;
+        padding: 30px;
+        justify-content: center;
+        align-items: center;
+        transition: .3s ease-out;
+        cursor: pointer;
+        box-shadow: 5px 5px 5px rgba($-color-black, 0);
+        gap: 1rem;
+        .card-title{
+            color: $text-color-bg-light;
+            p, h1{
+                margin: 0;
+                padding: 0;
+            }
+            p{
+                font-weight: 200;
+            }
+            h1{
+                font-weight: 700;
+                font-size: 27px;
+            }
+        }
+        &.active{
+            transform: scale(1.01);
+            box-shadow: 5px 5px 15px rgba($-color-black, 0.15);
+        }
+        &:hover{
+            transform: scale(1.02);
+            box-shadow: 5px 5px 15px rgba($-color-black, 0.3);
+        }
+    }
+    .business-btns{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: .5rem;
+        .business-btn{
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            width: calc(100% - 40px);
+            align-items: center;
+            border-radius: 20px;
+            padding: 10px 20px;
+            gap: 1rem;
+            background-color: $primary-color-light;
+            box-shadow: 5px 5px 5px rgba($-color-black, 0);
+            cursor: pointer;
+            transition: .3s ease-out;
+            .business-title{
+                color: $text-color-bg-light;
+                font-weight: 700;
+                font-size: 18px;
+            }
+            &.secondary{
+                background-color: $secondary-color-light;
+            }
+            &.warning{
+                background-color: $warning-color-light;
+            }
+            &.active{
+                transform: scale(1.005);
+                box-shadow: 5px 5px 15px rgba($-color-black, 0.15);
+            }
+            &:hover{
+                transform: scale(1.01);
+                box-shadow: 5px 5px 15px rgba($-color-black, 0.3);
+            }
+        }
+
+    }
+}
+.business-dashboard{
+    width: calc(100% - 40px);
+    padding: 20px;
+    min-height: 100px;
+    border-radius: 20px;
+    background-color: $-color-white;
+    .form-config{
+        .form-header{
+
+        }
+    }
+    .header-dt{
+        padding-bottom: 20px;
+        border-bottom: solid 1px $-color-black;
+        p{
+            font-size: 15px;
+            font-weight: 200;
+            margin: 0;
+            padding: 0;
+        }
+    }
+}
+
 
 /* Dark Theme */
 
