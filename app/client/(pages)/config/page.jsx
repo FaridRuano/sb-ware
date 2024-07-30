@@ -7,7 +7,9 @@ import CancelPlan from '@public/assets/icons/cancel-plan.png'
 import ChangePlan from '@public/assets/icons/change-plan.png'
 import ViewIcon from '@public/assets/icons/view-icon.png'
 import DownloadIcon from '@public/assets/icons/download-icon.png'
+import WarningIcon from '@public/assets/icons/warning-icon.png'
 import { useState } from 'react'
+import { Cursor } from 'mongoose'
 
 const Config = () => {
 
@@ -15,6 +17,92 @@ const Config = () => {
 
   const [activeOption, setActiveOption] = useState(0)
 
+  /* Business Info */
+
+  const [businesInfo, setBusinesInfo] = useState({
+    id: 1,
+    socialName: 'IDEE',
+    ruc: '1805467527001',
+    email: 'fruanocm2777@gmail.com',
+    phone: '0996447884',
+    address: 'JULIAN CORONEL 0131 Y RODRIGO PACHANO',
+  })
+
+  const [editInfo, setEditInfo] = useState(false)
+
+  const handleEditInfo = () => {
+    setEditInfo(current => !current)
+  }
+
+  const [editForm, setEditForm] = useState({
+    id: 1,
+    socialName: 'IDEE',
+    ruc: '1805467527001',
+    email: 'fruanocm2777@gmail.com',
+    phone: '0996447884',
+    address: 'JULIAN CORONEL 0131 Y RODRIGO PACHANO',
+  })
+
+  const [errorMsg, setErrorMsg] = useState("")
+
+  const [errorForm, setErrorForm] = useState(false)
+
+  const handleEditForm = (e) => {
+    const { name, value } = e.target
+
+    if (name === 'ruc') {
+      if (!/^\d*$/.test(value) || value.length > 13) {
+          return
+      }
+    }
+    if (name === 'phone') {
+      if (!/^\d*$/.test(value) || value.length > 10) {
+          return
+      }
+    }
+    if (name === 'address') {
+      if (value.length > 100) {
+          return
+      }
+    }
+    if (name === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            if (value.length < 1) {
+                setErrorMsg("")
+                setErrorForm(false)
+            } else {
+                setErrorForm(true)
+                setErrorMsg("Email no válido.")
+            }
+        } else {
+            setErrorForm(false)
+            setErrorMsg("")
+        }
+    }
+    setEditForm({
+        ...editForm,
+        [name]: value,
+    })
+  }
+
+  const isBusInfoSendable = () => {
+    if (editForm.ruc.length < 13 || editForm.socialName.length < 2 
+        || errorForm || editForm.email.length < 1 || editForm.phone.length < 10 || editForm.address.length < 1
+    ) {
+        return false
+    } else {
+        return true
+    }
+  }
+
+  const handleSubmitEdit = () => {
+
+    setBusinesInfo(editForm)
+    handleEditInfo()
+
+    //Send Data Here
+  }
   /* Paids */
 
   const paids = [
@@ -45,20 +133,105 @@ const Config = () => {
                 Información de la Empresa
               </div>
               <div className="form-body">
-                <div className="input-config">
-                  <span>
-                    Razón Social
-                  </span>
-                  <input type="text" placeholder='Mi empresa'/>
-                </div>
-              </div>
-              <div className="form-body">
-                <div className="input-config">
-                  <span>
-                    RUC
-                  </span>
-                  <input type="text" placeholder='180039189001'/>
-                </div>  
+                {
+                  editInfo ? (
+                    <>
+                      <div className="input-config">
+                          <div>
+                            Razón Social
+                          </div>
+                          <input type="text" placeholder='Mi empresa' name='socialName' value={editForm.socialName} onChange={handleEditForm}/>
+                        </div>
+                        <div className="input-config">
+                          <div>
+                            RUC
+                          </div>
+                          <input type="text" placeholder='180039189001' name='ruc' value={editForm.ruc} onChange={handleEditForm}/>
+                        </div>  
+                        <div className="input-config">
+                          <div>
+                            Email
+                          </div>
+                          <input type="text" placeholder='180039189001' name='email' value={editForm.email} onChange={handleEditForm}/>
+                        </div>  
+                        <div className="input-config">
+                          <div>
+                            Teléfono
+                          </div>
+                          <input type="text" placeholder='180039189001' name='phone' value={editForm.phone} onChange={handleEditForm}/>
+                        </div>  
+                        <div className="input-config">
+                          <div>
+                            Dirección
+                          </div>
+                          <input type="text" placeholder='180039189001' name='address' maxLength={100} value={editForm.address} onChange={handleEditForm}/>
+                        </div>
+                        <div className="form-footer">
+                              <div className="errors-config">
+                          {
+                            errorForm && (
+                              <>
+                                <Image src={WarningIcon} width={20} height={'auto'} alt='Warning'/>
+                                <span>
+                                  {errorMsg}
+                                </span>
+                              </>
+                            )
+                          }
+                              </div>
+                          <div className="buttons-config">
+                            <button type="button" className='button default' onClick={()=>{
+                              handleEditInfo()
+                              setEditForm(businesInfo)
+                              setErrorMsg("")
+                              setErrorForm(false)
+                            }}>
+                                Cancelar
+                            </button>
+                            <button type="button" className={isBusInfoSendable() ? 'button primary':'button primary disabled'} disabled={!isBusInfoSendable()} onClick={()=>handleSubmitEdit()}>Guardar</button>
+                          </div>
+                        </div>
+                    </>
+                  ):(
+                    <>
+                      <div className="input-config">
+                        <div>
+                          Razón Social
+                        </div>
+                        <input type="text" placeholder='Mi empresa' name='socialName' value={businesInfo.socialName} disabled/>
+                      </div>
+                      <div className="input-config">
+                        <div>
+                          RUC
+                        </div>
+                        <input type="text" placeholder='180039189001' name='ruc' value={businesInfo.ruc} disabled/>
+                      </div>  
+                      <div className="input-config">
+                        <div>
+                          Email
+                        </div>
+                        <input type="text" placeholder='180039189001' name='email' value={businesInfo.email} disabled/>
+                      </div>  
+                      <div className="input-config">
+                        <div>
+                          Teléfono
+                        </div>
+                        <input type="text" placeholder='180039189001' name='phone' value={businesInfo.phone} disabled/>
+                      </div>  
+                      <div className="input-config">
+                        <div>
+                          Dirección
+                        </div>
+                        <input type="text" placeholder='180039189001' name='address' value={businesInfo.address} disabled/>
+                      </div>
+                      <div className="form-footer one">
+                        <div className="buttons-config">
+                          <button type="button" className='button' onClick={()=>handleEditInfo()}>Editar</button>
+                        </div>
+                      </div>
+                    </>
+                  )
+                }
               </div>
             </div>
           </>
@@ -77,65 +250,70 @@ const Config = () => {
             <div className="paids-config">
               {
                 paids.length > 1 ? (
-                  <table className='dt-all'>
-                    <thead>
-                        <tr className='config-paids-dt'>
-                            <th>
-                                Fecha
-                            </th>
-                            <th>
-                                Número de Autorización
-                            </th>
-                            <th>
-                                Plan
-                            </th>
-                            <th>
-                                Cantidad
-                            </th>
-                            <th>
-                                Opciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            paids.map((paid, id) => (
-                                <tr key={id}>
-                                    <td>
-                                        {paid.date}
-                                    </td>
-                                    <td>
-                                        {paid.noAutorization}
-                                    </td>
-                                    <td>
-                                        {paid.plan}
-                                    </td>
-                                    <td>
-                                        ${paid.amount}
-                                    </td>
-                                    <td className='actions'>
-                                      <div className="tool-btn">
-                                        <div className="tool-tip">
-                                          Ver XML
+                  <>
+                    <table className='dt-all'>
+                      <thead>
+                          <tr className='config-paids-dt'>
+                              <th>
+                                  Fecha
+                              </th>
+                              <th>
+                                  Número de Autorización
+                              </th>
+                              <th>
+                                  Plan
+                              </th>
+                              <th>
+                                  Cantidad
+                              </th>
+                              <th>
+                                  Opciones
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {
+                              paids.map((paid, id) => (
+                                  <tr key={id} className='config-paids-dt'>
+                                      <td>
+                                          {paid.date}
+                                      </td>
+                                      <td>
+                                          {paid.noAutorization}
+                                      </td>
+                                      <td>
+                                          {paid.plan}
+                                      </td>
+                                      <td>
+                                          ${paid.amount}
+                                      </td>
+                                      <td className='actions'>
+                                        <div className="tool-btn">
+                                          <div className="tool-tip">
+                                            Ver XML
+                                          </div>
+                                          <div className="tool-icon">
+                                            <Image src={ViewIcon} width={20} height={'auto'} alt='View'/>
+                                          </div>
                                         </div>
-                                        <div className="tool-icon">
-                                          <Image src={ViewIcon} width={20} height={'auto'}/>
+                                        <div className="tool-btn">
+                                          <div className="tool-tip">
+                                            Descargar PDF
+                                          </div>
+                                          <div className="tool-icon">
+                                            <Image src={DownloadIcon} width={20} height={'auto'} alt='Download'/>
+                                          </div>
                                         </div>
-                                      </div>
-                                      <div className="tool-btn">
-                                        <div className="tool-tip">
-                                          Descargar PDF
-                                        </div>
-                                        <div className="tool-icon">
-                                          <Image src={DownloadIcon} width={20} height={'auto'}/>
-                                        </div>
-                                      </div>
-                                    </td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                  </table>
+                                      </td>
+                                  </tr>
+                              ))
+                          }
+                      </tbody>
+                    </table>
+                    <div className="dt-footer">
+                      Solo se puede acceder al historial de facturas de los últimos 12 meses anteriores a través de la cuenta.
+                    </div>
+                  </>
                 ):(
                   <>
                     No existen datos
@@ -173,7 +351,7 @@ const Config = () => {
               Mi empresa
             </p>
             <h1>
-              Nombre Empresa
+              {businesInfo.socialName}
             </h1>
           </div>
         </div>
@@ -199,7 +377,7 @@ const Config = () => {
               <Image src={CancelPlan} width={25} height={'auto'} alt='My Paids'/>
             </div>
             <div className="business-title">
-              Cancelar Suscripción
+              Reportar errores y Ayuda
             </div>
           </div>
         </div>

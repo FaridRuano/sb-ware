@@ -169,7 +169,7 @@ const Clients = () => {
 
       // Control date validness
       if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.end}`)
+        console.warn(`Invalid date: ${cli.plan[0].end}`)
         return false;
       }
 
@@ -186,7 +186,7 @@ const Clients = () => {
 
       // Control date validness
       if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.end}`)
+        console.warn(`Invalid date: ${cli.plan[0].end}`)
         return false;
       }
 
@@ -399,7 +399,7 @@ const Clients = () => {
   }
 
   const handleClientActive = (cli) => {
-    const isDate = new Date(cli.end)
+    const isDate = new Date(cli.plan[0].end)
 
     const asis = cli.asis
 
@@ -446,11 +446,11 @@ const Clients = () => {
 
     if (n === 2) {
       const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.end)
+        const cliDate = new Date(cli.plan[0].end)
 
         // Control date validness
         if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.end}`)
+          console.warn(`Invalid date: ${cli.plan[0].end}`)
           return false;
         }
 
@@ -465,11 +465,11 @@ const Clients = () => {
     }
     if (n === 3) {
       const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.end)
+        const cliDate = new Date(cli.plan[0].end)
 
         // Control date validness
         if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.end}`)
+          console.warn(`Invalid date: ${cli.plan[0].end}`)
           return false;
         }
 

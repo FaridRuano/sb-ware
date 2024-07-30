@@ -899,6 +899,20 @@ input, select {
                     justify-content: flex-end;
                 }
             }
+            &.config-paids-dt{
+                th:nth-child(1),
+                td:nth-child(1){
+                    width: 100px;
+                }
+                th:nth-child(2),
+                td:nth-child(2){
+                    width: 190px;
+                }
+                th:nth-child(5),
+                td:nth-child(5){
+                    width: 82px;
+                }
+            }
         }
     }
     tbody{
@@ -911,6 +925,11 @@ input, select {
             border-bottom: none;
         }
     }
+}
+
+.dt-footer{
+    margin-top: 10px;
+    font-size: 10px;
 }
 
 .dt-pagination{
@@ -1536,12 +1555,102 @@ input, select {
     background-color: $-color-white;
     .form-config{
         .form-header{
-
+            width: calc(100% - 40px);
+            color: $text-color-bg-light;
+            background-color: $-color-black;
+            padding: 10px 20px;
+            font-weight: 700;
+            border-radius: 5px;
+        }
+        .form-body{
+            padding: 20px;
+            width: calc(100% - 40px);
+            .input-config{
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                margin-bottom: 10px;
+                div{
+                    min-width: 100px;
+                    width: calc(20% - .5rem);
+                    font-size: 15px;
+                    font-weight: 200;
+                    color: $gray-color-light;
+                }
+                input{
+                    width: calc(80% - .5rem);
+                    outline: none;
+                    border: none;
+                    background-color: $-color-white;
+                    font-size: 15px;
+                    font-weight: 600;
+                    border-left: solid 2px $primary-color-light;
+                    border-bottom: solid 1px $gray-dark-color-light;
+                    padding-left: 10px;
+                    padding-bottom: 4px;
+                    color: $text-color-light;
+                }
+                input:disabled{
+                    color: $gray-dark-color-light;
+                    border-left: solid 2px $-color-black;
+                    border-bottom: solid 1px $-color-white;
+                }
+            }
+            .form-footer{
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                .errors-config{
+                    width: 50%;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: flex-start;
+                    gap: 1rem;
+                }
+                .buttons-config{
+                    width: 50%;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-end;
+                    align-items: center;
+                    gap: 1rem;
+                    .button{
+                        cursor: pointer;
+                        border: none;
+                        outline: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        color: $text-color-bg-light;
+                        font-weight: 700;
+                        background-color: $secondary-color-light;
+                        transition: .3s ease-out;
+                        &.primary{
+                            background-color: $primary-color-light;
+                        }
+                        &.default{
+                            background-color: $-color-black;
+                        }
+                        &.disabled{
+                            background-color: $gray-color-light;
+                            pointer-events: none;
+                        }
+                        &:hover{
+                            transform: scale(1.05);
+                        }
+                    }
+                }
+                &.one{
+                    .buttons-config{
+                        width: 100%;
+                    }
+                }
+            }
         }
     }
     .header-dt{
         padding-bottom: 20px;
-        border-bottom: solid 1px $-color-black;
         p{
             font-size: 15px;
             font-weight: 200;
@@ -1964,6 +2073,20 @@ input, select {
                 display: none;
             }
         }
+        .config-paids-dt{
+            th:nth-child(1),
+            td:nth-child(1){
+                display: none;
+            }
+            th:nth-child(2),
+            td:nth-child(2){
+                display: none;
+            }
+            th:nth-child(5),
+            td:nth-child(5){
+                width: 82px;
+            }
+        }
     }
     .screen-overlay{
         .overlay-work{
@@ -1994,6 +2117,39 @@ input, select {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /* Config Page */
+    .business-options{
+        .business-card{
+            .card-icon{
+                img{
+                    width: 50px;
+                    height: auto;
+                }
+            }
+            .card-title{
+                p{
+                    font-size: 14px;
+                }
+                h1{
+                    font-size: 20px;
+                }
+            }
+        }
+        .business-btns{
+            .business-btn{
+                .business-btn-icon{
+                    img{
+                        width: 20px;
+                        height: auto;
+                    }
+                }
+                .business-title{
+                    font-size: 15px;
                 }
             }
         }
@@ -2054,6 +2210,20 @@ input, select {
                 justify-content: flex-end;
             }
         }
+        .config-paids-dt{
+            th:nth-child(3),
+            td:nth-child(3){
+                width: 100px;
+            }
+            th:nth-child(4),
+            td:nth-child(4){
+                width: 80px;
+            }
+            th:nth-child(5),
+            td:nth-child(5){
+                width: 82px;
+            }
+        }
 
         
     }
@@ -2061,6 +2231,24 @@ input, select {
     .dt-pagination{
         justify-content: center;
     }
+
+    /* Config Page */
+    .business-options{
+        flex-direction: column;
+        align-items: center;
+        .business-card{
+            padding: 10px;
+            width: calc(100% - 24px);
+            height: 100px;
+            border-radius: 10px;
+        }
+        .business-btns{
+            .business-btn{
+                border-radius: 10px;
+            }
+        }
+    }
+    
 }
 
 /* KeyFrames */
