@@ -2214,6 +2214,15 @@ input, select {
                 display: none;
             }
         }
+        .paids-dt{
+            th:nth-child(1),
+            td:nth-child(1),
+            th:nth-child(3),
+            td:nth-child(3)
+            {
+                display: none;
+            }
+        }
         .clients-dt{
             th:nth-child(4),
             td:nth-child(4),
