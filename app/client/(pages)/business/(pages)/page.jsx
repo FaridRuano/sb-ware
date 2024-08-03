@@ -825,7 +825,6 @@ return (
                   </>
                 )
               }
-
             </div>
           </div>
           <div className="dt-pagination">
@@ -837,96 +836,91 @@ return (
           </div>
         </section>
       ) : (
-        <>
-          <section className='client-form'>
-            <div className="form-header">
-              Nuevo Cliente
-            </div>
-            <div className="form-body">
-              <div className="id-client">
-                ID <span>100</span>
-              </div>
-              <form className='form-client'>
-                <div className="form">
-                  <div className="header">
-                    Datos Personales
-                  </div>
-                  <div className="body">
-                    <div className="input-form">
-                      <label>Cédula</label>
-                      <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} />
-                    </div>
-                    <div className="input-form">
-                      <label>Nombre</label>
-                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
-                    </div>
-                    <div className="input-form">
-                      <label>Email</label>
-                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} />
-                    </div>
-                    <div className="input-form">
-                      <label>Teléfono</label>
-                      <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} />
-                    </div>
-                    <div className="input-form">
-                      <label>Dirección</label>
-                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} />
-                    </div>
-                  </div>
+        <section className='client-form'>
+          <div className="form-header">
+            Nuevo Cliente
+          </div>
+          <div className="form-body">
+            <form className='form-client'>
+              <div className="form">
+                <div className="header">
+                  Datos Personales
                 </div>
-                <div className="form">
-                  <div className="header">
-                    Plan Mensual
+                <div className="body">
+                  <div className="input-form">
+                    <div>Cédula</div>
+                    <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} />
                   </div>
-                  <div className="body">
-                    <div className="input-form">
-                      <label>Plan</label>
-                      <select onChange={handlePlan}>
-                        <option value='0'>
-                          Seleccionar
-                        </option>
-                        {
-                          planData.map((op, id) => (
-                            <option key={id} value={op.id}>
-                              {op.name}
-                            </option>
-                          ))
-                        }
-                      </select>
-                    </div>
-                    <div className="input-form">
-                      <label>Inicio</label>
-                      <input type="date" value={startDate} onChange={handleStartDate} />
-                    </div>
-                    <div className="input-form">
-                      <label>Duración</label>
-                      <input type="number" value={durationPlan} disabled />
-                    </div>
-                    <div className="input-form">
-                      <label>No. Asis</label>
-                      <input type="number" value={asisPlan} disabled />
-                    </div>
-                    <div className="input-form">
-                      <label>Fin</label>
-                      <input type="date" disabled value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                    </div>
+                  <div className="input-form">
+                    <div>Nombre</div>
+                    <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
                   </div>
-                </div>
-              </form>
-              <div className="form-submit">
-                <div className={sendable || errorEmail ? "error-msg" : "error-msg hidden"}>
-                  <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
-                  <span>
-                    {errorMsg}
-                  </span>
-                </div>
-                <div className="btn primary" onClick={() => handleSubmit()}>
-                  Guardar
+                  <div className="input-form">
+                    <div>Email</div>
+                    <input type="text" name='email' onChange={handleNewClient} value={newClient.email} />
+                  </div>
+                  <div className="input-form">
+                    <div>Teléfono</div>
+                    <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} />
+                  </div>
+                  <div className="input-form">
+                    <div>Dirección</div>
+                    <input type="text" name='address' onChange={handleNewClient} value={newClient.address} />
+                  </div>
                 </div>
               </div>
+              <div className="form">
+                <div className="header">
+                  Plan Mensual
+                </div>
+                <div className="body">
+                  <div className="input-form">
+                    <div>Plan</div>
+                    <select onChange={handlePlan}>
+                      <option value='0'>
+                        Seleccionar
+                      </option>
+                      {
+                        planData.map((op, id) => (
+                          <option key={id} value={op.id}>
+                            {op.name}
+                          </option>
+                        ))
+                      }
+                    </select>
+                  </div>
+                  <div className="input-form">
+                    <div>Inicio</div>
+                    <input type="date" value={startDate} onChange={handleStartDate} />
+                  </div>
+                  <div className="input-form">
+                    <div>Duración</div>
+                    <input type="number" value={durationPlan} disabled />
+                  </div>
+                  <div className="input-form">
+                    <div>No. Asis</div>
+                    <input type="number" value={asisPlan} disabled />
+                  </div>
+                  <div className="input-form">
+                    <div>Fin</div>
+                    <input type="date" disabled value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div className="form-submit">
+              <div className={sendable || errorEmail ? "error-msg" : "error-msg hidden"}>
+                <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                <span>
+                  {errorMsg}
+                </span>
+              </div>
+              <div className="btn primary" onClick={() => handleSubmit()}>
+                Guardar
+              </div>
             </div>
-          </section>
-        </>
+          </div>
+        </section>
       )
     }
     <ConfirmModal isActive={confirmModal} handleModal={handleConfirm} handleResponse={handleConfirmResponse} dataModal={selRow} />

@@ -959,8 +959,8 @@ input, select {
     flex-direction: column;
     overflow: hidden;
     .form-header{
-        background-color: $text-color-light;
-        color: $text-color-bg-light;
+        background-color: $-color-white;
+        color: $text-color-light;
         font-weight: 700;
         padding: 15px;
         border-radius: 10px 10px 0 0;
@@ -973,15 +973,6 @@ input, select {
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        .id-client{
-            color: $gray-color-light;
-            font-weight: 700;
-            span{
-                font-size: 20px;
-                margin-left: 20px;
-                font-weight: 200;
-            }
-        }
         .form-client{
             display: flex;
             flex-direction: row;
@@ -1042,7 +1033,7 @@ input, select {
     gap: 1rem;
     align-items: center;
     height: 30px;
-    label{
+    div{
         height: 28px;
         display: flex;
         font-size: 15px;
@@ -1336,7 +1327,7 @@ input, select {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 6;
+    z-index: 8;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1352,6 +1343,8 @@ input, select {
         transform: scale(0);
         animation: confirmModal .3s forwards ease-out;
         .modal-header{
+            padding-bottom: 10px;
+            margin-bottom: 10px;
             display: flex;
             flex-direction: row;
             gap: 1rem;
@@ -1735,11 +1728,15 @@ input, select {
 }
 
 @media (max-width: 1000px){
-
+    /* App */
+    body{
+        background-color: $-color-white;
+    }
     /* Client Page */
     .client-page{
         padding: 80px 25px 180px 25px;
-        height: auto;
+        height: calc(fit-content - 260px);
+        background-color: $-color-white;
     }
     .btn-icon{
         width: 50px;
@@ -1761,7 +1758,7 @@ input, select {
     .client-navbar{
         bottom: 0;
         top: auto;
-        z-index: 2;
+        z-index: 7;
         background-color: $-color-black;
         padding: 5px;
         width: 100vw;
@@ -1843,6 +1840,15 @@ input, select {
             gap: 1rem;
             .recent-pays{
                 .datatable{
+                    border-radius: 20px;
+                    background-color: $primary-color-light;
+                    color: $text-color-light;
+                    tr{
+                        border-bottom: solid 1px $-color-black;
+                        &:last-child{
+                            border-bottom: none;
+                        }
+                    }
                     td{
                         padding: 6px 0;
                     }
@@ -1857,6 +1863,15 @@ input, select {
     .dashboard-part-02{
         flex-direction: column;
         .datatable{
+            border-radius: 20px;
+            background-color: $-color-black;
+            color: $text-color-bg-light;
+            tr{
+                border-bottom: solid 1px $-color-white !important;
+                &:last-child{
+                    border-bottom: none !important;
+                }
+            }
             td:nth-child(2){
                 display: block;
             }
@@ -1898,8 +1913,12 @@ input, select {
             width: fit-content;
         }
     }
+    .dt-wrap{
+        padding: 0;
+    }
     .dt-all{
         .client-dt{
+            padding: 0 !important;
             th:nth-child(2),
             td:nth-child(2),
             th:nth-child(5),
@@ -1928,21 +1947,23 @@ input, select {
     }
     .client-form{
         .form-body{
-            padding: 15px;
-            width: calc(100% - 30px);
+            padding: 0;
+            width: calc(100%);
             .form-client{
                 flex-direction: column;
                 .form{
                     width: 100%;
                     .body{
-                        padding: 20px 0px;
-                        width: calc(100%);
+                        padding: 20px 10px;
+                        width: calc(100% - 20px);
                         .input-form{
-                            input{
+                            width: 100%;
+                            input, select{
                                 width: calc(100% - 1rem - 100px);
+                                max-width: none;
                                 font-size: 16px;
                             }
-                            label{
+                            div{
                                 font-size: 14px;
                             }
                         }
@@ -1960,7 +1981,6 @@ input, select {
             bottom: 0;
         }
     }
-    
 
     /* Business Page Company */
     .form-dt{
@@ -1970,7 +1990,7 @@ input, select {
             .col{
                 width: 100%;
                 .input-form{
-                    label{
+                    div{
                         font-size: 12px;
                     }
                 }
@@ -2039,7 +2059,6 @@ input, select {
     }
 
     /* Business Page */
-
     .dt-all{
         .client-dt{
             th:nth-child(2),
@@ -2159,10 +2178,9 @@ input, select {
 @media (max-width: 600px){
     .dashboard-part-01{
         .datatable{
-            td{
-                &:nth-child(2), &:nth-child(3){
-                    display: none;
-                }
+            td:nth-child(2),
+            td:nth-child(3){
+                display: none !important;
             }
         }
     }

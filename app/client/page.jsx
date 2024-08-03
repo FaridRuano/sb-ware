@@ -34,9 +34,48 @@ const Client = () => {
   /* Navigation */
   const router = useRouter()
 
-  //const totalMoney = 1840.52
-  const totalSuppostedMoney = 2460
+  const totalSuppostedMoney = 300
+
   const [totalMoney, setTotalMoney] = useState(0)
+
+  const [paids, setPaids] = useState(0)
+
+  const [nopaids, setNoPaids] = useState(0)
+
+  const [recentPays,setRecentPays] =useState([])
+
+  const [recentClients,setRecentClients] = useState([])
+
+  const [recentAsistance,setRecentAsistance] = useState ([])
+
+  const [totalClients, setTotalClients] = useState(0)
+
+  const limitClients = 50
+
+  //const monthlyAverage = 1240.45
+  const [monthlyAverage, setMonthlyAverage] = useState(0)
+
+  const handleFormatDate = (isoDate) => {
+    if(isoDate==null){
+      return null
+    }
+    const date = new Date(isoDate);
+    const day = date.getUTCDate().toString().padStart(2, '0')
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
+    const year = date.getUTCFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  const actualDate = () => {
+    const date = new Date()
+    const day = String(date.getDate()).padStart(2, '0')
+    const monthNames = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    const month = monthNames[date.getMonth()]
+    return `${day} | ${month}`
+  }
 
   const fetchAndLoadData = async () => {
     try {
@@ -54,30 +93,9 @@ const Client = () => {
       console.log(e)
     }
   }
-  useEffect(() => {
-    fetchAndLoadData()
-  }, [])
-
-  //const paids = 154
-  const [paids,setPaids]=useState(1)
-  //const nopaids = 24
-  const [nopaids,setNoPaids]=useState(1)
-
-  const [recentPays,setRecentPays] =useState([])
-
-  const [recentClients,setRecentClients] = useState([])
-
-  const [recentAsistance,setRecentAsistance] =useState ([])
-
-  //const totalClients = 278
-  const [totalClients,setTotalClients]=useState(1)
-  const limitClients = 300
-
-  //const monthlyAverage = 1240.45
-  const [monthlyAverage,setMonthlyAverage]=useState(100)
 
   useEffect(()=>{
-    console.log(nopaids)
+    
     const rootStyles = getComputedStyle(document.documentElement);
 
     const primaryColorLight = rootStyles.getPropertyValue('--primary-color-light').trim()
@@ -93,7 +111,7 @@ const Client = () => {
     let progress = setInterval(() => {
 
       if(progressStartValue <= progressEndValue * 0.999){
-        progressStartValue = progressStartValue + 10
+        progressStartValue = progressStartValue + 0.1
       }else{
         progressStartValue = progressStartValue + 0.01
       }
@@ -102,9 +120,7 @@ const Client = () => {
       circularProgress.style.background = `conic-gradient(${primaryColorLight} ${((progressStartValue * 100) / totalSuppostedMoney) * 3.6}deg, ${backgroundColorLight} 0deg)`
 
       if(progressStartValue >= progressEndValue){
-        progressStartValue = progressStartValue - 0.01
-        progressValue.textContent = `$${progressStartValue.toFixed(2)}`
-
+        progressValue.textContent = `$${totalMoney.toFixed(2)}`
         clearInterval(progress)
       }
     }, speed)
@@ -114,6 +130,8 @@ const Client = () => {
     clientsText = document.getElementById('clientsNumber'),
     averageText = document.getElementById('averageNumber')
 
+    let monthlyRealTimeAverage = totalMoney / 3
+
     let paidsStartValue = 0,
     paidsEndValue = paids,
     nopaidsStartValue = 0,
@@ -121,12 +139,16 @@ const Client = () => {
     clientsStartValue = 0,
     clientsEndValue = totalClients,
     averageStartValue = 0,
-    averageEndValue = monthlyAverage,
-    textSpeed = 5
+    averageEndValue = monthlyRealTimeAverage,
+    textSpeed = 1
 
     let progressPaids = setInterval(() => {
 
-      paidsStartValue++
+      if(paids === 0){
+        clearInterval(progressPaids)
+      }else{
+        paidsStartValue++
+      }
 
       paidsText.textContent = `${paidsStartValue}`
 
@@ -139,7 +161,11 @@ const Client = () => {
 
     let progressNoPaids = setInterval(() => {
 
-      nopaidsStartValue++
+      if(nopaids === 0){
+        clearInterval(progressNoPaids)
+      }else{
+        nopaidsStartValue++
+      }
 
       nopaidsText.textContent = `${nopaidsStartValue}`
 
@@ -151,7 +177,11 @@ const Client = () => {
 
     let progressClients = setInterval(() => {
 
-      clientsStartValue++
+      if(totalClients === 0){
+        clearInterval(progressClients)
+      }else{
+        clientsStartValue++
+      }
 
       clientsText.textContent = `${clientsStartValue}`
 
@@ -162,24 +192,25 @@ const Client = () => {
     },textSpeed)
 
     let progressAverage = setInterval(() => {
-
-      if(averageStartValue <= averageEndValue * 0.999){
-        averageStartValue = averageStartValue + 10
+      
+      if(progressAverage === 0){
+        averageText.textContent = `$${monthlyRealTimeAverage.toFixed(2)}`
+        clearInterval(progressAverage)
       }else{
-        averageStartValue = averageStartValue + 0.01
+        averageStartValue = averageStartValue + 0.1
       }
-
       averageText.textContent = `$${averageStartValue.toFixed(2)}`
 
       if(averageStartValue >= averageEndValue){
-        averageStartValue = averageStartValue - 0.01
-        averageText.textContent = `$${averageStartValue.toFixed(2)}`
+        averageStartValue = averageEndValue
+        averageText.textContent = `$${monthlyRealTimeAverage.toFixed(2)}`
         clearInterval(progressAverage)
       }
-      
-    },textSpeed)
+
+    }, textSpeed)
 
     let progressBar = document.querySelector(".progress")
+
 
     let progressPercentage = (totalClients * 100) / limitClients,
     initialPercentage = 0
@@ -187,27 +218,18 @@ const Client = () => {
     let progressClientsBar = setInterval(() => {
 
       initialPercentage++
-
       progressBar.style.width = `${initialPercentage.toFixed(0)}%`
-
-      if(initialPercentage == progressPercentage.toFixed(0)){
+      if(initialPercentage == 100 - progressPercentage){
         clearInterval(progressClientsBar)
       }
       
-    },10)
+    },30)
 
   },[totalMoney])
 
-  const handleFormatDate = (isoDate) => {
-    if(isoDate==null){
-      return null
-    }
-    const date = new Date(isoDate);
-    const day = date.getUTCDate().toString().padStart(2, '0');
-    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
-    const year = date.getUTCFullYear();
-    return `${day}/${month}/${year}`;
-  };
+  useEffect(() => {
+    fetchAndLoadData()
+  }, [])
 
   return (
     <div className="home-client">
@@ -248,7 +270,7 @@ const Client = () => {
       <section className='dashboard-part-01'>
         <div className="money-statistics">
           <div className="total-money">
-          <span className="date">{new Date().getDate()} | {new Date().toLocaleString('default', { month: 'long' })}</span>
+          <span className="date">{actualDate()}</span>
             <span className="total">{0}</span>
             <span className="tag">Total Pagos</span>
             <div className="circular-progress"/>
@@ -284,7 +306,7 @@ const Client = () => {
                               {handleFormatDate(data.date)}
                             </td>
                             <td>
-                              ${data.amount}
+                              <b>${data.amount}</b>
                             </td>
                           </tr>
                         ))
@@ -396,7 +418,6 @@ const Client = () => {
                               {data.name}
                             </td>
                             <td>
-                              
                               {handleFormatDate(data.attent)}
                             </td>
                           </tr>
