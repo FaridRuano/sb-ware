@@ -67,6 +67,12 @@ input, select {
     padding: 100px;
 }
 
+/* Globals */
+
+.loading{
+    animation: loopOpacity 1s infinite;
+}
+
 /* Main Nav Bar */
 
 .main-navbar{
@@ -242,6 +248,11 @@ input, select {
             transform: scale(1.05);
         }
     }
+    &.loading{
+        .shortcut{
+            height: 40px;
+        }
+    }
 }
 
 .money-statistics{
@@ -389,6 +400,9 @@ input, select {
             }
         }
     }
+    &.loading{
+        height: 300px;
+    }
 }
 
 .footer-datatable{
@@ -446,6 +460,9 @@ input, select {
                 }
             }
         }
+    }
+    &.loading{
+        height: 210px;
     }
 }
 
@@ -579,6 +596,13 @@ input, select {
         pointer-events: none;
         opacity: .5;
     }
+    &.anim{
+        animation: loopOpacity 1s infinite;
+        .card-bar{
+            height: 115px;
+            padding: 0;
+        }
+    }
 }
 
 .tool-bar{
@@ -600,6 +624,12 @@ input, select {
             opacity: 0;
             display: none;
         }
+    }
+    &.loading{
+        height: 39px;
+        border-radius: 10px;
+        background-color: $gray-color-light;
+        animation: loopOpacity 1s infinite;
     }
 }
 
@@ -652,6 +682,12 @@ input, select {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    &.loading{
+        background-color: $gray-color-light;
+        animation: loopOpacity 1s infinite;
+        border-radius: 10px;
+        height: 400px;
+    }
 }
 
 .dt-wrap{
@@ -1540,6 +1576,7 @@ input, select {
 
     }
 }
+
 .business-dashboard{
     width: calc(100% - 40px);
     padding: 20px;
@@ -1652,7 +1689,6 @@ input, select {
         }
     }
 }
-
 
 /* Dark Theme */
 
@@ -1793,6 +1829,11 @@ input, select {
                 }
             }
         }
+        &.loading{
+            .shortcut{
+                height: 30px;
+            }
+        }
     }
     .dashboard-part-01{
         flex-direction: column;
@@ -1841,10 +1882,10 @@ input, select {
             .recent-pays{
                 .datatable{
                     border-radius: 20px;
-                    background-color: $primary-color-light;
-                    color: $text-color-light;
+                    background-color: $-color-black;
+                    color: $text-color-bg-light;
                     tr{
-                        border-bottom: solid 1px $-color-black;
+                        border-bottom: solid 1px $-color-white;
                         &:last-child{
                             border-bottom: none;
                         }
@@ -1856,6 +1897,10 @@ input, select {
                     td:nth-child(2){
                         display: block;
                     }
+                }
+                &.loading{
+                    background-color: $gray-color-light;
+                    height: 180px;
                 }
             }
         }
@@ -1874,6 +1919,11 @@ input, select {
             }
             td:nth-child(2){
                 display: block;
+            }
+        }
+        .recent-clients{
+            &.loading{
+                background-color: $gray-color-light;
             }
         }
     }
@@ -2036,6 +2086,13 @@ input, select {
             }
             .form-dt{
                 gap: .7rem;
+            }
+        }
+        &.loading{
+            .container-option{
+                &:last-child{
+                    background-color: $gray-color-light;
+                }
             }
         }
     }
@@ -2324,5 +2381,16 @@ input, select {
     100%{
         transform: translateY(150px);
     }
-    
+}
+
+@keyframes loopOpacity {
+    0%{
+        opacity: .2;
+    }
+    50%{
+        opacity: .6;
+    }
+    100%{
+        opacity: .2;
+    }
 }

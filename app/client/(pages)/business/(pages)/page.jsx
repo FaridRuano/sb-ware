@@ -80,7 +80,6 @@ const postNewClient = async (newClient) => {
   }
 }
 
-
 const deleteClient = async (client) => {
   try {
     const uri = process.env.NEXT_PUBLIC_API_URL;
@@ -141,9 +140,11 @@ const updateClient = async (data) => {
   }
 }
 
-
-
 const Clients = () => {
+
+  /* Loading Page */
+
+  const [isLoading, setLoading] = useState(true)
 
   /* Active Table */
 
@@ -153,10 +154,7 @@ const Clients = () => {
 
   const [baseData, setBaseData] = useState([])
 
-
   const [clientData, setClientData] = useState([])
-
-
 
   const countClients = () => {
     return baseData.length
@@ -357,20 +355,7 @@ const Clients = () => {
     currentPage * itemsPerPage
   ))
 
-  useEffect(() => {
-    const fetchAndLoadPersons = async () => {
-      try {
-        setCurrentItems(clientData.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        ))
-        setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-      } catch (e) {
-        console.log(e)
-      }
-    }
-    fetchAndLoadPersons()
-  }, [clientData])
+  
 
 
   const handlePreviousPage = () => {
@@ -486,28 +471,21 @@ const Clients = () => {
 
   const fetchAndLoadPersons = async () => {
     try {
+      setLoading(true)
       const fetchData = await mongoClientData()
       const planData = await mongoPlanData()
-      //console.log(planData)
       if (fetchData.length >= 0) {
         setBaseData(fetchData)
         setClientData(fetchData)
-        //console.log(fetchData)
       }
       if (planData.length >= 0) {
         setPlanData(planData)
       }
-
+      setLoading(false)
     } catch (e) {
       console.log(e)
     }
   }
-
-  useEffect(() => {
-    fetchAndLoadPersons()
-  }, [])
-
-
 
   /* Modals */
 
@@ -617,6 +595,7 @@ const handleStatus = async (msg) => {
   handleStatusMsg(msg)
   setSelRow({ id: 0 })
 }
+
 const handleAttent = async (msg) => {
   setStatusModal(current => !current)
   const data = {
@@ -650,285 +629,341 @@ const handleFormatDate = (isoDate) => {
   return `${day}/${month}/${year}`;
 }
 
-return (
-  <div className="company-page">
-    <section className={addClient ? "stats-bar disabled" : "stats-bar"}>
-      <div className={activeTable === 1 ? "card-bar active" : "card-bar"} onClick={() => handleDataClient(1)}>
-        <span>
-          Clientes
-        </span>
-        <h1>
-          {countClients()}
-        </h1>
-        <div className="active-bar" />
-      </div>
-      <div className={activeTable === 2 ? "card-bar primary active" : "card-bar primary"} onClick={() => handleDataClient(2)}>
-        <span>
-          Activos
-        </span>
-        <h1>
-          {countClientsActive()}
-        </h1>
-        <div className="active-bar" />
-      </div>
-      <div className={activeTable === 3 ? "card-bar gray active" : "card-bar gray"} onClick={() => handleDataClient(3)}>
-        <span>
-          Inactivos
-        </span>
-        <h1>
-          {countClientsInactive()}
-        </h1>
-        <div className="active-bar" />
-      </div>
-    </section>
-    <section className={addClient ? "tool-bar hidden" : "tool-bar"}>
-      <div className="tools-01">
-        <div className={!addClient ? "btn" : "btn cancel"} onClick={() => handleAddClient()}>
-          <div className="btn-img">
-            {
-              !addClient ? (
-                <Image src={AddBtn} width={14} height={'auto'} alt="Add" />
-              ) : (
-                <Image src={DelBtn} width={12} height={'auto'} alt="Delete" />
-              )
-            }
-          </div>
-          <div className="btn-name">
-            {!addClient ? 'Agregar' : 'Cancelar'}
-          </div>
-        </div>
-      </div>
-      <div className="tools-02">
-        <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleRenew()}>
-          <div className="btn-img">
-            <Image src={RenewBtn} width={19} height={'auto'} alt="Renew" />
-          </div>
-          <div className="btn-name">
-            Renovar
-          </div>
-        </div>
-        <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handlePay()}>
-          <div className="btn-img">
-            <Image src={PayBtn} width={11} height={'auto'} alt="Pay" />
-          </div>
-          <div className="btn-name">
-            Reg. Pago
-          </div>
-        </div>
-        <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleAttent('Se marco la asistencia de ' + selRow.name + ' con exito.')}>
-          <div className="btn-img">
-            <Image src={AsisBtn} width={17} height={'auto'} alt="Asis" />
-          </div>
-          <div className="btn-name">
-            Reg. Asis
-          </div>
-        </div>
-        <div className={selRow.id > 0 ? "btn warning" : "btn warning disabled"} onClick={() => handleConfirm()}>
-          <div className="btn-img">
-            <Image src={TrashBtn} width={12} height={'auto'} alt="Delete" />
-          </div>
-          <div className="btn-name">
-            Eliminar
-          </div>
-        </div>
-      </div>
-    </section>
-    {
-      !addClient ? (
-        <section className='data-table'>
-          <div className="dt-wrap">
-            <div className="dt-header">
-              <div className="header-wrap">
-                <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
-                <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
-              </div>
-              {
-                selRow.id > 0 && (
-                  <div className="header-deselect">
-                    <Image src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ id: 0 })} />
-                  </div>
-                )
-              }
-            </div>
-            <div className="dt-body">
-              {
-                currentItems.length > 0 ? (
-                  <table className="dt-all">
-                    <thead>
-                      <tr className='client-dt'>
-                        <th />
-                        <th>
-                          ID
-                        </th>
-                        <th>
-                          Nombre
-                        </th>
-                        <th>
-                          Plan
-                        </th>
-                        <th>
-                          Inicio
-                        </th>
-                        <th>
-                          Final
-                        </th>
-                        <th>
-                          Asis
-                        </th>
-                        <th>
-                          Deuda
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {
-                        currentItems.map((cli, id) => (
-                          <tr className={selRow.id === cli.id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
-                            {
-                              handleClientActive(cli) ? (
-                                <td className='primary' />
-                              ) : (
-                                <td className='gray' />
-                              )
-                            }
-                            <td>
-                              {cli.id}
-                            </td>
-                            <td>
-                              {cli.name}
-                            </td>
-                            <td>
-                              {cli.plan[0].name}
-                            </td>
-                            <td>
-                              {handleFormatDate(cli.plan[0].ini)}
-                            </td>
-                            <td>
-                              {handleFormatDate(cli.plan[0].end)}
-                            </td>
-                            <td>
-                              {cli.asis}
-                            </td>
-                            <td>
-                              <span className={cli.debt > 0 ? 'loan' : 'loan full'}>
-                                ${cli.debt.toFixed(2)}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      }
-                    </tbody>
-                  </table>
-                ) : (
-                  <>
-                    No existen datos
-                  </>
-                )
-              }
-            </div>
-          </div>
-          <div className="dt-pagination">
-            <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-            <span>
-              {currentPage} de {totalPages}
-            </span>
-            <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-          </div>
-        </section>
-      ) : (
-        <section className='client-form'>
-          <div className="form-header">
-            Nuevo Cliente
-          </div>
-          <div className="form-body">
-            <form className='form-client'>
-              <div className="form">
-                <div className="header">
-                  Datos Personales
-                </div>
-                <div className="body">
-                  <div className="input-form">
-                    <div>Cédula</div>
-                    <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} />
-                  </div>
-                  <div className="input-form">
-                    <div>Nombre</div>
-                    <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
-                  </div>
-                  <div className="input-form">
-                    <div>Email</div>
-                    <input type="text" name='email' onChange={handleNewClient} value={newClient.email} />
-                  </div>
-                  <div className="input-form">
-                    <div>Teléfono</div>
-                    <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} />
-                  </div>
-                  <div className="input-form">
-                    <div>Dirección</div>
-                    <input type="text" name='address' onChange={handleNewClient} value={newClient.address} />
-                  </div>
-                </div>
-              </div>
-              <div className="form">
-                <div className="header">
-                  Plan Mensual
-                </div>
-                <div className="body">
-                  <div className="input-form">
-                    <div>Plan</div>
-                    <select onChange={handlePlan}>
-                      <option value='0'>
-                        Seleccionar
-                      </option>
-                      {
-                        planData.map((op, id) => (
-                          <option key={id} value={op.id}>
-                            {op.name}
-                          </option>
-                        ))
-                      }
-                    </select>
-                  </div>
-                  <div className="input-form">
-                    <div>Inicio</div>
-                    <input type="date" value={startDate} onChange={handleStartDate} />
-                  </div>
-                  <div className="input-form">
-                    <div>Duración</div>
-                    <input type="number" value={durationPlan} disabled />
-                  </div>
-                  <div className="input-form">
-                    <div>No. Asis</div>
-                    <input type="number" value={asisPlan} disabled />
-                  </div>
-                  <div className="input-form">
-                    <div>Fin</div>
-                    <input type="date" disabled value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                  </div>
-                </div>
-              </div>
-            </form>
-            <div className="form-submit">
-              <div className={sendable || errorEmail ? "error-msg" : "error-msg hidden"}>
-                <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
-                <span>
-                  {errorMsg}
-                </span>
-              </div>
-              <div className="btn primary" onClick={() => handleSubmit()}>
-                Guardar
-              </div>
-            </div>
-          </div>
-        </section>
-      )
+useEffect(() => {
+  const fetchAndLoadPersons = async () => {
+    try {
+      setCurrentItems(clientData.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      ))
+      setTotalPages(Math.ceil(clientData.length / itemsPerPage))
+      setLoading(false)
+    } catch (e) {
+      console.log(e)
     }
-    <ConfirmModal isActive={confirmModal} handleModal={handleConfirm} handleResponse={handleConfirmResponse} dataModal={selRow} />
-    <RenewModal isActive={renewModal} handleModal={handleRenew} handleResponse={handleRenewResponse} dataModal={selRow} dataModal2={planData} />
-    <PayModal isActive={payModal} handleModal={handlePay} handleResponse={handlePayResponse} dataModal={selRow} />
-    <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} />
-  </div>
-)
+  }
+  fetchAndLoadPersons()
+}, [clientData])
+
+useEffect(() => {
+  fetchAndLoadPersons()
+}, [])
+
+if(isLoading){
+  return (
+    <div className="company-page">
+      <section className="stats-bar anim">
+        <div className="card-bar">
+          <span>
+          </span>
+          <h1>
+          </h1>
+          <div className="active-bar" />
+        </div>
+        <div className="card-bar primary">
+          <span>
+          </span>
+          <h1>
+          </h1>
+          <div className="active-bar" />
+        </div>
+        <div className="card-bar gray">
+          <span>
+          </span>
+          <h1>
+          </h1>
+          <div className="active-bar" />
+        </div>
+      </section>
+      <section className="tool-bar loading">
+        <div className="tools-01"/>
+      </section>
+      <section className='data-table loading'>
+      </section>
+    </div>
+  )
+}else{
+  return (
+    <div className="company-page">
+      <section className={addClient ? "stats-bar disabled" : "stats-bar"}>
+        <div className={activeTable === 1 ? "card-bar active" : "card-bar"} onClick={() => handleDataClient(1)}>
+          <span>
+            Clientes
+          </span>
+          <h1>
+            {countClients()}
+          </h1>
+          <div className="active-bar" />
+        </div>
+        <div className={activeTable === 2 ? "card-bar primary active" : "card-bar primary"} onClick={() => handleDataClient(2)}>
+          <span>
+            Activos
+          </span>
+          <h1>
+            {countClientsActive()}
+          </h1>
+          <div className="active-bar" />
+        </div>
+        <div className={activeTable === 3 ? "card-bar gray active" : "card-bar gray"} onClick={() => handleDataClient(3)}>
+          <span>
+            Inactivos
+          </span>
+          <h1>
+            {countClientsInactive()}
+          </h1>
+          <div className="active-bar" />
+        </div>
+      </section>
+      <section className={addClient ? "tool-bar hidden" : "tool-bar"}>
+        <div className="tools-01">
+          <div className={!addClient ? "btn" : "btn cancel"} onClick={() => handleAddClient()}>
+            <div className="btn-img">
+              {
+                !addClient ? (
+                  <Image src={AddBtn} width={14} height={'auto'} alt="Add" />
+                ) : (
+                  <Image src={DelBtn} width={12} height={'auto'} alt="Delete" />
+                )
+              }
+            </div>
+            <div className="btn-name">
+              {!addClient ? 'Agregar' : 'Cancelar'}
+            </div>
+          </div>
+        </div>
+        <div className="tools-02">
+          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleRenew()}>
+            <div className="btn-img">
+              <Image src={RenewBtn} width={19} height={'auto'} alt="Renew" />
+            </div>
+            <div className="btn-name">
+              Renovar
+            </div>
+          </div>
+          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handlePay()}>
+            <div className="btn-img">
+              <Image src={PayBtn} width={11} height={'auto'} alt="Pay" />
+            </div>
+            <div className="btn-name">
+              Reg. Pago
+            </div>
+          </div>
+          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleAttent('Se marco la asistencia de ' + selRow.name + ' con exito.')}>
+            <div className="btn-img">
+              <Image src={AsisBtn} width={17} height={'auto'} alt="Asis" />
+            </div>
+            <div className="btn-name">
+              Reg. Asis
+            </div>
+          </div>
+          <div className={selRow.id > 0 ? "btn warning" : "btn warning disabled"} onClick={() => handleConfirm()}>
+            <div className="btn-img">
+              <Image src={TrashBtn} width={12} height={'auto'} alt="Delete" />
+            </div>
+            <div className="btn-name">
+              Eliminar
+            </div>
+          </div>
+        </div>
+      </section>
+      {
+        !addClient ? (
+          <section className='data-table'>
+            <div className="dt-wrap">
+              <div className="dt-header">
+                <div className="header-wrap">
+                  <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
+                  <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
+                </div>
+                {
+                  selRow.id > 0 && (
+                    <div className="header-deselect">
+                      <Image src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ id: 0 })} />
+                    </div>
+                  )
+                }
+              </div>
+              <div className="dt-body">
+                {
+                  currentItems.length > 0 ? (
+                    <table className="dt-all">
+                      <thead>
+                        <tr className='client-dt'>
+                          <th />
+                          <th>
+                            ID
+                          </th>
+                          <th>
+                            Nombre
+                          </th>
+                          <th>
+                            Plan
+                          </th>
+                          <th>
+                            Inicio
+                          </th>
+                          <th>
+                            Final
+                          </th>
+                          <th>
+                            Asis
+                          </th>
+                          <th>
+                            Deuda
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          currentItems.map((cli, id) => (
+                            <tr className={selRow.id === cli.id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
+                              {
+                                handleClientActive(cli) ? (
+                                  <td className='primary' />
+                                ) : (
+                                  <td className='gray' />
+                                )
+                              }
+                              <td>
+                                {cli.id}
+                              </td>
+                              <td>
+                                {cli.name}
+                              </td>
+                              <td>
+                                {cli.plan[0].name}
+                              </td>
+                              <td>
+                                {handleFormatDate(cli.plan[0].ini)}
+                              </td>
+                              <td>
+                                {handleFormatDate(cli.plan[0].end)}
+                              </td>
+                              <td>
+                                {cli.asis}
+                              </td>
+                              <td>
+                                <span className={cli.debt > 0 ? 'loan' : 'loan full'}>
+                                  ${cli.debt.toFixed(2)}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  ) : (
+                    <>
+                      No existen datos
+                    </>
+                  )
+                }
+              </div>
+            </div>
+            <div className="dt-pagination">
+              <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+              <span>
+                {currentPage} de {totalPages}
+              </span>
+              <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+            </div>
+          </section>
+        ) : (
+          <section className='client-form'>
+            <div className="form-header">
+              Nuevo Cliente
+            </div>
+            <div className="form-body">
+              <form className='form-client'>
+                <div className="form">
+                  <div className="header">
+                    Datos Personales
+                  </div>
+                  <div className="body">
+                    <div className="input-form">
+                      <div>Cédula</div>
+                      <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} />
+                    </div>
+                    <div className="input-form">
+                      <div>Nombre</div>
+                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
+                    </div>
+                    <div className="input-form">
+                      <div>Email</div>
+                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} />
+                    </div>
+                    <div className="input-form">
+                      <div>Teléfono</div>
+                      <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} />
+                    </div>
+                    <div className="input-form">
+                      <div>Dirección</div>
+                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} />
+                    </div>
+                  </div>
+                </div>
+                <div className="form">
+                  <div className="header">
+                    Plan Mensual
+                  </div>
+                  <div className="body">
+                    <div className="input-form">
+                      <div>Plan</div>
+                      <select onChange={handlePlan}>
+                        <option value='0'>
+                          Seleccionar
+                        </option>
+                        {
+                          planData.map((op, id) => (
+                            <option key={id} value={op.id}>
+                              {op.name}
+                            </option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="input-form">
+                      <div>Inicio</div>
+                      <input type="date" value={startDate} onChange={handleStartDate} />
+                    </div>
+                    <div className="input-form">
+                      <div>Duración</div>
+                      <input type="number" value={durationPlan} disabled />
+                    </div>
+                    <div className="input-form">
+                      <div>No. Asis</div>
+                      <input type="number" value={asisPlan} disabled />
+                    </div>
+                    <div className="input-form">
+                      <div>Fin</div>
+                      <input type="date" disabled value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <div className="form-submit">
+                <div className={sendable || errorEmail ? "error-msg" : "error-msg hidden"}>
+                  <Image src={WarningIcon} width={22} height={'auto'} alt='WARNING' />
+                  <span>
+                    {errorMsg}
+                  </span>
+                </div>
+                <div className="btn primary" onClick={() => handleSubmit()}>
+                  Guardar
+                </div>
+              </div>
+            </div>
+          </section>
+        )
+      }
+      <ConfirmModal isActive={confirmModal} handleModal={handleConfirm} handleResponse={handleConfirmResponse} dataModal={selRow} />
+      <RenewModal isActive={renewModal} handleModal={handleRenew} handleResponse={handleRenewResponse} dataModal={selRow} dataModal2={planData} />
+      <PayModal isActive={payModal} handleModal={handlePay} handleResponse={handlePayResponse} dataModal={selRow} />
+      <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} />
+    </div>
+    )
+  }
 }
+
 
 export default Clients

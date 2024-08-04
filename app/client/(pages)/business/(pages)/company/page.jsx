@@ -85,18 +85,26 @@ const mongoPyamentData = async () => {
 
 const Company = () => {
 
+  /* Loading Page */
+
+  const [isLoading, setLoading] = useState(true)
+
   /* Clients */
+
   const [isDtClient, setDtClient] = useState(false)
 
   const handleDtClient = (action) => {
     if (action === 'open') {
       setDtClient(true)
     } else {
+      fetchAndLoadData()
       setDtClient(false)
     }
   }
+
   const fetchAndLoadData = async () => {
     try {
+      setLoading(true)
       const fetchData = await mongoClientData()
       const planData = await mongoPlanData()
       const attenData= await mongoAttenData()
@@ -113,7 +121,7 @@ const Company = () => {
       if (paymentData.length >= 0) {
         setPaidsData(paymentData)
       }
-
+      setLoading(false)
     } catch (e) {
       console.log(e)
     }
@@ -172,193 +180,223 @@ const Company = () => {
 
   /* Fetch */
 
-
   useEffect(() => {
     fetchAndLoadData()
   }, [])
 
-  useEffect(() => {
-    fetchAndLoadData()
-  }, [isDtPlan,isDtClient,isDtPaids,isDtAsis])
-
-  return (
-    <div className='company-page'>
-      <DtPlans isActive={isDtPlan} handleActive={handleDtPlan} />
-      <DtClients isActive={isDtClient} handleActive={handleDtClient} />
-      <DtAsis isActive={isDtAsis} handleActive={handleDtAsis} />
-      <Dtpaids isActive={isDtPaids} handleActive={handleDtPaids} />
-      <section className='charts-section'>
-        <div className={"container-option"} onClick={() => handleDtClient('open')}>
-          <span className='title-body'>
-            Clientes
-          </span>
-        </div>
-        <div className="container-option" onClick={() => handleDtClient('open')}>
-          <div className="dt-body ">
-            {
-              clientData.length >= 1 ? (
-                <table className="dt-all">
-                  <tbody>
-                    {
-                      clientData.map((cli, id) => (
-                        <tr key={id} className='clients-dt'>
-                          <td>
-                            {cli.id}
-                          </td>
-                          <td>
-                            {cli.name}
-                          </td>
-                          <td>
-                            {cli.ced}
-                          </td>
-                          <td>
-                            {cli.email}
-                          </td>
-                          <td>
-                            {cli.phone}
-                          </td>
-                          <td>
-                            {cli.address}
-                          </td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-              ) : (
-                <div className="dt-empty">
-                  No existe información para mostrar
-                </div>
-              )
-            }
+  if(isLoading){
+    return (
+      <div className='company-page'>
+        <DtPlans isActive={isDtPlan} handleActive={handleDtPlan} />
+        <DtClients isActive={isDtClient} handleActive={handleDtClient} />
+        <DtAsis isActive={isDtAsis} handleActive={handleDtAsis} />
+        <Dtpaids isActive={isDtPaids} handleActive={handleDtPaids} />
+        <section className='charts-section loading'>
+          <div className="container-option">
           </div>
-        </div>
-      </section>
-      <section className='charts-section'>
-        <div className={"container-option"} onClick={() => handleDtPlan('open')}>
-          <span className='title-body'>
-            Planes
-          </span>
-        </div>
-        <div className="container-option">
-          <div className="dt-body ">
-            {
-              planData.length >= 1 ? (
-                <table className="dt-all">
-                  <tbody>
-                    {
-                      planData.map((pla, id) => (
-                        <tr key={id} className='plan-dt' onClick={() => handleDtPlan('open')}>
-                          <td>
-                            {pla.id}
-                          </td>
-                          <td>
-                            {pla.name}
-                          </td>
-                          <td>
-                            {pla.dura}
-                          </td>
-                          <td>
-                            {pla.asis}
-                          </td>
-                          <td>
-                            <b>${pla.cost}</b>
-                          </td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-              ) : (
-                <div className="dt-empty">
-                  No existe información para mostrar
-                </div>
-              )
-            }
+          <div className="container-option">
           </div>
-        </div>
-      </section>
-      <section className='charts-section'>
-        <div className={"container-option"} onClick={() => handleDtAsis('open')}>
-          <span className='title-body'>
-            Asistencias
-          </span>
-        </div>
-        <div className="container-option">
-          <div className="dt-body ">
-            {
-              asisData.length >= 1 ? (
-                <table className="dt-all">
-                  <tbody>
-                    {
-                      asisData.map((asi, id) => (
-                        <tr key={id} className='asis-dt' onClick={() => handleDtAsis('open')}>
-                          <td>
-                            {asi.id}
-                          </td>
-                          <td>
-                            {asi.name}
-                          </td>
-                          <td>
-                            {handleFormatDate(asi.date)}
-                          </td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-              ) : (
-                <div className="dt-empty">
-                  No existe información para mostrar
-                </div>
-              )
-            }
+        </section>
+        <section className='charts-section loading'>
+          <div className="container-option">
           </div>
-        </div>
-      </section>
-      <section className='charts-section'>
-        <div className={"container-option"} onClick={() => handleDtPaids('open')}>
-          <span className='title-body'>
-            Pagos
-          </span>
-        </div>
-        <div className="container-option">
-          <div className="dt-body ">
-            {
-              paidsData.length >= 1 ? (
-                <table className="dt-all">
-                  <tbody>
-                    {
-                      paidsData.map((pai, id) => (
-                        <tr key={id} className='paids-dt' onClick={() => handleDtPaids('open')}>
-                          <td>
-                            {pai.id}
-                          </td>
-                          <td>
-                            {pai.name}
-                          </td>
-                          <td>
-                            {handleFormatDate(pai.date)}
-                          </td>
-                          <td>
-                            <b>${pai.amount}</b>
-                          </td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-              ) : (
-                <div className="dt-empty">
-                  No existe información para mostrar
-                </div>
-              )
-            }
+          <div className="container-option">
           </div>
-        </div>
-      </section>
-    </div>
-  )
+        </section>
+        <section className='charts-section loading'>
+          <div className="container-option">
+          </div>
+          <div className="container-option">
+          </div>
+        </section>
+        <section className='charts-section loading'>
+          <div className="container-option">
+          </div>
+          <div className="container-option">
+          </div>
+        </section>
+      </div>
+    )
+  }else{
+    return (
+      <div className='company-page'>
+        <DtPlans isActive={isDtPlan} handleActive={handleDtPlan} />
+        <DtClients isActive={isDtClient} handleActive={handleDtClient} />
+        <DtAsis isActive={isDtAsis} handleActive={handleDtAsis} />
+        <Dtpaids isActive={isDtPaids} handleActive={handleDtPaids} />
+        <section className='charts-section'>
+          <div className={"container-option"} onClick={() => handleDtClient('open')}>
+            <span className='title-body'>
+              Clientes
+            </span>
+          </div>
+          <div className="container-option" onClick={() => handleDtClient('open')}>
+            <div className="dt-body ">
+              {
+                clientData.length >= 1 ? (
+                  <table className="dt-all">
+                    <tbody>
+                      {
+                        clientData.map((cli, id) => (
+                          <tr key={id} className='clients-dt'>
+                            <td>
+                              {cli.id}
+                            </td>
+                            <td>
+                              {cli.name}
+                            </td>
+                            <td>
+                              {cli.ced}
+                            </td>
+                            <td>
+                              {cli.email}
+                            </td>
+                            <td>
+                              {cli.phone}
+                            </td>
+                            <td>
+                              {cli.address}
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="dt-empty">
+                    No existe información para mostrar
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </section>
+        <section className='charts-section'>
+          <div className={"container-option"} onClick={() => handleDtPlan('open')}>
+            <span className='title-body'>
+              Planes
+            </span>
+          </div>
+          <div className="container-option">
+            <div className="dt-body ">
+              {
+                planData.length >= 1 ? (
+                  <table className="dt-all">
+                    <tbody>
+                      {
+                        planData.map((pla, id) => (
+                          <tr key={id} className='plan-dt' onClick={() => handleDtPlan('open')}>
+                            <td>
+                              {pla.id}
+                            </td>
+                            <td>
+                              {pla.name}
+                            </td>
+                            <td>
+                              {pla.dura}
+                            </td>
+                            <td>
+                              {pla.asis}
+                            </td>
+                            <td>
+                              <b>${pla.cost}</b>
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="dt-empty">
+                    No existe información para mostrar
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </section>
+        <section className='charts-section'>
+          <div className={"container-option"} onClick={() => handleDtAsis('open')}>
+            <span className='title-body'>
+              Asistencias
+            </span>
+          </div>
+          <div className="container-option">
+            <div className="dt-body ">
+              {
+                asisData.length >= 1 ? (
+                  <table className="dt-all">
+                    <tbody>
+                      {
+                        asisData.map((asi, id) => (
+                          <tr key={id} className='asis-dt' onClick={() => handleDtAsis('open')}>
+                            <td>
+                              {asi.id}
+                            </td>
+                            <td>
+                              {asi.name}
+                            </td>
+                            <td>
+                              {handleFormatDate(asi.date)}
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="dt-empty">
+                    No existe información para mostrar
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </section>
+        <section className='charts-section'>
+          <div className={"container-option"} onClick={() => handleDtPaids('open')}>
+            <span className='title-body'>
+              Pagos
+            </span>
+          </div>
+          <div className="container-option">
+            <div className="dt-body ">
+              {
+                paidsData.length >= 1 ? (
+                  <table className="dt-all">
+                    <tbody>
+                      {
+                        paidsData.map((pai, id) => (
+                          <tr key={id} className='paids-dt' onClick={() => handleDtPaids('open')}>
+                            <td>
+                              {pai.id}
+                            </td>
+                            <td>
+                              {pai.name}
+                            </td>
+                            <td>
+                              {handleFormatDate(pai.date)}
+                            </td>
+                            <td>
+                              <b>${pai.amount}</b>
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="dt-empty">
+                    No existe información para mostrar
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
 }
 
 export default Company
