@@ -628,7 +628,7 @@ const DtClients = ({ isActive, handleActive }) => {
     return (
         <>
             <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow} />
-            <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} full={true} />
+            <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose}/>
             <div className={isActive ? 'screen-overlay active' : 'screen-overlay'}>
                 <div className="overlay-work">
                     <div className="close-overlay">
@@ -782,25 +782,25 @@ const DtClients = ({ isActive, handleActive }) => {
                                             <div className="cols">
                                                 <div className="col">
                                                     <div className="input-form">
-                                                        <label>Cédula</label>
+                                                        <div>Cédula</div>
                                                         <input type="text" name="ced" placeholder='9999999999' value={newClient.ced} onChange={handleNewClient} autoComplete='off' />
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Nombre</label>
+                                                        <div>Nombre</div>
                                                         <input type="text" name="name" placeholder='Cliente' value={newClient.name} onChange={handleNewClient} autoComplete='off' />
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Email</label>
+                                                        <div>Email</div>
                                                         <input type="text" name="email" placeholder='cliente@email.com' value={newClient.email} onChange={handleNewClient} autoComplete='off' />
                                                     </div>
                                                 </div>
                                                 <div className="col">
                                                     <div className="input-form">
-                                                        <label>Teléfono</label>
+                                                        <div>Teléfono</div>
                                                         <input type="text" name="phone" placeholder='0999999999' value={newClient.phone} onChange={handleNewClient} autoComplete='off' />
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Dirección</label>
+                                                        <div>Dirección</div>
                                                         <input type="text" name="address" placeholder='Av...' value={newClient.address} onChange={handleNewClient} autoComplete='off' />
                                                     </div>
                                                 </div>
@@ -821,7 +821,7 @@ const DtClients = ({ isActive, handleActive }) => {
                                             <div className="cols">
                                                 <div className="col">
                                                     <div className="input-form">
-                                                        <label>Plan</label>
+                                                        <div>Plan</div>
                                                         <select onChange={handlePlan} value={planSel.id}>
                                                             <option value='0'>
                                                                 Seleccionar
@@ -836,21 +836,21 @@ const DtClients = ({ isActive, handleActive }) => {
                                                         </select>
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Inicio</label>
+                                                        <div>Inicio</div>
                                                         <input type="date" value={startDate} onChange={handleStartDate} />
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Duración</label>
+                                                        <div>Duración</div>
                                                         <input type="number" value={durationPlan} onChange={(e) => setDurationPlan(e.target.value)} placeholder='0'/>
                                                     </div>
                                                 </div>
                                                 <div className="col">
                                                     <div className="input-form">
-                                                        <label>No. Asis</label>
+                                                        <div>No. Asis</div>
                                                         <input type="number" value={asisPlan} onChange={(e) => setAsisPlan(e.target.value)} placeholder='0'/>
                                                     </div>
                                                     <div className="input-form">
-                                                        <label>Fin</label>
+                                                        <div>Fin</div>
                                                         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                                                     </div>
                                                 </div>
