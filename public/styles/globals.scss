@@ -1264,11 +1264,11 @@ input, select {
             }
         }
         .body{
-            color: $text-color-bg-light !important;
-            padding: 20px;
+            color: $text-color-bg-light;
             border-radius: 20px;
             &.light{
-                color: $text-color-light !important;
+                padding: 20px;
+                color: $text-color-light;
                 background-color: $-color-white;
             }
         }
@@ -2033,6 +2033,29 @@ input, select {
     }
 
     /* Business Page Company */
+    .screen-overlay{
+        .overlay-work{
+            .dashboard{
+                .body{
+                    &.light{
+                        color: $text-color-bg-light;
+                        padding: 0;
+                        background-color:   $-color-black;
+                    }
+                    .form-dt{
+                        .header-form{
+                            border-bottom: solid 1px $-color-white;
+                        }
+                        .submit{
+                            button{
+                                border: solid 2px $-color-white;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     .form-dt{
         .cols{
             flex-direction: column;
@@ -2041,7 +2064,17 @@ input, select {
                 width: 100%;
                 .input-form{
                     div{
+                        border-right: solid 3px $-color-white;
                         font-size: 12px;
+                    }
+                    input, select{
+                        background-color: transparent;
+                        border-bottom: solid 1px $-color-black;
+                        font-weight: 700;
+                        filter: invert(1);
+                        option{
+                            color: $-color-black;
+                        }
                     }
                 }
             }

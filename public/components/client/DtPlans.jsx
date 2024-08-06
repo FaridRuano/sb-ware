@@ -537,21 +537,21 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                     <div className="cols">
                                                         <div className="col">
                                                             <div className="input-form sm">
-                                                                <label>Nombre</label>
+                                                                <div>Nombre</div>
                                                                 <input type="text" name="name" placeholder='Plan #1' value={newPlan.name} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                             <div className="input-form sm">
-                                                                <label>Duración</label>
+                                                                <div>Duración</div>
                                                                 <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                         <div className="col">
                                                             <div className="input-form sm">
-                                                                <label>Asistencias</label>
+                                                                <div>Asistencias</div>
                                                                 <input type="text" name="asis" placeholder='30' value={newPlan.asis} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                             <div className="input-form sm">
-                                                                <label>Costo</label>
+                                                                <div>Costo</div>
                                                                 <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
@@ -572,21 +572,21 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                     <div className="cols">
                                                         <div className="col">
                                                             <div className="input-form sm">
-                                                                <label>Nombre</label>
+                                                                <div>Nombre</div>
                                                                 <input type="text" name="name" placeholder='Plan #1' value={newPlan.name} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                             <div className="input-form sm">
-                                                                <label>Duración</label>
+                                                                <div>Duración</div>
                                                                 <input type="text" name="dura" placeholder='Dias' value={newPlan.dura} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
                                                         <div className="col">
                                                             <div className="input-form sm">
-                                                                <label>Asistencias</label>
+                                                                <div>Asistencias</div>
                                                                 <input type="text" name="asis" placeholder='30' value={newPlan.asis} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                             <div className="input-form sm">
-                                                                <label>Costo</label>
+                                                                <div>Costo</div>
                                                                 <input type="text" name="cost" placeholder='$10.00' value={newPlan.cost} onChange={handleNewPlan} autoComplete='off' />
                                                             </div>
                                                         </div>
