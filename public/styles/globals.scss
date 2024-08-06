@@ -1619,6 +1619,7 @@ input, select {
                     border-bottom: solid 1px $gray-dark-color-light;
                     padding-left: 10px;
                     padding-bottom: 4px;
+                    border-radius: 0;
                     color: $text-color-light;
                 }
                 input:disabled{
