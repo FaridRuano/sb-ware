@@ -2045,6 +2045,35 @@ input, select {
                         background-color:   $-color-black;
                     }
                     .form-dt{
+                        .cols{
+                            flex-direction: column;
+                            gap: .5rem;
+                            .col{
+                                width: 100%;
+                                .input-form{
+                                    width: 100%;
+                                    div{
+                                        border-right: solid 3px $-color-white;
+                                        font-size: 14px;
+                                        font-weight: 600;
+                                        width: 110px;
+                                        
+                                    }
+                                    input, select{
+                                        font-size: 15px;
+                                        width: 100%;
+                                        max-width: none;
+                                        background-color: transparent;
+                                        border-bottom: solid 1px $-color-black;
+                                        font-weight: 700;
+                                        filter: invert(1);
+                                        option{
+                                            color: $-color-black;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         .header-form{
                             border-bottom: solid 1px $-color-white;
                         }
@@ -2052,34 +2081,6 @@ input, select {
                             button{
                                 border: solid 2px $-color-white;
                             }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    .form-dt{
-        .cols{
-            flex-direction: column;
-            gap: .5rem;
-            .col{
-                width: 100%;
-                .input-form{
-                    width: 100%;
-                    div{
-                        border-right: solid 3px $-color-white;
-                        font-size: 12px;
-                        
-                    }
-                    input, select{
-                        width: 100%;
-                        max-width: none;
-                        background-color: transparent;
-                        border-bottom: solid 1px $-color-black;
-                        font-weight: 700;
-                        filter: invert(1);
-                        option{
-                            color: $-color-black;
                         }
                     }
                 }
@@ -2136,6 +2137,11 @@ input, select {
         }
     }
 
+    /* Config Page */
+    .business-dashboard{
+        width: 100%;
+        padding: 0;
+    }
 }
 
 @media (max-width: 800px) {
@@ -2368,6 +2374,15 @@ input, select {
         .business-btns{
             .business-btn{
                 border-radius: 10px;
+            }
+        }
+    }
+
+    .business-dashboard{
+        .form-config{
+            .form-body{
+                padding: 20px 5px;
+                margin: auto;
             }
         }
     }
