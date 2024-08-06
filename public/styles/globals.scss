@@ -2035,6 +2035,8 @@ input, select {
     /* Business Page Company */
     .screen-overlay{
         .overlay-work{
+            padding: 40px 20px;
+            width: calc(95% - 40px);
             .dashboard{
                 .body{
                     &.light{
@@ -2063,11 +2065,15 @@ input, select {
             .col{
                 width: 100%;
                 .input-form{
+                    width: 100%;
                     div{
                         border-right: solid 3px $-color-white;
                         font-size: 12px;
+                        
                     }
                     input, select{
+                        width: 100%;
+                        max-width: none;
                         background-color: transparent;
                         border-bottom: solid 1px $-color-black;
                         font-weight: 700;
