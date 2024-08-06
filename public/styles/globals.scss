@@ -38,6 +38,10 @@ ul, h1, p{
     padding: 0;
 }
 
+a{
+    text-decoration: none;
+}
+
 li{
     margin: 0;
     list-style: none;
@@ -82,7 +86,6 @@ input, select {
     justify-content: space-between;
     height: 80px;
     align-items: center;
-    border-bottom: solid 1px $text-color-light;
     transition: 1s all ease-out;
     .items-wrap{
         display: flex;
@@ -1607,6 +1610,10 @@ input, select {
                     font-size: 15px;
                     font-weight: 200;
                     color: $gray-color-light;
+                    border-right: solid 2px $-color-black;
+                    &.edit{
+                        border-right: solid 2px $primary-color-light;
+                    }
                 }
                 input{
                     width: calc(80% - .5rem);
@@ -1615,7 +1622,6 @@ input, select {
                     background-color: $-color-white;
                     font-size: 15px;
                     font-weight: 600;
-                    border-left: solid 2px $primary-color-light;
                     border-bottom: solid 1px $gray-dark-color-light;
                     padding-left: 10px;
                     padding-bottom: 4px;
@@ -1624,7 +1630,6 @@ input, select {
                 }
                 input:disabled{
                     color: $gray-dark-color-light;
-                    border-left: solid 2px $-color-black;
                     border-bottom: solid 1px $-color-white;
                 }
             }
@@ -1688,6 +1693,74 @@ input, select {
             margin: 0;
             padding: 0;
         }
+    }
+    .plan-cf{
+       display: flex; 
+       flex-direction: row;
+       width: 100%;
+       background-color: $primary-color-light;
+       color: $text-color-light;
+       .actual-sb{
+            width: calc(100% - 40px);
+            display: flex; 
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+           .details{
+               span{
+                font-size: 12px;
+               }
+               h1{
+                font-size: 34px;
+               }
+               p{
+                font-size: 15px;
+               }
+               &.two{
+                padding: 20px;
+                background-color: $-color-white;
+                color: $text-color-light;
+                border-radius: 20px;
+                p{
+                    font-weight: 700;
+                }
+               }
+           }
+       }
+    }
+    .options-cf{
+        margin: 20px 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .update-plan{
+            cursor: pointer;
+            background-color: $secondary-color-light;
+            color: $text-color-bg-light;
+            padding: 20px;
+            transition: .3s ease-out;
+            font-weight: 700;
+            &:hover{
+                transform: scale(1.05);
+            }
+        }
+        span{
+            cursor: pointer;
+            transition: .3s ease-out;
+            &:hover{
+                color: $error-color-light;
+                text-decoration: underline;
+            }
+        }
+    }
+    .contact-cf{
+        background-color: $warning-color-light;
+        padding: 20px;
+        font-weight: 700;
+        color: $text-color-bg-light;
+        text-decoration: none;
     }
 }
 
@@ -2066,7 +2139,7 @@ input, select {
                                         max-width: none;
                                         background-color: transparent;
                                         border-bottom: solid 1px $-color-black;
-                                        font-weight: 700;
+                                        font-weight: 400;
                                         filter: invert(1);
                                         option{
                                             color: $-color-black;
@@ -2080,7 +2153,10 @@ input, select {
                         }
                         .submit{
                             button{
-                                border: solid 2px $-color-white;
+                                border: solid 1px $-color-white;
+                                &:hover{
+                                    border: none ;
+                                }
                             }
                         }
                     }
@@ -2386,7 +2462,14 @@ input, select {
                 margin: auto;
             }
         }
+        .options-cf{
+            width: 100%;
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+        }
     }
+
     
 }
 

@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <div className="main-page">
       <NavBarMain/>
-      <button onClick={toggleTheme}>Change</button>
+      {/* <button onClick={toggleTheme}>Change</button> */}
     </div>
   )
 }

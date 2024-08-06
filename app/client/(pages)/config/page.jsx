@@ -137,31 +137,31 @@ const Config = () => {
                   editInfo ? (
                     <>
                       <div className="input-config">
-                          <div>
+                          <div className='edit'>
                             Razón Social
                           </div>
                           <input type="text" placeholder='Mi empresa' name='socialName' value={editForm.socialName} onChange={handleEditForm}/>
                         </div>
                         <div className="input-config">
-                          <div>
+                          <div className='edit'>
                             RUC
                           </div>
                           <input type="text" placeholder='180039189001' name='ruc' value={editForm.ruc} onChange={handleEditForm}/>
                         </div>  
                         <div className="input-config">
-                          <div>
+                          <div className='edit'>
                             Email
                           </div>
                           <input type="text" placeholder='180039189001' name='email' value={editForm.email} onChange={handleEditForm}/>
                         </div>  
                         <div className="input-config">
-                          <div>
+                          <div className='edit'>
                             Teléfono
                           </div>
                           <input type="text" placeholder='180039189001' name='phone' value={editForm.phone} onChange={handleEditForm}/>
                         </div>  
                         <div className="input-config">
-                          <div>
+                          <div className='edit'>
                             Dirección
                           </div>
                           <input type="text" placeholder='180039189001' name='address' maxLength={100} value={editForm.address} onChange={handleEditForm}/>
@@ -241,7 +241,7 @@ const Config = () => {
           <>
             <div className="header-dt">
               <h1>
-                Factura e historial de facturación
+                Facturas e historial de facturación
               </h1>
               <p>
                 Revisa tu historial de facturación y gestiona las facturas.
@@ -326,13 +326,66 @@ const Config = () => {
       case 2:
         return (
           <>
-            Hola 3
+            <div className="header-dt">
+              <h1>
+                Mi Suscripción
+              </h1>
+              <p>
+                Puedes cancelar o expandir tu suscripción en cualquier momento.
+              </p>
+            </div>
+            <div className="plan-cf">
+              <div className="actual-sb">
+                <div className="details">
+                  <span>
+                    Vence en 24 días.
+                  </span>
+                  <h1>
+                    SB50
+                  </h1>
+                  <p>
+                    Capacidad de 50 clientes.
+                  </p>
+                </div>
+                <div className="details two">
+                  <span>
+                    Espacio Usado.
+                  </span>
+                  <h1>
+                    36
+                  </h1>
+                  <p>
+                    Clientes.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="options-cf">
+              <div className='update-plan'>
+                Expandir mi espacio
+              </div>
+              <span>
+                Cancelar mi suscripción.
+              </span>
+            </div>
           </>
         )
       case 3:
         return (
           <>
-            Hola 4
+            <div className="header-dt">
+              <h1>
+                Soporte al usuario
+              </h1>
+              <p>
+                Envía un mensaje directo para reportar errores o problemas en el sistema.
+              </p>
+            </div>
+            <a href="https://wa.me/+593996447884">
+              <div className="contact-cf">
+                Empezar Discusión
+              </div>
+            </a>
           </>
         )
     }
