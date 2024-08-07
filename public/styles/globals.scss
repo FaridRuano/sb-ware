@@ -33,6 +33,10 @@ body{
     background-color: $background-color-light;
 }
 
+.no-scroll{
+    overflow: hidden;
+}
+
 ul, h1, h2, h3, p{
     margin: 0;
     padding: 0;
@@ -541,16 +545,42 @@ input, select {
         padding: 0;
         .nav-item{
             font-weight: 400;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 16px;
             cursor: pointer;
             color: $text-color-light;
-            transition: 1s all ease-out;
-            &.btn01{
-                background-color: $text-color-light;
-                padding: 10px 20px;
-                color: $text-color-bg-light;
-                font-weight: 600;
-                border-radius: 10px;
+            transition: .3s all ease-out;
+            position: relative;
+            height: 60px;
+            &::after{
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%; /* Start the line from the center */
+                transform: translateX(-50%) scaleX(0); /* Scale the line to 0 initially */
+                transform-origin: center bottom; /* Scale from the center bottom */
+                height: 1px;
+                width: 100%;
+                background-color: $-color-black;
+                transition: transform 0.3s ease-in-out; /* Smooth transition */
+            }
+            &:hover::after {
+                transform: translateX(-50%) scaleX(1); /* Scale the line to full width on hover */
+            }
+        }
+        .btn01{
+            cursor: pointer;
+            transition: .3s all ease-out;
+            background-color: $text-color-light;
+            padding: 10px 20px;
+            color: $text-color-bg-light;
+            font-weight: 600;
+            border-radius: 10px;
+            &:hover{
+                color: $text-color-light;
+                background-color: $primary-color-light;
             }
         }
     }
@@ -562,7 +592,107 @@ input, select {
     left: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
-    transition: 1s all ease-out;
+    transition: .3s all ease-out;
+    &:hover{
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+.main-navbar-min{
+    width: calc(100% - 40px);
+    height: 50px;
+    background-color: $-color-black;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    .nav-item{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: .3s ease-out;
+        &:hover{
+            transform: scale(1.05);
+        }
+    }
+}
+
+.menu-overlay{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    background-image: url('/assets/imgs/asset-nav-bg.png');
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    transition: .5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .menu-close{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        cursor: pointer;
+        transition: .3s ease-out;
+        transform: scale(0.9);
+        &:hover{
+            transform: rotate(180deg);
+        }
+    }
+    .items-wrap{
+        .nav-item{
+            position: relative;
+            font-size: 44px;
+            font-weight: 800;
+            cursor: pointer;
+            height: 80px;
+            width: fit-content;
+            transition: .3s all ease-out;
+            padding: 0 20px;
+            &.btn01{
+                border: solid 1px $-color-black;
+                &:hover{
+                    color: $primary-color-light;
+                    background-color: $-color-black;
+                    &::after{
+                        background-color: $primary-color-light;
+                    }
+                }
+            }
+            &::after{
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%; /* Start the line from the center */
+                transform: translateX(-100%) scaleX(0); /* Scale the line to 0 initially */
+                transform-origin: center bottom; /* Scale from the center bottom */
+                height: 20px;
+                width: 100%;
+                background-color: $-color-black;
+                transition: transform 0.3s ease-in-out; /* Smooth transition */
+            }
+            &:hover::after {
+                transform: translateX(-50%) scaleX(1); /* Scale the line to full width on hover */
+            }
+        }
+    }
+    &.off{
+        transform: translateY(-100vh);
+    }
 }
 
 
@@ -2684,8 +2814,16 @@ input, select {
 @media (max-width: 800px) {
 
     /* Main Page */
+    .main-page{
+        padding: 0;
+        padding-top: 50px;
+    }
 
-    
+    .main-navbar{
+        width: calc(100% - 40px);
+        padding: 0 20px;
+    }
+
 
     /* Client Page */
     .tool-bar{

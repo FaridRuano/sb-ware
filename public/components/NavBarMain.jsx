@@ -1,47 +1,124 @@
+'use client'
 import LogoNavBar from "@public/assets/icons/logo-navbar.png"
 import LogoNavBarDark from "@public/assets/icons/logo-navbar-dark.png"
+import Menu from "@public/assets/icons/menu-icon.png"
+import LogIn from "@public/assets/icons/login-icon.png"
+import Close from "@public/assets/icons/del-icon-big.png"
 import { useTheme } from "@context/ThemeContext"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+
+const useWindowSize = () => {
+    const [windowSize, setWindowSize] = useState({
+      width: undefined,
+      height: undefined,
+    })
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        })
+      }
+  
+      window.addEventListener('resize', handleResize)
+      handleResize()
+      return () => window.removeEventListener('resize', handleResize)
+    }, [])
+  
+    return windowSize
+}
 
 const NavBarMain = () => {
+
     const router = useRouter()
 
     const {isDarkMode} = useTheme()
 
-    
+    const size = useWindowSize()
 
-  return (
-    <>
-        <div className="logo-navbar">
-            {
-                isDarkMode ? (
-                    <Image src={LogoNavBarDark} height={40} width={'auto'} alt="Logo"/>    
-                ):(
-                    <Image src={LogoNavBar} height={40} width={'auto'} alt="Logo"/>    
-                )
-            }
-        </div>
-        <nav className="main-navbar">
-            <ul className="items-wrap">
-                <li className="nav-item">
-                    Precios
-                </li>
-                <li className="nav-item">
-                    Contáctate
-                </li>
-            </ul>
-            <ul className="items-wrap">
-                <li className="nav-item">
-                    Crear Cuenta
-                </li>
-                <li className="btn01 nav-item" onClick={()=>router.push('/client')}>
-                    Ingresar
-                </li>
-            </ul>
-        </nav>
-    </>
-  )
+    const [menu, setMenu] = useState(false)
+
+    useEffect(() => {
+        if (menu) {
+          document.body.classList.add('no-scroll')
+        } else {
+          document.body.classList.remove('no-scroll')
+        }
+    }, [menu])
+
+    if(size.width > 800){
+        return (
+            <>
+                <div className="logo-navbar">
+                    {
+                        isDarkMode ? (
+                            <Image src={LogoNavBarDark} height={40} width={'auto'} alt="Logo"/>    
+                        ):(
+                            <Image src={LogoNavBar} height={40} width={'auto'} alt="Logo"/>    
+                        )
+                    }
+                </div>
+                <nav className="main-navbar">
+                    <ul className="items-wrap">
+                        <li className="nav-item">
+                            Precios
+                        </li>
+                        <li className="nav-item">
+                            Contáctate
+                        </li>
+                    </ul>
+                    <ul className="items-wrap">
+                        <li className="nav-item">
+                            Crear Cuenta
+                        </li>
+                        <li className="btn01" onClick={()=>router.push('/client')}>
+                            Ingresar
+                        </li>
+                    </ul>
+                </nav>
+            </>
+          )
+    }else{
+        return(
+            <>
+                <div className="main-navbar-min">
+                    <div className="nav-item" onClick={()=>setMenu(true)}>
+                        <Image src={Menu} width={25} height={'auto'} alt="Menu"/>
+                    </div>
+                    <div className="nav-item">
+                        <Image src={LogoNavBarDark} width={'auto'} height={30} alt="Sb Ware"/>
+                    </div>
+                    <div className="nav-item">
+                        <Image src={LogIn} width={20} height={'auto'} alt="LogIn" onClick={()=>router.push('/client')}/>
+                    </div>
+                </div>
+                <div className={menu ? "menu-overlay" : "menu-overlay off"}>
+                    <div className="menu-close" onClick={()=>setMenu(false)}>
+                        <Image src={Close} width={35} height={'auto'} alt="Close"/>
+                    </div>
+                    <ul className="items-wrap">
+                        <li className="nav-item">
+                            Precios
+                        </li>
+                        <li className="nav-item">
+                            Contáctate
+                        </li>
+                        <li className="nav-item">
+                            Crear Cuenta
+                        </li>
+                        <li className="nav-item btn01" onClick={()=>router.push('/client')}>
+                            Ingresar
+                        </li>
+                    </ul>
+                </div>
+            </>
+        )
+    }
+
+  
 }
 
 export default NavBarMain
