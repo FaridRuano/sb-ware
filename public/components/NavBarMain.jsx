@@ -25,13 +25,10 @@ const NavBarMain = () => {
         <nav className="main-navbar">
             <ul className="items-wrap">
                 <li className="nav-item">
-                    Software
-                </li>
-                <li className="nav-item">
                     Precios
                 </li>
                 <li className="nav-item">
-                    Contactate
+                    Contáctate
                 </li>
             </ul>
             <ul className="items-wrap">

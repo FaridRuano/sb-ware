@@ -381,7 +381,7 @@ const Config = () => {
                 Envía un mensaje directo para reportar errores o problemas en el sistema.
               </p>
             </div>
-            <a href="https://wa.me/+593996447884">
+            <a href="https://wa.me/+593996447884" target="_blank">
               <div className="contact-cf">
                 Empezar Discusión
               </div>
