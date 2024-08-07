@@ -40,8 +40,11 @@ const Home = () => {
           </div>
           <div className="body">
             <p>
-              Tu solución ideal para el control y gestión de pequeñas empresas
-              <br/>que cumplan con el modelo basado en suscripción.
+              Descubre la solución perfecta diseñada especialmente para adaptarse a un modelo basado en suscripción.
+              <br/>
+              <b>
+                ¡Transforma tu negocio y lleva la eficiencia al siguiente nivel con nuestra innovadora plataforma!
+              </b>
             </p>
           </div>
         </div>
@@ -63,7 +66,7 @@ const Home = () => {
               40%
             </span>
             <p>
-              Aumento en la retención de clientes.
+              Aumento en la optimización de la empresa.
             </p>
           </div>
           <div className="statistic">
@@ -71,7 +74,7 @@ const Home = () => {
               25%
             </span>
             <p>
-              Aumento en la retención de clientes.
+              Aumento en ganancias en el primer año.
             </p>
           </div>
         </div>
@@ -192,7 +195,7 @@ const Home = () => {
               <div className="price">
                 {
                   isSwitch ? (
-                    <span>$12.99</span>
+                    <span>$12.90</span>
                   ) : (
                     <span>$144</span>
                   )
@@ -230,7 +233,7 @@ const Home = () => {
               <div className="price">
                 {
                   isSwitch ? (
-                    <span>$23.99</span>
+                    <span>$23.90</span>
                   ) : (
                     <span>$276</span>
                   )
@@ -271,7 +274,7 @@ const Home = () => {
               <div className="price">
                 {
                   isSwitch ? (
-                    <span>$32.99</span>
+                    <span>$32.90</span>
                   ) : (
                     <span>$384</span>
                   )

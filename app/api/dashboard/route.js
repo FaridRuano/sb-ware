@@ -9,19 +9,30 @@ export async function GET() {
     await connectMongoDB();
     let clients = await Client.find();
 
-    // Ordena los clientes por la fecha más reciente en su array de payments
-    clients = clients.sort((a, b) => {
-        const dateA = new Date(Math.max(...a.payments.map(payment => new Date(payment.date))));
-        const dateB = new Date(Math.max(...b.payments.map(payment => new Date(payment.date))));
-        return dateB - dateA;
-    }).slice(0, 4);
+    // Extraer todos los pagos de todos los clientes
+    let allPayments = [];
+    clients.forEach(client => {
+        client.payments.forEach(payment => {
+            allPayments.push({
+                clientId: client.id,
+                clientName: client.name,
+                clientPlan: client.plan[0].name,
+                paymentDate: new Date(payment.date),
+                paymentAmount: payment.amount
+            });
+        });
+    });
 
-    const recentPays = clients.map(client => ({
-        id: client.id,  // Asegúrate de usar el campo correcto para el ID, por ejemplo, _id si estás usando MongoDB
-        name: client.name,
-        date:new Date(Math.max(...client.attent.map(att => new Date(att)))),
-        plan: client.plan[0].name,  // Extrae solo el campo 'name' de cada plan
-        amount: client.payments.reduce((sum, payment) => sum + payment.amount, 0)
+    // Ordenar los pagos por la fecha más reciente y limitar a 4 pagos
+    allPayments = allPayments.sort((a, b) => b.paymentDate - a.paymentDate).slice(0, 4);
+
+    // Crear recentPays basado en los pagos más recientes
+    const recentPays = allPayments.map(payment => ({
+        id: payment.clientId,
+        name: payment.clientName,
+        date: payment.paymentDate,
+        plan: payment.clientPlan,
+        amount: payment.paymentAmount
     }));
 
     const recentClientsSortedById = clients.slice(0, 3).sort((a, b) => b.id - a.id);
