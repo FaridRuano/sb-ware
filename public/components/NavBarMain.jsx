@@ -8,6 +8,7 @@ import { useTheme } from "@context/ThemeContext"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import Script from "next/script"
 
 const useWindowSize = () => {
     const [windowSize, setWindowSize] = useState({
@@ -52,21 +53,22 @@ const NavBarMain = () => {
     if(size.width > 800){
         return (
             <>
+                <Script src="/utils/scrollSection.js"/>
                 <div className="logo-navbar">
                     {
                         isDarkMode ? (
-                            <Image src={LogoNavBarDark} height={40} width={'auto'} alt="Logo"/>    
+                            <Image src={LogoNavBarDark} height={40} width={'auto'} alt="Logo" onClick={()=>scrollToSection('main')}/>    
                         ):(
-                            <Image src={LogoNavBar} height={40} width={'auto'} alt="Logo"/>    
+                            <Image src={LogoNavBar} height={40} width={'auto'} alt="Logo" onClick={()=>scrollToSection('main')}/>    
                         )
                     }
                 </div>
                 <nav className="main-navbar">
                     <ul className="items-wrap">
-                        <li className="nav-item">
+                        <li className="nav-item" onClick={()=>scrollToSection('prices')}>
                             Precios
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item" onClick={()=>scrollToSection('contact')}>
                             Contáctate
                         </li>
                     </ul>
@@ -84,12 +86,13 @@ const NavBarMain = () => {
     }else{
         return(
             <>
+                <Script src="/utils/scrollSection.js"/>
                 <div className="main-navbar-min">
                     <div className="nav-item" onClick={()=>setMenu(true)}>
                         <Image src={Menu} width={25} height={'auto'} alt="Menu"/>
                     </div>
                     <div className="nav-item">
-                        <Image src={LogoNavBarDark} width={'auto'} height={30} alt="Sb Ware"/>
+                        <Image src={LogoNavBarDark} width={'auto'} height={30} alt="Sb Ware" onClick={()=>scrollToSection('main')}/>
                     </div>
                     <div className="nav-item">
                         <Image src={LogIn} width={20} height={'auto'} alt="LogIn" onClick={()=>router.push('/client')}/>
@@ -100,10 +103,16 @@ const NavBarMain = () => {
                         <Image src={Close} width={35} height={'auto'} alt="Close"/>
                     </div>
                     <ul className="items-wrap">
-                        <li className="nav-item">
+                        <li className="nav-item" onClick={()=>{
+                            scrollToSection('prices')   
+                            setMenu(false)
+                        }}>
                             Precios
                         </li>
-                        <li className="nav-item">
+                        <li className="nav-item" onClick={()=>{
+                            scrollToSection('contact')   
+                            setMenu(false)
+                        }}>
                             Contáctate
                         </li>
                         <li className="nav-item">

@@ -13,6 +13,7 @@ import Asset6 from "@public/assets/imgs/screen-company.png"
 import Asset7 from "@public/assets/imgs/screen-dash-pc.png"
 import IdeeLogo from "@public/assets/icons/idee-logo.png"
 import { useState } from "react"
+import Script from "next/script"
 
 const Home = () => {
   const {isDarkMode, toggleTheme} = useTheme()
@@ -27,8 +28,9 @@ const Home = () => {
 
   return (
     <div className="main-page">
+      <Script src='@public/utils/scrollAnim.js'/>
       <NavBarMain/>
-      <section className="main-first">
+      <section className="main-first" id='main'>
         <div className="text-warp">
           <div className="header">
             <h1>
@@ -173,7 +175,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="main-fifth">
+      <section className="main-fifth" id='prices'>
         <div className="warp">
           <div className="title">
             Descubre <b>todos</b> nuestros <span><b>planes</b></span>
@@ -311,7 +313,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <div className="main-sixth">
+      <div className="main-sixth" id='contact'>
         <div className="warp">
           <div className="contact">
             <span>Buscas algo más personalizado?</span>
