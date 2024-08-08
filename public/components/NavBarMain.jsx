@@ -76,7 +76,7 @@ const NavBarMain = () => {
                         <li className="nav-item">
                             Crear Cuenta
                         </li>
-                        <li className="btn01" onClick={()=>router.push('/client')}>
+                        <li className="btn01" onClick={()=>router.push('/login')}>
                             Ingresar
                         </li>
                     </ul>
@@ -118,7 +118,7 @@ const NavBarMain = () => {
                         <li className="nav-item">
                             Crear Cuenta
                         </li>
-                        <li className="nav-item btn01" onClick={()=>router.push('/client')}>
+                        <li className="nav-item btn01" onClick={()=>router.push('/login')}>
                             Ingresar
                         </li>
                     </ul>
