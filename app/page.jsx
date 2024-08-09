@@ -20,11 +20,7 @@ const Home = () => {
 
   /* Switch Button */
 
-  const [isSwitch, setSwitch] = useState(false)
-
-  const handleSwitch = () => {
-    setSwitch(current => !current)
-  }
+  const [isSwitch, setSwitch] = useState(true)
 
   return (
     <div className="main-page">
@@ -271,7 +267,7 @@ const Home = () => {
             </div>
             <div className="plan lv">
               <div className="name">
-                SB40
+                SB360
               </div>
               <div className="price">
                 {

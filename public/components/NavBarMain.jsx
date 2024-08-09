@@ -104,6 +104,12 @@ const NavBarMain = () => {
                     </div>
                     <ul className="items-wrap">
                         <li className="nav-item" onClick={()=>{
+                            scrollToSection('main')   
+                            setMenu(false)
+                        }}>
+                            Inicio
+                        </li>
+                        <li className="nav-item" onClick={()=>{
                             scrollToSection('prices')   
                             setMenu(false)
                         }}>
