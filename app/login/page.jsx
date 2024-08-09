@@ -1,12 +1,31 @@
+'use client'
+
 import Image from "next/image";
 import Google from "@public/assets/icons/google-logo.png"
+import Google2 from "@public/assets/icons/google-logo2.png"
 import ArrowLeft from "@public/assets/icons/arrow-left.png"
+import CheckBox from "@public/components/shared/CheckBox";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+
+  /* Routes */
+
+  const router = useRouter()
+2
+  /* Login Form */
+
+  const [isChecked, setChecked] = useState(false)
+
+  const handleCheck = () => {
+    setChecked(current => !current)
+  }
+
   return (
     <div className="login-page">
       <div className="page-warp">
-        <div className="return-btn">
+        <div className="return-btn" onClick={()=>router.push('/')}>
           <div className="icon">
             <Image src={ArrowLeft} width={18} height={'auto'} alt="Arrow"/>
           </div>
@@ -34,7 +53,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="login-body">
-            <form action="submit">
+            <form>
               <div className="input-login">
                 <div>
                   Email
@@ -45,18 +64,15 @@ export default function LoginPage() {
                 <div>
                   Contraseña
                 </div>
-                <input type="text" />
+                <input type="password" />
               </div>
               <div className="check-login">
+                <CheckBox checked={isChecked} onChange={handleCheck}/>
                 <div>
                   Recordar mis datos
                 </div>
-                <input type="checkbox" />
               </div>
               <div className="submit-login">
-                <div>
-                  Ingresar
-                </div>
                 <button type="submit">
                   Ingresar
                 </button>
@@ -72,7 +88,8 @@ export default function LoginPage() {
             <div className="login-options">
               <div className="google-btn">
                 <div className="icon">
-                  <Image src={Google} width={30} height={'auto'} alt="Google"/>
+                  <Image className="o" src={Google} width={20} height={'auto'} alt="Google"/>
+                  <Image className="i" src={Google2} width={20} height={'auto'} alt="Google"/>
                 </div>
                 <div className="text">
                   Ingresar con Cuenta Google

@@ -95,7 +95,7 @@ const NavBarMain = () => {
                         <Image src={LogoNavBarDark} width={'auto'} height={30} alt="Sb Ware" onClick={()=>scrollToSection('main')}/>
                     </div>
                     <div className="nav-item">
-                        <Image src={LogIn} width={20} height={'auto'} alt="LogIn" onClick={()=>router.push('/client')}/>
+                        <Image src={LogIn} width={20} height={'auto'} alt="LogIn" onClick={()=>router.push('/login')}/>
                     </div>
                 </div>
                 <div className={menu ? "menu-overlay" : "menu-overlay off"}>
