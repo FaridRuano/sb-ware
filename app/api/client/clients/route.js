@@ -1,63 +1,50 @@
 import connectMongoDB from "@libs/mongodb"
 import Client from "@models/clientModel"
-import Plan from "@models/planModel"
-import { NextRequest, NextResponse } from "next/server"
+import mongoose from "mongoose"
+import { NextResponse } from "next/server"
 
 export async function POST(request) {
-    const { ced, name, plan, asis, debt, email, phone, address, payments, atten } = await request.json()
+    const { ced, name, email, phone, address, plan, user } = await request.json()
     await connectMongoDB()
 
-    const highestIdClient = await Client.findOne().sort({ id: -1 }).exec();
+    const highestIdClient = await Client.findOne().sort({ id: -1 }).exec()
     const newId = highestIdClient ? highestIdClient.id + 1 : 1
 
-    await Client.create({ ced, name, plan, asis, debt, id: newId, email, phone, address, payments, atten })
+    await Client.create({ id: newId, ced, name, email, phone, address, plan: plan, payments: null, attent: null, user })
     return NextResponse.json({ message: "Data created" }, { status: 200 })
 }
 
-// export async function GET() {
-//     await connectMongoDB()
-//     // const clients = await Client.find()
-//     // return NextResponse.json({clients})
-//     const clients = await Client.find();
-//     const plans = await Plan.find();
-
-//     // Crear un diccionario para una búsqueda rápida de planes por ID
-//     const planDict = {};
-//     plans.forEach(plan => {
-//         planDict[plan.id] = plan.name;
-//     });
-
-//     // Mapear clientes para reemplazar el campo 'plan' con el nombre del plan
-//     const clientsWithPlanNames = clients.map(client => {
-//         return {
-//             ...client._doc,
-//             plan: planDict[client.plan] || client.plan // Si no se encuentra el plan, dejar el ID
-//         };
-//     });
-
-//     return NextResponse.json({ clients: clientsWithPlanNames });
-// }
-export async function GET() {
+export async function GET(request) {
     await connectMongoDB()
-    const clients = await Client.find()
+
+    const url = request.nextUrl
+    const email = url.searchParams.get('email')
+
+    if (!email) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const clients = await Client.find({ user: email })
     return NextResponse.json({ clients })
 }
 
 export async function DELETE(request) {
-    const { id } = await request.json();
-    await connectMongoDB();
-    const result = await Client.findOneAndDelete({ id: id });
+    const { id } = await request.json()
+    await connectMongoDB()
+
+    const result = await Client.findOneAndDelete({ id: id })
+
     if (result) {
-        return NextResponse.json({ message: "Client deleted successfully" }, { status: 200 });
+        return NextResponse.json({ message: "Client deleted successfully" }, { status: 200 })
     } else {
-        return NextResponse.json({ message: "Client not found" }, { status: 404 });
+        return NextResponse.json({ message: "Client not found" }, { status: 404 })
     }
 }
 
 
 export async function PUT(request) {
     const { action, id, data } = await request.json();
-    console.log(action)
+    
     await connectMongoDB();
 
     if (action === 'renew') {
@@ -68,7 +55,7 @@ export async function PUT(request) {
         }
 
         const lastPlan = client.plan[client.plan.length - 1];
-        const debt = client.debt
+        const deud = client.deud
         if (!lastPlan || !lastPlan.dura) {
             return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
         }
@@ -89,7 +76,7 @@ export async function PUT(request) {
                 //ini: newIni,
                 //end: newEnd,
                 asis: lastPlan.asis,
-                debt: debt + lastPlan.cost,
+                deud: deud + lastPlan.cost,
                 $set: updateQuery,
             },
             { new: true }
@@ -98,42 +85,69 @@ export async function PUT(request) {
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 
     } else if (action === 'registerPayment') {
-        const client = await Client.findOne({ id: id });
+
+        const client = await Client.findOne({ _id: id });
 
         if (!client) {
-            return NextResponse.json({ message: "Client not found" }, { status: 404 });
+            return NextResponse.json({ message: "Client not found" }, { status: 404 })
         }
 
-        // Actualizar el saldo (debt) del cliente y obtener el cliente actualizado
+
+        await Client.updateOne(
+            { _id: id, payments: null },
+            { 
+                $set: { payments: []},
+            },
+        )
+
+        const currentdeud = client.plan.deud.valueOf();
+
+        const decrementedValue = currentdeud - data.amount;
+
         const updatedClient = await Client.findOneAndUpdate(
-            { id: id },
+            { _id: id },
             {
-                $inc: { debt: -data[0] }, // Decrementar la deuda
-                $push: { payments: { amount: data[0], date: data[1] } } // Agregar nuevo pago al array
+                $set: { "plan.deud": new mongoose.Types.Double(decrementedValue) },
+                $push: { payments: { amount: data.amount, date: data.date } }
             },
             { new: true }
-        );
-        return NextResponse.json({ message: "Data created" }, { status: 200 })
+        )
+
+        if (updatedClient) {
+            return NextResponse.json({ message: "Attendance registered successfully", client }, { status: 200 })
+        } else {
+            return NextResponse.json({ message: "Client not found" }, { status: 404 })
+        }
 
     } else if (action === 'registerAttendance') {
 
-        const client = await Client.findOneAndUpdate(
-            { id: id },
-            {
-                $push: { attent: data },
-                $inc: { asis: -1 },
-            },
-            { new: true }
+        const client = await Client.findOne({ _id: id })
+
+        if (!client) {
+            return NextResponse.json({ message: "Client not found" }, { status: 404 })
+        }
+
+        await Client.updateOne(
+            { _id: id, attent: null },
+            { $set: { attent: [] } }
         );
 
-        if (client) {
+        const updatedClient = await Client.findOneAndUpdate(
+            { _id: id },
+            {
+                $push: { attent: data },
+                $inc: { "plan.asis": -1 },
+            },
+            { new: true }
+        )
+
+        if (updatedClient) {
             return NextResponse.json({ message: "Attendance registered successfully", client }, { status: 200 });
         } else {
             return NextResponse.json({ message: "Client not found" }, { status: 404 });
         }
 
-    }
-    else if (action === 'change') {
+    }else if (action === 'change') {
         const client = await Client.findOne({ id: id });
         if (!client) {
             return NextResponse.json({ message: "Client not found" }, { status: 404 });
@@ -143,7 +157,7 @@ export async function PUT(request) {
         const plan = data[0]
         console.log(plan)
         //const date = data[1]
-        const debt = client.debt
+        const deud = client.deud
         // if (!lastPlan || !lastPlan.duration) {
         //     return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
         // }
@@ -165,7 +179,7 @@ export async function PUT(request) {
                 //ini: newIni,
                 //end: newEnd,
                 asis: plan.asis,
-                debt: debt + plan.cost,
+                deud: deud + plan.cost,
                 plan: plan,
                 //$set: updateQuery,
             },
@@ -180,26 +194,22 @@ export async function PUT(request) {
         );
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 
-    }
-    else if (action === "update") {
-        // Actualizar el plan 
-        console.log(data.name)
-        const updatedPlan = await Client.findOneAndUpdate(
+    }else if (action === "update") {
+
+        await Client.findOneAndUpdate(
             { id: id },
             {
-                ced: data[0].ced,
-                name: data[0].name,
-                plan: data[0].plan,
-                asis: data[0].asisPlan,
-                debt: data[0].durationPlan,
-                email: data[0].email,
-                phone: data[0].phone,
-                address: data[0].address,
+                ced: data.ced,
+                name: data.name,
+                plan: data.plan,
+                asis: data.asisPlan,
+                deud: data.durationPlan,
+                email: data.email,
+                phone: data.phone,
+                address: data.address,
             },
             { new: true }
         );
-
-        
 
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 

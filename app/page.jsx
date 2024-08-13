@@ -14,9 +14,17 @@ import Asset7 from "@public/assets/imgs/screen-dash-pc.png"
 import IdeeLogo from "@public/assets/icons/idee-logo.png"
 import { useState } from "react"
 import Script from "next/script"
+import { useRouter } from "next/navigation"
 
 const Home = () => {
+
+  /* Mode */
+
   const {isDarkMode, toggleTheme} = useTheme()
+
+  /* Router */
+
+  const router = useRouter()
 
   /* Switch Button */
 
@@ -24,7 +32,6 @@ const Home = () => {
 
   return (
     <div className="main-page">
-      <Script src='@public/utils/scrollAnim.js'/>
       <NavBarMain/>
       <section className="main-first" id='main'>
         <div className="text-warp">
@@ -161,7 +168,7 @@ const Home = () => {
             Disponible en <b>todos</b> tus <span><b>dispositivos</b></span>
           </div>
           <div className="body">
-            <div className="bigbtn">
+            <div className="bigbtn" onClick={()=>router.push('/login')}>
               Ingresa
             </div>
             <div className="text">
@@ -358,6 +365,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <Script src='@public/utils/scrollAnim.js'/>
       {/* <button onClick={toggleTheme}>Change</button> */}
     </div>
   )

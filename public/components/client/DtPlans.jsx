@@ -8,31 +8,38 @@ import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
-const mongoPlanData = async () => {
-    try {
-        const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/plan`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
 
-        if (!res.ok) {
-            throw new Error("Failed")
+const mongoPlanData = async () => {
+    const storedUserStr = localStorage.getItem('app.AUTH')
+
+    if(storedUserStr){
+
+        const json = JSON.parse(storedUserStr)
+
+        try {
+            const uri = process.env.NEXT_PUBLIC_API_URL;
+            const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            
+            if (!res.ok) {
+                throw new Error("Failed")
+            }
+            const ponse = await res.json()
+            return ponse.plans
+        } catch (error) {
+            console.log(error)
         }
-        const ponse = await res.json()
-        return ponse.plans
-    } catch (error) {
-        console.log(error)
     }
 }
 
 const postNewPlan = async (newPlan) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        console.log(uri)
-        const res = await fetch(`${uri}/api/plan`, {
+        const res = await fetch(`${uri}/api/client/plan`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,12 +57,13 @@ const postNewPlan = async (newPlan) => {
         throw error
     }
 }
+
 const deletePlan = async (plan) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/plan`, {
+        const res = await fetch(`${uri}/api/client/plan`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,11 +83,12 @@ const deletePlan = async (plan) => {
         throw error
     }
 }
+
 const updatePlan = async (newPlan) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
         console.log(uri)
-        const res = await fetch(`${uri}/api/plan`, {
+        const res = await fetch(`${uri}/api/client/plan`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -98,6 +107,10 @@ const updatePlan = async (newPlan) => {
 }
 
 const DtPlans = ({ isActive, handleActive }) => {
+
+    /* User */
+
+    const [currentUser, setCurrentUser] = useState(null)
 
     /* Base Data */
 
@@ -220,6 +233,14 @@ const DtPlans = ({ isActive, handleActive }) => {
         return true
     }
 
+    const [newPlan, setNewPlan] = useState({
+        name: '',
+        dura: '',
+        asis: '',
+        cost: '',
+        user: '',
+    })
+
     const handleIsAdd = () => {
         setSelRow({ id: 0 })
         setNewPlan({
@@ -227,16 +248,10 @@ const DtPlans = ({ isActive, handleActive }) => {
             dura: '',
             asis: '',
             cost: '',
+            user: currentUser.email,
         })
         setIsAdd(current => !current)
     }
-
-    const [newPlan, setNewPlan] = useState({
-        name: '',
-        dura: '',
-        asis: '',
-        cost: '',
-    })
 
     const handleNewPlan = (e) => {
         const { name, value } = e.target
@@ -278,17 +293,18 @@ const DtPlans = ({ isActive, handleActive }) => {
     }
 
     const handleSubmitAdd = async () => {
+        
+        //Send Data Here
+        await postNewPlan(newPlan)
+        await fetchAndLoadData()
+
         setNewPlan({
             name: '',
             dura: '',
             asis: '',
             cost: '',
         })
-
-        //Send Data Here
-        await postNewPlan(newPlan)
-        await fetchAndLoadData()
-
+        
         handleStatus('Se agrego con exito.')
         handleIsAdd()
     }
@@ -394,6 +410,21 @@ const DtPlans = ({ isActive, handleActive }) => {
             currentPage * itemsPerPage))
     }, [planData])
 
+    useEffect(() => {
+        const storedUserStr = localStorage.getItem('app.AUTH')
+      
+        if(storedUserStr){
+          const json = JSON.parse(storedUserStr)
+          setCurrentUser(json.data)
+          setNewPlan({
+              ...newPlan,
+              user: json.data.email
+              }
+          )
+        }
+      
+    }, [])
+
     return (
         <>
             <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow} />
@@ -465,6 +496,7 @@ const DtPlans = ({ isActive, handleActive }) => {
                                     <div className="body">
                                         {
                                             currentItems.length > 0 ? (
+
                                                 <table className='dt-all'>
                                                     <thead>
                                                         <tr className='plan-dt'>
@@ -517,13 +549,18 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                 )
                                         }
                                     </div>
-                                    <div className="dt-pagination dark">
-                                        <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                                        <span>
-                                            {currentPage} de {totalPages}
-                                        </span>
-                                        <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-                                    </div>
+                                    {
+                                        currentItems.length > 0 &&(
+
+                                            <div className="dt-pagination dark">
+                                                <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                                                <span>
+                                                    {currentPage} de {totalPages}
+                                                </span>
+                                                <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                                            </div>
+                                        )
+                                    }
                                 </>
                             ) : (
                                 <>

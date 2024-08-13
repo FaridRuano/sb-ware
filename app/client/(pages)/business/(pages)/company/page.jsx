@@ -4,82 +4,112 @@ import DtClients from '@public/components/client/DtClients'
 import React, { useEffect, useState } from 'react'
 import DtAsis from '@public/components/client/DtAsis'
 import Dtpaids from '@public/components/client/DtPaids'
-const mongoClientData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/client`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+const mongoClientData = async () => {
+
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.clients
+    } catch (error) {
+        console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.clients
-  } catch (error) {
-    console.log(error)
   }
 }
-const mongoPlanData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/plan`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+const mongoPlanData = async () => {
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse.plans
+    } catch (error) {
+      console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.plans
-  } catch (error) {
-    console.log(error)
   }
 }
 
 const mongoAttenData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/atten`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/attent?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse.clients
+    } catch (error) {
+      console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.clients
-  } catch (error) {
-    console.log(error)
   }
 }
 
 const mongoPyamentData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/payment`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
+  const storedUserStr = localStorage.getItem('app.AUTH')
 
-    if (!res.ok) {
-      throw new Error("Failed")
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/payment?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse.payments
+    } catch (error) {
+      console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.payments
-  } catch (error) {
-    console.log(error)
   }
 }
 

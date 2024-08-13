@@ -9,8 +9,10 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Script from "next/script"
+import { useUser } from "@context/UserContext"
 
 const useWindowSize = () => {
+
     const [windowSize, setWindowSize] = useState({
       width: undefined,
       height: undefined,
@@ -34,6 +36,8 @@ const useWindowSize = () => {
 
 const NavBarMain = () => {
 
+    const [isLogged, setLogged] = useState(false)
+
     const router = useRouter()
 
     const {isDarkMode} = useTheme()
@@ -49,6 +53,15 @@ const NavBarMain = () => {
           document.body.classList.remove('no-scroll')
         }
     }, [menu])
+
+    useEffect(()=>{
+        const storedUser = localStorage.getItem('app.AUTH');
+        if(storedUser){
+            setLogged(true)
+        }else{
+            setLogged(false)
+        }
+    },[])
 
     if(size.width > 800){
         return (
@@ -76,7 +89,13 @@ const NavBarMain = () => {
                         <li className="nav-item">
                             Crear Cuenta
                         </li>
-                        <li className="btn01" onClick={()=>router.push('/login')}>
+                        <li className="btn01" onClick={()=>{
+                            if(isLogged){
+                                router.push('/client')
+                            }else{
+                                router.push('/login')
+                            }
+                        }}>
                             Ingresar
                         </li>
                     </ul>
@@ -94,8 +113,14 @@ const NavBarMain = () => {
                     <div className="nav-item">
                         <Image src={LogoNavBarDark} width={'auto'} height={30} alt="Sb Ware" onClick={()=>scrollToSection('main')}/>
                     </div>
-                    <div className="nav-item">
-                        <Image src={LogIn} width={20} height={'auto'} alt="LogIn" onClick={()=>router.push('/login')}/>
+                    <div className="nav-item"onClick={()=>{
+                            if(isLogged){
+                                router.push('/client')
+                            }else{
+                                router.push('/login')
+                            }
+                        }}>
+                        <Image src={LogIn} width={20} height={'auto'} alt="LogIn"/>
                     </div>
                 </div>
                 <div className={menu ? "menu-overlay" : "menu-overlay off"}>
@@ -124,7 +149,13 @@ const NavBarMain = () => {
                         <li className="nav-item">
                             Crear Cuenta
                         </li>
-                        <li className="nav-item btn01" onClick={()=>router.push('/login')}>
+                        <li className="nav-item btn01" onClick={()=>{
+                            if(isLogged){
+                                router.push('/client')
+                            }else{
+                                router.push('/login')
+                            }
+                        }}>
                             Ingresar
                         </li>
                     </ul>

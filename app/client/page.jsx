@@ -9,27 +9,38 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const mongoClientData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/dashboard`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/dashboard?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse
+    } catch (error) {
+      console.log(error)
     }
-    const ponse = await res.json()
-    return ponse
-  } catch (error) {
-    console.log(error)
   }
 }
 
 
 const Client = () => {
+
+  /* User */
+
+  const storedUserStr = localStorage.getItem('app.AUTH')
 
   /* Loading Page */
 
@@ -39,7 +50,7 @@ const Client = () => {
 
   const router = useRouter()
 
-  const totalSuppostedMoney = 300
+  const [totalSuppostedMoney, setTotalSuppostedMoney] = useState(300)
 
   const [totalMoney, setTotalMoney] = useState(0)
 
@@ -55,7 +66,14 @@ const Client = () => {
 
   const [totalClients, setTotalClients] = useState(0)
 
-  const limitClients = 50
+  const limitClients = () => {
+    if(storedUserStr){
+      const json = JSON.parse(storedUserStr)
+      return json.data.sub.space
+    }else{
+      return 100
+    }
+  }
 
   const [monthlyAverage, setMonthlyAverage] = useState(0)
 
@@ -89,12 +107,13 @@ const Client = () => {
       const fetchData = await mongoClientData()
       setTotalMoney(fetchData.totalAmount)
       setPaids(fetchData.paids)
-      setNoPaids(fetchData.nopaids)
+      setNoPaids(fetchData.noPaids)
       setRecentClients(fetchData.recentClients)
       setMonthlyAverage(fetchData.monthlyAverage)
       setRecentPays(fetchData.recentPays)
-      setRecentAsistance(fetchData.recentAsistance)
+      setRecentAsistance(fetchData.recentAttent)
       setTotalClients(fetchData.totalClients)
+      setTotalSuppostedMoney(fetchData.totalDebt + fetchData.totalAmount)
       setLoading(false)
     } catch (e) {
       console.log(e)
@@ -219,15 +238,14 @@ const Client = () => {
   
       let progressBar = document.querySelector(".progress")
   
-  
-      let progressPercentage = (totalClients * 100) / limitClients,
+      let progressPercentage = (totalClients * 100) / limitClients(),
       initialPercentage = 0
-  
+
+      
       let progressClientsBar = setInterval(() => {
-  
         initialPercentage++
         progressBar.style.width = `${initialPercentage.toFixed(0)}%`
-        if(initialPercentage == 100 - progressPercentage){
+        if(initialPercentage >=  100 - progressPercentage){
           clearInterval(progressClientsBar)
         }
         
@@ -282,7 +300,7 @@ const Client = () => {
     return (
       <div className="home-client">
         <section className="tasks-shortcuts">
-          <div className="shortcut">
+          <div className="shortcut" onClick={()=>router.push('/client/business')}>
             <div className="icon-wrap">
               <Image src={DollarIcon} width={20} height={'auto'} alt='User'/>
             </div>
@@ -290,7 +308,7 @@ const Client = () => {
               Registrar Pago
             </span>
           </div>
-          <div className="shortcut">
+          <div className="shortcut" onClick={()=>router.push('/client/business')}>
             <div className="icon-wrap">
               <Image src={UserIcon} width={20} height={'auto'} alt='User'/>
             </div>
@@ -298,7 +316,7 @@ const Client = () => {
               Nuevo Cliente
             </span>
           </div>
-          <div className="shortcut">
+          <div className="shortcut" onClick={()=>router.push('/client/business')}>
             <div className="icon-wrap">
               <Image src={CheckIcon} width={20} height={'auto'} alt='User'/>
             </div>
@@ -306,7 +324,7 @@ const Client = () => {
               Marcar Asistencia
             </span>
           </div>
-          <div className="shortcut">
+          <div className="shortcut" onClick={()=>router.push('/client/business')}>
             <div className="icon-wrap">
               <Image src={CalendarIcon} width={20} height={'auto'} alt='User'/>
             </div>
@@ -375,7 +393,7 @@ const Client = () => {
               <span>
                 Últimos pagos
               </span>
-              <a>
+              <a href='/client/business/company'>
                 Ver todos
               </a>
             </div>
@@ -434,7 +452,7 @@ const Client = () => {
                   <div className="progress"/>
                 </div>
                 <span className="footer">
-                  Te quedan <b>{limitClients - totalClients}</b> cupos
+                  Te quedan <b>{limitClients() - totalClients}</b> cupos
                   disponibles
                 </span>
               </div>
@@ -487,7 +505,7 @@ const Client = () => {
               <span>
                 Últimas asistencias
               </span>
-              <a>
+              <a href='/client/business/company'>
                 Ver todos
               </a>
             </div>

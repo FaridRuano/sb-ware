@@ -1,5 +1,6 @@
 import '@public/styles/globals.scss'
 import { ThemeProvider } from '@context/ThemeContext';
+import { UserProvider } from '@context/UserContext';
 
 export const metadata = {
   title: "Sb Ware",
@@ -12,7 +13,9 @@ export default function RootLayout({ children }) {
       <body>
         <main className="app">
           <ThemeProvider>
-            {children}
+            <UserProvider>
+              {children}
+            </UserProvider>
           </ThemeProvider>
         </main>
       </body>

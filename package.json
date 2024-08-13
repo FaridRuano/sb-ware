@@ -9,11 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^1.7.3",
+    "bcrypt": "^5.1.1",
+    "cookie": "^0.6.0",
     "firebase": "^10.12.3",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.4.4",
+    "mongoose": "^8.5.2",
+    "mongoose-double": "^0.0.1",
     "mongoose-sequence": "^6.0.1",
     "next": "14.2.3",
+    "next-cookies": "^2.0.3",
     "react": "^18",
     "react-date-picker": "^11.0.0",
     "react-dom": "^18",

@@ -8,8 +8,66 @@ import ChangePlan from '@public/assets/icons/change-plan.png'
 import ViewIcon from '@public/assets/icons/view-icon.png'
 import DownloadIcon from '@public/assets/icons/download-icon.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
-import { useState } from 'react'
-import { Cursor } from 'mongoose'
+import { useEffect, useState } from 'react'
+
+const fetchCliData = async () => {
+
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/config?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+const fetchPostData = async (editData) => {
+
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/config?email=${json.data.email}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(editData),
+
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+
+      return ponse
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 
 const Config = () => {
 
@@ -20,27 +78,56 @@ const Config = () => {
   /* Business Info */
 
   const [businesInfo, setBusinesInfo] = useState({
-    id: 1,
-    socialName: 'IDEE',
-    ruc: '1805467527001',
-    email: 'fruanocm2777@gmail.com',
-    phone: '0996447884',
-    address: 'JULIAN CORONEL 0131 Y RODRIGO PACHANO',
+    socialName: '',
+    ruc: '',
+    email: '',
+    phone: '',
+    address: '',
   })
+
+  const [subType, setSubType] = useState('')
+
+  const [expireDate, setExpireDate] = useState(new Date())
+
+  const [space, setSpace] = useState(0)
+
+  const [spaceRemain, setSpaceRemain] = useState(0)
 
   const [editInfo, setEditInfo] = useState(false)
 
+  const daysUntilPay = (date) => {
+
+    const inputDate = new Date(date)
+  
+    const dayOfMonth = inputDate.getDate()
+  
+    const currentMonth = inputDate.getMonth()
+    const currentYear = inputDate.getFullYear()
+  
+    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear
+  
+    const nextDate = new Date(nextYear, nextMonth, dayOfMonth)
+  
+    const differenceInMillis = nextDate - inputDate
+  
+    const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24))
+  
+    setExpireDate(differenceInDays)
+  }
+
   const handleEditInfo = () => {
+    setEditForm(businesInfo)
     setEditInfo(current => !current)
   }
 
   const [editForm, setEditForm] = useState({
-    id: 1,
-    socialName: 'IDEE',
-    ruc: '1805467527001',
-    email: 'fruanocm2777@gmail.com',
-    phone: '0996447884',
-    address: 'JULIAN CORONEL 0131 Y RODRIGO PACHANO',
+    id: '',
+    socialName: '',
+    ruc: '',
+    email: '',
+    phone: '',
+    address: '',
   })
 
   const [errorMsg, setErrorMsg] = useState("")
@@ -80,6 +167,7 @@ const Config = () => {
             setErrorMsg("")
         }
     }
+
     setEditForm({
         ...editForm,
         [name]: value,
@@ -87,40 +175,48 @@ const Config = () => {
   }
 
   const isBusInfoSendable = () => {
-    if (editForm.ruc.length < 13 || editForm.socialName.length < 2 
-        || errorForm || editForm.email.length < 1 || editForm.phone.length < 10 || editForm.address.length < 1
-    ) {
+
+    if(editForm.ruc.length > 0){
+      if(editForm.ruc.length < 13){
         return false
-    } else {
-        return true
+      }
     }
+    if(editForm.phone.length > 0){
+      if(editForm.phone.length < 10){
+        return false
+      }
+    }
+
+    return true
+
   }
 
-  const handleSubmitEdit = () => {
+  const handleSubmitEdit = async () => {
 
-    setBusinesInfo(editForm)
+    setLoading(true)
+
+    const editData = {
+      name: editForm.socialName,
+      ruc: editForm.ruc,
+      emailRuc: editForm.email,
+      phone: editForm.phone,
+      address: editForm.address
+    }
+
+
+    try{
+      await fetchPostData(editData)
+    }catch(e){
+      console.log(e)
+    }
+    fetchAndLoadData()
     handleEditInfo()
-
-    //Send Data Here
+    setLoading(false)
   }
+
   /* Paids */
 
-  const paids = [
-    {
-      id: 1,
-      date: '2024-06-01',
-      noAutorization: '180282371912301232',
-      plan: 'SB 50 students',
-      amount: '29.99'
-    },
-    {
-      id: 2,
-      date: '2024-06-01',
-      noAutorization: '180282371912301231',
-      plan: 'SB 50 students',
-      amount: '29.99'
-    }
-  ]
+  const [paids, setPaids] = useState([])
 
   const ActiveDashboard = () => {
 
@@ -140,31 +236,31 @@ const Config = () => {
                           <div className='edit'>
                             Razón Social
                           </div>
-                          <input type="text" placeholder='Mi empresa' name='socialName' value={editForm.socialName} onChange={handleEditForm}/>
+                          <input type="text" placeholder='Mi empresa' name='socialName' value={editForm.socialName} onChange={handleEditForm} maxLength={20}/>
                         </div>
                         <div className="input-config">
                           <div className='edit'>
                             RUC
                           </div>
-                          <input type="text" placeholder='180039189001' name='ruc' value={editForm.ruc} onChange={handleEditForm}/>
+                          <input type="text" placeholder='9999999999999' name='ruc' value={editForm.ruc} onChange={handleEditForm} maxLength={13}/>
                         </div>  
                         <div className="input-config">
                           <div className='edit'>
                             Email
                           </div>
-                          <input type="text" placeholder='180039189001' name='email' value={editForm.email} onChange={handleEditForm}/>
+                          <input type="text" placeholder='user@email.com' name='email' value={editForm.email} onChange={handleEditForm}/>
                         </div>  
                         <div className="input-config">
                           <div className='edit'>
                             Teléfono
                           </div>
-                          <input type="text" placeholder='180039189001' name='phone' value={editForm.phone} onChange={handleEditForm}/>
+                          <input type="text" placeholder='0998887777' name='phone' value={editForm.phone} onChange={handleEditForm} maxLength={10}/>
                         </div>  
                         <div className="input-config">
                           <div className='edit'>
                             Dirección
                           </div>
-                          <input type="text" placeholder='180039189001' name='address' maxLength={100} value={editForm.address} onChange={handleEditForm}/>
+                          <input type="text" placeholder='Ecuador' name='address' maxLength={100} value={editForm.address} onChange={handleEditForm}/>
                         </div>
                         <div className="form-footer">
                               <div className="errors-config">
@@ -204,25 +300,25 @@ const Config = () => {
                         <div>
                           RUC
                         </div>
-                        <input type="text" placeholder='180039189001' name='ruc' value={businesInfo.ruc} disabled/>
+                        <input type="text" placeholder='9999999999999' name='ruc' value={businesInfo.ruc} disabled/>
                       </div>  
                       <div className="input-config">
                         <div>
                           Email
                         </div>
-                        <input type="text" placeholder='180039189001' name='email' value={businesInfo.email} disabled/>
+                        <input type="text" placeholder='user@email.com' name='email' value={businesInfo.email} disabled/>
                       </div>  
                       <div className="input-config">
                         <div>
                           Teléfono
                         </div>
-                        <input type="text" placeholder='180039189001' name='phone' value={businesInfo.phone} disabled/>
+                        <input type="text" placeholder='0998887777' name='phone' value={businesInfo.phone} disabled/>
                       </div>  
                       <div className="input-config">
                         <div>
                           Dirección
                         </div>
-                        <input type="text" placeholder='180039189001' name='address' value={businesInfo.address} disabled/>
+                        <input type="text" placeholder='Ecuador' name='address' value={businesInfo.address} disabled/>
                       </div>
                       <div className="form-footer one">
                         <div className="buttons-config">
@@ -338,13 +434,13 @@ const Config = () => {
               <div className="actual-sb">
                 <div className="details">
                   <span>
-                    Vence en 24 días.
+                    Vence en {expireDate} días.
                   </span>
                   <h1>
-                    SB50
+                    {subType}
                   </h1>
                   <p>
-                    Capacidad de 50 clientes.
+                    Capacidad de {space} clientes.
                   </p>
                 </div>
                 <div className="details two">
@@ -352,7 +448,7 @@ const Config = () => {
                     Espacio Usado.
                   </span>
                   <h1>
-                    36
+                    {spaceRemain}
                   </h1>
                   <p>
                     Clientes.
@@ -361,12 +457,17 @@ const Config = () => {
               </div>
             </div>
             <div className="options-cf">
-              <div className='update-plan'>
-                Expandir mi espacio
-              </div>
-              <span>
-                Cancelar mi suscripción.
-              </span>
+              <a href="https://wa.me/+593996447884" target="_blank">
+                <div className='update-plan'>
+                  Expandir mi espacio
+                </div>
+              </a>
+              
+              <a href="https://wa.me/+593996447884" target="_blank">
+                <span>
+                    Cancelar mi suscripción.
+                </span>
+              </a>
             </div>
           </>
         )
@@ -391,58 +492,112 @@ const Config = () => {
     }
   }
 
+  const [isLoading, setLoading] = useState(true)
 
-  return (
-    <>
-      <section className='business-options'>
-        <div className={activeOption === 0 ? "business-card active":"business-card"} onClick={()=>setActiveOption(0)}>
-          <div className="card-icon">
-            <Image src={BusinessIcon} width={90} height={'auto'} alt='Bussiness'/>
-          </div>
-          <div className="card-title">
-            <p>
-              Mi empresa
-            </p>
-            <h1>
-              {businesInfo.socialName}
-            </h1>
-          </div>
-        </div>
-        <div className="business-btns">
-          <div className={activeOption === 1 ? "business-btn active":"business-btn"} onClick={()=>setActiveOption(1)}>
-            <div className="business-btn-icon">
-              <Image src={MyPaids} width={25} height={'auto'} alt='My Paids'/>
-            </div>
-            <div className="business-title">
-              Mis pagos
-            </div>
-          </div>
-          <div className={activeOption === 2 ? "business-btn secondary active":"business-btn secondary"} onClick={()=>setActiveOption(2)}>
-            <div className="business-btn-icon">
-              <Image src={ChangePlan} width={25} height={'auto'} alt='My Paids'/>
-            </div>
-            <div className="business-title">
-              Configurar Suscripción
-            </div>
-          </div>
-          <div className={activeOption === 3 ? "business-btn warning active":"business-btn warning"} onClick={()=>setActiveOption(3)}>
-            <div className="business-btn-icon">
-              <Image src={CancelPlan} width={25} height={'auto'} alt='My Paids'/>
-            </div>
-            <div className="business-title">
-              Reportar errores y Ayuda
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="business-dashboard">
-        {
-          ActiveDashboard()
-        }
-      </section>
-    </>
+  const fetchAndLoadData = async () => {
+    try {
+      setLoading(true)
+      const fetchData = await fetchCliData()
+      if(fetchData){
+        setBusinesInfo({
+          socialName: fetchData.business.name,
+          ruc: fetchData.business.ruc,
+          email: fetchData.business.email,
+          phone: fetchData.business.phone,
+          address: fetchData.business.address,
+        })
+        setPaids(fetchData.sub.paids || [])
+        setSubType(fetchData.sub.plan)
+        setSpace(fetchData.sub.space)
+        setSpaceRemain(fetchData.sub.space - fetchData.totalCli)
+        daysUntilPay(fetchData.sub.paydate)
+        
+      }
+      setLoading(false)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
-  )
+  useEffect(()=>{
+    fetchAndLoadData()
+  },[])
+
+  if(isLoading) {
+    return (
+      <>
+        <section className='business-options loading'>
+          <div className="business-card">
+          </div>
+          <div className="business-btns">
+            <div className="business-btn">
+            </div>
+            <div className="business-btn secondary">
+            </div>
+            <div className="business-btn warning">
+            </div>
+          </div>
+        </section>
+        <section className="business-dashboard">
+
+        </section>
+      </>
+  
+    )
+  }else{
+    return (
+      <>
+        <section className='business-options'>
+          <div className={activeOption === 0 ? "business-card active":"business-card"} onClick={()=>setActiveOption(0)}>
+            <div className="card-icon">
+              <Image src={BusinessIcon} width={90} height={'auto'} alt='Bussiness'/>
+            </div>
+            <div className="card-title">
+              <p>
+                Mi empresa
+              </p>
+              <h1>
+                {businesInfo.socialName || 'S/N'}
+              </h1>
+            </div>
+          </div>
+          <div className="business-btns">
+            <div className={activeOption === 1 ? "business-btn active":"business-btn"} onClick={()=>setActiveOption(1)}>
+              <div className="business-btn-icon">
+                <Image src={MyPaids} width={25} height={'auto'} alt='My Paids'/>
+              </div>
+              <div className="business-title">
+                Mis pagos
+              </div>
+            </div>
+            <div className={activeOption === 2 ? "business-btn secondary active":"business-btn secondary"} onClick={()=>setActiveOption(2)}>
+              <div className="business-btn-icon">
+                <Image src={ChangePlan} width={25} height={'auto'} alt='My Paids'/>
+              </div>
+              <div className="business-title">
+                Configurar Suscripción
+              </div>
+            </div>
+            <div className={activeOption === 3 ? "business-btn warning active":"business-btn warning"} onClick={()=>setActiveOption(3)}>
+              <div className="business-btn-icon">
+                <Image src={CancelPlan} width={25} height={'auto'} alt='My Paids'/>
+              </div>
+              <div className="business-title">
+                Reportar errores y Ayuda
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="business-dashboard">
+          {
+            ActiveDashboard()
+          }
+        </section>
+      </>
+  
+    )
+  }
+
 }
 
 export default Config

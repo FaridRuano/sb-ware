@@ -10,30 +10,38 @@ import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 const mongoAttenData = async () => {
-    try {
-        const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/atten`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
 
+    const storedUserStr = localStorage.getItem('app.AUTH')
+  
+    if(storedUserStr){
+  
+      const json = JSON.parse(storedUserStr)
+      try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client/attent?email=${json.data.email}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+  
         if (!res.ok) {
-            throw new Error("Failed")
+          throw new Error("Failed")
         }
         const ponse = await res.json()
         return ponse.clients
-    } catch (error) {
+      } catch (error) {
         console.log(error)
+      }
     }
 }
+
 const deleteAsis = async (client) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/atten`, {
+        const res = await fetch(`${uri}/api/client/attent`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -250,13 +258,18 @@ const DtAsis = ({ isActive, handleActive }) => {
                                     )
                             }
                         </div>
-                        <div className="dt-pagination dark">
-                            <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                            <span>
-                                {currentPage} de {totalPages}
-                            </span>
-                            <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-                        </div>
+                        {
+                            currentItems.length > 0 &&(
+
+                                <div className="dt-pagination dark">
+                                    <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                                    <span>
+                                        {currentPage} de {totalPages}
+                                    </span>
+                                    <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
             </div>

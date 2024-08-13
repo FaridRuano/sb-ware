@@ -2,24 +2,36 @@ import connectMongoDB from "@libs/mongodb"
 import Client from "@models/clientModel"
 import { NextResponse } from 'next/server';
 
-export async function GET() {
-    await connectMongoDB();
-    const clients = await Client.find();
+export async function GET(request) {
+    await connectMongoDB()
 
-    // Crear un array para almacenar los resultados con nombre, fecha y monto
-    const paymentDates = [];
+    const url = request.nextUrl
+    const email = url.searchParams.get('email')
+
+    if (!email) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const clients = await Client.find({ user: email })
+
+    const paymentDates = []
 
     clients.forEach(client => {
-        client.payments.forEach(payment => {
-            paymentDates.push({ id:client.id,name: client.name, date: new Date(payment.date), amount: payment.amount });
-        });
-    });
+        if (client.payments && Array.isArray(client.payments)) {
+            client.payments.forEach(payment => {
+                paymentDates.push({
+                    id: client.id,
+                    name: client.name,
+                    date: new Date(payment.date),
+                    amount: payment.amount
+                })
+            })
+        }
+    })
 
-    // Ordenar los resultados por fecha desde la más reciente a la más antigua
-    paymentDates.sort((a, b) => b.date - a.date);
+    paymentDates.sort((a, b) => b.date - a.date)
 
-    // Retornar la respuesta con el formato solicitado
-    return NextResponse.json({ payments: paymentDates });
+    return NextResponse.json({ payments: paymentDates })
 }
 
 export async function DELETE(request) {

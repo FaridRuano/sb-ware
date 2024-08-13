@@ -19,54 +19,70 @@ import StatusModal from '@public/components/client/StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 const mongoClientData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/client`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return ponse.clients
+    } catch (error) {
+        console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.clients
-  } catch (error) {
-    console.log(error)
   }
 }
-const mongoPlanData = async () => {
-  try {
-    const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/plan`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
 
-    if (!res.ok) {
-      throw new Error("Failed")
+const mongoPlanData = async () => {
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+      const uri = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+  
+      if (!res.ok) {
+        throw new Error("Failed")
+      }
+      const ponse = await res.json()
+      return ponse.plans
+    } catch (error) {
+      console.log(error)
     }
-    const ponse = await res.json()
-    return ponse.plans
-  } catch (error) {
-    console.log(error)
   }
 }
 
 const postNewClient = async (newClient) => {
   try {
     const uri = process.env.NEXT_PUBLIC_API_URL;
-    const res = await fetch(`${uri}/api/client`, {
+    const res = await fetch(`${uri}/api/client/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newClient),
-    });
+    })
 
     if (!res.ok) {
       throw new Error('Failed to post new data')
@@ -85,7 +101,7 @@ const deleteClient = async (client) => {
     const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-    const res = await fetch(`${uri}/api/client`, {
+    const res = await fetch(`${uri}/api/client/clients`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -115,7 +131,7 @@ const updateClient = async (data) => {
     const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-    const res = await fetch(`${uri}/api/client`, {
+    const res = await fetch(`${uri}/api/client/clients`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -142,6 +158,10 @@ const updateClient = async (data) => {
 
 const Clients = () => {
 
+  /* User */
+
+  const [currentUser, setCurrentUser] = useState(null)
+
   /* Loading Page */
 
   const [isLoading, setLoading] = useState(true)
@@ -163,11 +183,10 @@ const Clients = () => {
   const countClientsInactive = () => {
     const current = new Date()
     const filteredData = (baseData.filter(cli => {
-      const cliDate = new Date(cli.plan[0].end)
+      const cliDate = new Date(cli.plan.end)
 
-      // Control date validness
       if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.plan[0].end}`)
+        console.warn(`Invalid date: ${cli.plan.end}`)
         return false;
       }
 
@@ -180,11 +199,11 @@ const Clients = () => {
   const countClientsActive = () => {
     const current = new Date()
     const filteredData = (baseData.filter(cli => {
-      const cliDate = new Date(cli.plan[0].end)
+      const cliDate = new Date(cli.plan.end)
 
       // Control date validness
       if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.plan[0].end}`)
+        console.warn(`Invalid date: ${cli.plan.end}`)
         return false;
       }
 
@@ -201,7 +220,6 @@ const Clients = () => {
 
   const handlePlan = (e) => {
     const selPlan = planData.find(plan => plan.id === Number(e.target.value))
-
     if (selPlan) {
       setDurationPlan(selPlan.dura)
       setAsisPlan(selPlan.asis)
@@ -267,25 +285,6 @@ const Clients = () => {
   const handleNewClient = (e) => {
     const { name, value } = e.target
 
-    /* Ced Controller */
-    if (name === 'ced' || name === 'phone') {
-      if (!/^\d*$/.test(value) || value.length > 10) {
-        return
-      }
-    }
-    if (name === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        if (value.length < 1) {
-          setErrorEmail(false)
-        } else {
-          setErrorEmail(true)
-          setErrorMsg("Email no válido.")
-        }
-      } else {
-        setErrorEmail(false)
-      }
-    }
     setNewClient({
       ...newClient,
       [name]: value,
@@ -300,39 +299,60 @@ const Clients = () => {
   }
 
   const handleSubmit = async () => {
-    if (newClient.ced.length < 10 || newClient.name.length < 2
-      || errorEmail || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
-      || !planSel > 0
-    ) {
+    if (newClient.name.length < 2 || newClient.ced.length < 1 || newClient.email.length < 1 || newClient.phone.length < 1 || newClient.address.length < 1 ) {
+      if (newClient.ced.length < 1) {
+        setNewClient((prev) => ({
+          ...prev,
+          ced: '9999999999999',
+        }));
+      }
+      
+      if (newClient.email.length < 1) {
+        setNewClient((prev) => ({
+          ...prev,
+          email: 'default@email.com',
+        }));
+      }
+      if (newClient.phone.length < 1) {
+        setNewClient((prev) => ({
+          ...prev,
+          phone: '9999999999',
+        }));
+      }
+      if (newClient.address.length < 1) {
+        setNewClient((prev) => ({
+          ...prev,
+          address: 'Ecuador',
+        }));
+      }
       setSendable(true)
-      setErrorMsg('Existen campos vacios. Porfavor llenalos!')
+      setErrorMsg('Nombre es el único campo obligatorio!')
     } else {
       setSendable(false)
       const newClientData = {
         ced: newClient.ced,
         name: newClient.name,
-        plan: [{
-          ...planSel,   // Copia las propiedades existentes de planSel
-          ini: startDate,
-          end: endDate
-        }],
-        asis: asisPlan,
-        debt: durationPlan,
         email: newClient.email,
         phone: newClient.phone,
         address: newClient.address,
-        payments: []
+        plan: {
+          id: planSel.id,
+          name: planSel.name,
+          dura: durationPlan,
+          asis: asisPlan,
+          deud: planSel.cost,
+          ini: startDate,
+          end: endDate,
+        },
+        user: currentUser.email
       }
-
       try {
-        //console.log(newClientData)
         await postNewClient(newClientData)
         await fetchAndLoadPersons()
-
+        handleAddClient()
       } catch (error) {
         console.error('Error posting new person:', error)
       }
-      handleAddClient()
     }
   }
 
@@ -354,9 +374,6 @@ const Clients = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   ))
-
-  
-
 
   const handlePreviousPage = () => {
     setSelRow({ id: 0 })
@@ -384,7 +401,7 @@ const Clients = () => {
   }
 
   const handleClientActive = (cli) => {
-    const isDate = new Date(cli.plan[0].end)
+    const isDate = new Date(cli.plan.end)
 
     const asis = cli.asis
 
@@ -431,11 +448,11 @@ const Clients = () => {
 
     if (n === 2) {
       const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.plan[0].end)
+        const cliDate = new Date(cli.plan.end)
 
         // Control date validness
         if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.plan[0].end}`)
+          console.warn(`Invalid date: ${cli.plan.end}`)
           return false;
         }
 
@@ -450,11 +467,11 @@ const Clients = () => {
     }
     if (n === 3) {
       const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.plan[0].end)
+        const cliDate = new Date(cli.plan.end)
 
         // Control date validness
         if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.plan[0].end}`)
+          console.warn(`Invalid date: ${cli.plan.end}`)
           return false;
         }
 
@@ -500,15 +517,11 @@ const Clients = () => {
 
   const handleConfirmResponse = async () => {
     setConfirmModal(current => !current)
-    // const filteredData = (clientData.filter(cli => {
-    //   return cli.id !== selRow.id
-    // }))
     const data = {
       id: selRow.id
     }
     await deleteClient(data)
     await fetchAndLoadPersons()
-    //setClientData(baseData)
     setTotalPages(Math.ceil(clientData.length / itemsPerPage))
     setCurrentItems(clientData.slice(
       (currentPage - 1) * itemsPerPage,
@@ -545,9 +558,8 @@ const Clients = () => {
       action: "change",
       id: selRow.id,
       data: [{
-        ...pl,   // Copia las propiedades existentes de planSel
+        ...pl,   
         ini: dt,
-        //end: dt
       }]
     };
     console.log(data)
@@ -564,7 +576,7 @@ const Clients = () => {
 const [payModal, setPayModal] = useState(false)
 
 const handlePay = () => {
-  if (selRow.debt === 0) {
+  if (selRow.plan.deud === 0) {
     return
   } else {
     handleStatusClose()
@@ -576,12 +588,16 @@ const handlePayResponse = async (response) => {
   setPayModal(current => !current)
   const data = {
     action: "registerPayment",
-    id: selRow.id,
-    data: [parseFloat(response), currentDate]
-  };
-  console.log(data)
+    id: selRow._id,
+    data: {
+      amount: parseFloat(response), 
+      date: currentDate
+    }
+  }
+
   await updateClient(data)
   await fetchAndLoadPersons()
+
   handleStatus('Se registro correctamente el pago de ' + selRow.name + '.')
   setSelRow({ id: 0 })
 }
@@ -599,12 +615,10 @@ const handleStatus = async (msg) => {
 const handleAttent = async (msg) => {
   setStatusModal(current => !current)
   const data = {
-
     action: "registerAttendance",
-    id: selRow.id,
+    id: selRow._id,
     data: currentDate
   };
-  console.log(data)
   await updateClient(data)
   await fetchAndLoadPersons()
   handleStatusMsg(msg)
@@ -647,6 +661,14 @@ useEffect(() => {
 
 useEffect(() => {
   fetchAndLoadPersons()
+
+  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  if(storedUserStr){
+    const json = JSON.parse(storedUserStr)
+    setCurrentUser(json.data)
+  }
+
 }, [])
 
 if(isLoading){
@@ -790,9 +812,7 @@ if(isLoading){
                       <thead>
                         <tr className='client-dt'>
                           <th />
-                          <th>
-                            ID
-                          </th>
+
                           <th>
                             Nombre
                           </th>
@@ -825,26 +845,23 @@ if(isLoading){
                                 )
                               }
                               <td>
-                                {cli.id}
-                              </td>
-                              <td>
                                 {cli.name}
                               </td>
                               <td>
-                                {cli.plan[0].name}
+                                {cli.plan.name}
                               </td>
                               <td>
-                                {handleFormatDate(cli.plan[0].ini)}
+                                {handleFormatDate(cli.plan.ini)}
                               </td>
                               <td>
-                                {handleFormatDate(cli.plan[0].end)}
+                                {handleFormatDate(cli.plan.end)}
                               </td>
                               <td>
-                                {cli.asis}
+                                {cli.plan.asis}
                               </td>
                               <td>
-                                <span className={cli.debt > 0 ? 'loan' : 'loan full'}>
-                                  ${cli.debt.toFixed(2)}
+                                <span className={cli.plan.deud > 0 ? 'loan' : 'loan full'}>
+                                  ${cli.plan.deud}
                                 </span>
                               </td>
                             </tr>
@@ -882,23 +899,23 @@ if(isLoading){
                   <div className="body">
                     <div className="input-form">
                       <div>Cédula</div>
-                      <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} />
+                      <input type="text" name='ced' onChange={handleNewClient} value={newClient.ced} autoComplete='off' maxLength={13}/>
                     </div>
                     <div className="input-form">
                       <div>Nombre</div>
-                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} />
+                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} autoComplete='off'/>
                     </div>
                     <div className="input-form">
                       <div>Email</div>
-                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} />
+                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} autoComplete='off'/>
                     </div>
                     <div className="input-form">
                       <div>Teléfono</div>
-                      <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} />
+                      <input type="text" name='phone' onChange={handleNewClient} value={newClient.phone} autoComplete='off' maxLength={10}/>
                     </div>
                     <div className="input-form">
                       <div>Dirección</div>
-                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} />
+                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} autoComplete='off'/>
                     </div>
                   </div>
                 </div>

@@ -21,29 +21,27 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
         setError(false)
     }
 
-    const [amount, setAmount] = useState(0)
+    const [amount, setAmount] = useState("")
 
     const [error, setError] = useState(false)
 
-    const [actual, setActual] = useState(dataModal.debt)
+    const [actual, setActual] = useState( 0 )
 
     const handleAmount = (e) => {
 
-        const value = e.target.value;
+        const value = e.target.value
 
-        console.log(actual)
-
-        const regex = /^\d*\.?\d{0,2}$/;
+        const regex = /^\d*\.?\d{0,2}$/
 
         if (regex.test(value)) {
-            setAmount(value);
-            if (value === dataModal.debt) {
+            setAmount(value)
+            if (value === dataModal.plan.deud) {
                 setActual(0)
             } else {
-                setActual(dataModal.debt - value)
+                setActual(dataModal.plan.deud - value)
             }
 
-            if (value > dataModal.debt) {
+            if (value > dataModal.plan.deud) {
                 setError(true)
             } else {
                 setError(false)
@@ -52,87 +50,92 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
     }
 
     useEffect(()=>{
-        setActual(dataModal.debt)
+        if(dataModal.id > 0){
+            setActual(dataModal.plan.deud)
+        }
     },[])
 
-    if (changeModal) {
-        return (
-            <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>
-                <div className="modal-wrap">
-                    <span className="modal-exit" onClick={() => resetModal()}>
-                        <Image src={DelBtn} width={14} height={'auto'} alt='Exit' />
-                    </span>
-                    <div className="modal-msg center">
-                        Ingresa el valor <br />
-                    </div>
-                    <div className="modal-renew">
-                        <div className="input-form number-big">
-                            <input type="text" value={amount} onChange={handleAmount} placeholder='00.00' />
+    if(dataModal.id>0){
+        if (changeModal) {
+            return (
+                <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>
+                    <div className="modal-wrap">
+                        <span className="modal-exit" onClick={() => resetModal()}>
+                            <Image src={DelBtn} width={14} height={'auto'} alt='Exit' />
+                        </span>
+                        <div className="modal-msg center">
+                            Ingresa el valor <br />
                         </div>
-                    </div>
-                    <div className={error ? "modal-msg center sm error" : "modal-msg center sm"}>
-                        {
-                            error ? (
-                                <>
-                                    El valor no puede ser mayor a la deuda.
-                                </>
-                            ) : (
-                                <>
-                                    La deuda de actual es de ${actual || dataModal.debt}
-                                </>
-                            )
-                        }
-                    </div>
-                    <div className="modal-options">
-                        <button className='option' onClick={() => {
-                            setChangeModal(false)
-                        }}>
-                            Regresar
-                        </button>
-                        <button className={amount > 0 && amount <= dataModal.debt ? 'option confirm' : 'option confirm disabled'} onClick={() => {
-                            handleResponse(amount)
-                            setChangeModal(false)
-                            setAmount(0)
-                        }}>
-                            Aceptar
-                        </button>
+                        <div className="modal-renew">
+                            <div className="input-form number-big">
+                                <input type="text" value={amount} onChange={handleAmount} placeholder='00.00' />
+                            </div>
+                        </div>
+                        <div className={error ? "modal-msg center sm error" : "modal-msg center sm"}>
+                            {
+                                error ? (
+                                    <>
+                                        El valor no puede ser mayor a la deuda.
+                                    </>
+                                ) : (
+                                    <>
+                                        La deuda de actual es de ${actual.toFixed(2) || dataModal.plan.deud.toFixed(2)}
+                                    </>
+                                )
+                            }
+                        </div>
+                        <div className="modal-options">
+                            <button className='option' onClick={() => {
+                                setChangeModal(false)
+                            }}>
+                                Regresar
+                            </button>
+                            <button className={amount > 0 && amount <= dataModal.plan.deud ? 'option confirm' : 'option confirm disabled'} onClick={() => {
+                                handleResponse(amount)
+                                setChangeModal(false)
+                                setAmount(0)
+                            }}>
+                                Aceptar
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
-    } else {
-        return (
-            <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>
-                <div className="modal-wrap">
-                    <div className="modal-header">
-                        <div className="modal-icon">
-                            <Image src={RenewIcon} width={25} height={'auto'} alt='Trash' />
+            )
+        } else {
+            return (
+                <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>
+                    <div className="modal-wrap">
+                        <div className="modal-header">
+                            <div className="modal-icon">
+                                <Image src={RenewIcon} width={25} height={'auto'} alt='Trash' />
+                            </div>
+                            <p>
+                                Registro de Pago
+                            </p>
                         </div>
-                        <p>
-                            Registro de Pago
+                        <p className='modal-msg'>
+                            Que cantidad se esta pagando de <br />
+                            <b>{dataModal.name}</b>?
                         </p>
-                    </div>
-                    <p className='modal-msg'>
-                        Que cantidad se esta pagando de <br />
-                        <b>{dataModal.name}</b>?
-                    </p>
-                    <div className="modal-options">
-                        <button className='option' onClick={() => handleChangeModal()}>
-                            Otro
-                        </button>
-                        <button className='option confirm' onClick={() => handleResponse(dataModal.debt)}>
-                            Total ${dataModal.debt}
-                        </button>
-                    </div>
-                    <div className="modal-options">
-                        <button className='option cancel' onClick={() => resetModal()}>
-                            Cancelar
-                        </button>
+                        <div className="modal-options">
+                            <button className='option' onClick={() => handleChangeModal()}>
+                                Otro
+                            </button>
+                            <button className='option confirm' onClick={() => handleResponse(dataModal.plan.deud)}>
+                                Total ${dataModal.plan.deud}
+                            </button>
+                        </div>
+                        <div className="modal-options">
+                            <button className='option cancel' onClick={() => resetModal()}>
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
     }
+
 }
 
 export default PayModal

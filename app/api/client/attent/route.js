@@ -1,25 +1,32 @@
 import connectMongoDB from "@libs/mongodb"
 import Client from "@models/clientModel"
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
 
-export async function GET() {
-    await connectMongoDB();
-    const clients = await Client.find();
+export async function GET(request) {
+    await connectMongoDB()
+
+    const url = request.nextUrl
+    const email = url.searchParams.get('email')
+
+    if (!email) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
     
-    // Crear un array para almacenar los resultados con nombre y fechas
-    const clientDates = [];
+    const clients = await Client.find({ user: email })
+    
+    const clientDates = []
 
     clients.forEach(client => {
-        client.attent.forEach(date => {
-            clientDates.push({id:client.id, name: client.name, date: new Date(date) });
-        });
-    });
+        if(client.attent && Array.isArray(client.attent)){
+            client.attent.forEach(date => {
+                clientDates.push({id:client.id, name: client.name, date: new Date(date) })
+            })
+        }
+    })
 
-    // Ordenar los resultados por fecha desde la más reciente a la más antigua
-    clientDates.sort((a, b) => b.date - a.date);
+    clientDates.sort((a, b) => b.date - a.date)
 
-    // Retornar la respuesta con el formato solicitado
-    return NextResponse.json({ clients: clientDates });
+    return NextResponse.json({ clients: clientDates })
 }
 
 export async function DELETE(request) {

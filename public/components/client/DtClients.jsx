@@ -12,48 +12,65 @@ import WarningIcon from '@public/assets/icons/warning-icon.png'
 
 
 const mongoClientData = async () => {
-    try {
-        const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
 
-        if (!res.ok) {
-            throw new Error("Failed")
+    const storedUserStr = localStorage.getItem('app.AUTH')
+
+    if(storedUserStr){
+
+        const json = JSON.parse(storedUserStr)
+
+        try {
+            const uri = process.env.NEXT_PUBLIC_API_URL;
+            const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+    
+            if (!res.ok) {
+                throw new Error("Failed")
+            }
+            const ponse = await res.json()
+            return ponse.clients
+        } catch (error) {
+            console.log(error)
         }
-        const ponse = await res.json()
-        return ponse.clients
-    } catch (error) {
-        console.log(error)
     }
 }
-const mongoPlanData = async () => {
-    try {
-        const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/plan`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
 
+const mongoPlanData = async () => {
+
+    const storedUserStr = localStorage.getItem('app.AUTH')
+  
+    if(storedUserStr){
+  
+      const json = JSON.parse(storedUserStr)
+  
+      try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+  
         if (!res.ok) {
-            throw new Error("Failed")
+          throw new Error("Failed")
         }
         const ponse = await res.json()
         return ponse.plans
-    } catch (error) {
+      } catch (error) {
         console.log(error)
+      }
     }
 }
 
 const postNewClient = async (newClient) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client`, {
+        const res = await fetch(`${uri}/api/client/clients`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,19 +82,18 @@ const postNewClient = async (newClient) => {
             throw new Error('Failed to post new data')
         }
 
-        // Optionally, you can handle the response after posting if needed
-        const postedFaculty = await res.json()
     } catch (error) {
         console.error('Error:', error)
         throw error
     }
 }
+
 const deleteClient = async (client) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/client`, {
+        const res = await fetch(`${uri}/api/client/clients`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,12 +106,6 @@ const deleteClient = async (client) => {
             throw new Error('Failed to post new data')
         }
 
-        // Optionally, you can handle the response after posting if needed
-        const postedFaculty = await res.json()
-
-        // Fetch updated data after posting
-        //const updatedData = await personData()
-        //return updatedData
     } catch (error) {
         console.error('Error:', error)
         throw error
@@ -107,7 +117,7 @@ const updateClient = async (data) => {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/client`, {
+        const res = await fetch(`${uri}/api/client/clients`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,12 +130,6 @@ const updateClient = async (data) => {
             throw new Error('Failed to post new data')
         }
 
-        // Optionally, you can handle the response after posting if needed
-        const postedFaculty = await res.json()
-
-        // Fetch updated data after posting
-        //const updatedData = await personData()
-        //return updatedData
     } catch (error) {
         console.error('Error:', error)
         throw error
@@ -133,6 +137,10 @@ const updateClient = async (data) => {
 }
 
 const DtClients = ({ isActive, handleActive }) => {
+
+    /* User */
+
+    const [currentUser, setCurrentUser] = useState(null)
 
     /* Base Data */
 
@@ -152,9 +160,6 @@ const DtClients = ({ isActive, handleActive }) => {
             console.log(e)
         }
     }
-
-
-
 
     /* Datatable */
 
@@ -249,6 +254,23 @@ const DtClients = ({ isActive, handleActive }) => {
 
     /* Add Client */
 
+    const [newClient, setNewClient] = useState({
+        id: '',
+        ced: '',
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        debt: '',
+        plan: {
+            id: '',
+            name: '',
+            dura: '',
+            asis: '',
+        },
+        user: ''
+    })
+
     const [isAdd, setIsAdd] = useState(false)
 
     const [planData, setPlanData] = useState([])
@@ -309,7 +331,6 @@ const DtClients = ({ isActive, handleActive }) => {
         const date = new Date(year, month - 1, day)
         setStartDate(getFormattedDate(date))
         setEndDate(getFormattedDate(addDays(date, durationPlan)))
-        //console.log(endDate)
     }
 
     const AddButton = () => {
@@ -336,7 +357,8 @@ const DtClients = ({ isActive, handleActive }) => {
                 name: '',
                 dura: '',
                 asis: '',
-            }
+            },
+            user: currentUser.email
         })
         setAsisPlan('')
         setDurationPlan('')
@@ -344,22 +366,6 @@ const DtClients = ({ isActive, handleActive }) => {
         setPlanSel({id:0})
         setIsAdd(current => !current)
     }
-
-    const [newClient, setNewClient] = useState({
-        id: '',
-        ced: '',
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        debt: '',
-        plan: {
-            id: '',
-            name: '',
-            dura: '',
-            asis: '',
-        }
-    })
 
     const [errorForm, setErrorForm] = useState(false)
 
@@ -396,9 +402,10 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const isClientSendable = () => {
+
         if (newClient.ced.length < 10 || newClient.name.length < 2
             || errorForm || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
-            || !planSel > 0
+            || !planSel > 0 || currentUser.email.length < 1
         ) {
             return false
         } else {
@@ -407,7 +414,6 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const handleSubmitAdd = async () => {
-
 
         const newClientData = {
             ced: newClient.ced,
@@ -424,7 +430,8 @@ const DtClients = ({ isActive, handleActive }) => {
             email: newClient.email,
             phone: newClient.phone,
             address: newClient.address,
-            payments: []
+            payments: [],
+            user: currentUser.email
         }
 
         //Send Data Here
@@ -443,7 +450,8 @@ const DtClients = ({ isActive, handleActive }) => {
                 name: '',
                 dura: '',
                 asis: '',
-            }
+            },
+            user: currentUser.email
         })
 
         handleStatus('Se agrego con exito.')
@@ -519,27 +527,25 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const handleSubmitEdit = async () => {
-        //console.log(newClient)
 
         const data = {
             action: "update",
             id: selRow.id,
-            data: [{
+            data: {
                 ced: newClient.ced,
                 name: newClient.name,
                 plan: [{
-                    ...planSel,   // Copia las propiedades existentes de planSel
+                    ...planSel,
                     ini: startDate,
                     end: endDate
                 }],
-                //ini: startDate,
-                //end: endDate,
                 asis: asisPlan,
                 debt: durationPlan,
                 email: newClient.email,
                 phone: newClient.phone,
                 address: newClient.address,
-            }]
+                user: currentUser.email
+            }
         };
         await updateClient(data)
         await fetchAndLoadData()
@@ -557,7 +563,8 @@ const DtClients = ({ isActive, handleActive }) => {
                 name: '',
                 dura: '',
                 asis: '',
-            }
+            },
+            user: currentUser.email
         })
         setPlanSel({ id: 0 })
 
@@ -574,7 +581,7 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const handleSubmitDelete = async () => {
-        //Send Data Here
+        
         const data = {
             id: selRow.id
         }
@@ -624,6 +631,21 @@ const DtClients = ({ isActive, handleActive }) => {
             (currentPage - 1) * itemsPerPage,
             currentPage * itemsPerPage))
     }, [clientData])
+
+    useEffect(() => {
+        const storedUserStr = localStorage.getItem('app.AUTH')
+      
+        if(storedUserStr){
+          const json = JSON.parse(storedUserStr)
+          setCurrentUser(json.data)
+          setNewClient({
+              ...newClient,
+              user: json.data.email
+              }
+          )
+        }
+      
+    }, [])
 
     return (
         <>
@@ -754,13 +776,18 @@ const DtClients = ({ isActive, handleActive }) => {
                                                 )
                                         }
                                     </div>
-                                    <div className="dt-pagination dark">
-                                        <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                                        <span>
-                                            {currentPage} de {totalPages}
-                                        </span>
-                                        <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
-                                    </div>
+                                    {
+                                        currentItems.length > 0 &&(
+
+                                            <div className="dt-pagination dark">
+                                                <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
+                                                <span>
+                                                    {currentPage} de {totalPages}
+                                                </span>
+                                                <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                                            </div>
+                                        )
+                                    }
                                 </>
                             ) : (
                                 <>
