@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
+import SearchIcon from '@public/assets/icons/search-icon.png'
 
 const mongoAttenData = async () => {
 
@@ -84,6 +85,10 @@ const DtAsis = ({ isActive, handleActive }) => {
             const attenData = await mongoAttenData()
             if (attenData.length >= 0) {
                 setAsisData(attenData)
+                setCurrentItems(attenData.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage))
+                setTotalPages(Math.ceil(attenData.length / itemsPerPage))
             }
 
         } catch (e) {
@@ -100,6 +105,8 @@ const DtAsis = ({ isActive, handleActive }) => {
     const [selRow, setSelRow] = useState({
         id: 0
     })
+
+    const [searchTerm, setSearchTerm] = useState('')
 
     const [totalPages, setTotalPages] = useState(Math.ceil(asisData.length / itemsPerPage))
 
@@ -132,6 +139,29 @@ const DtAsis = ({ isActive, handleActive }) => {
             ))
         }
     }
+
+
+    const handleSearchTerm = (event) => {
+        setSearchTerm(event.target.value)
+        setCurrentPage(1)
+        if (event.target.value.length < 1) {
+            setCurrentItems(asisData.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ))
+            setTotalPages(Math.ceil(asisData.length / itemsPerPage))
+        } else {
+            const filtered = asisData.filter(cli =>
+                cli.name.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+            setCurrentItems(filtered.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ))
+            setTotalPages(Math.ceil(filtered.length / itemsPerPage))
+        }
+    }
+
     const handleFormatDate = (isoDate) => {
         const date = new Date(isoDate);
         const day = date.getUTCDate().toString().padStart(2, '0');
@@ -219,6 +249,12 @@ const DtAsis = ({ isActive, handleActive }) => {
                             </div>
                             <div className={selRow.id > 0 ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
+                            </div>
+                        </div>
+                        <div className="header">
+                            <div className="header-wrap">
+                                <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
+                                <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
                             </div>
                         </div>
                         <div className="body">

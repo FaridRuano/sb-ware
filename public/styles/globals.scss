@@ -2431,7 +2431,7 @@ input, select {
             background-color: $gray-dark-color-light;
         }
         .title-body{
-            font-size: 40px;
+            font-size: 24px;
             font-weight: 700;
         }
         .dt-body{
@@ -2512,6 +2512,7 @@ input, select {
                     justify-content: flex-start;
                     color: $text-color-bg-light;
                     transition: .3s ease-out;
+                    overflow: hidden;
                     &.add{
                         background-color: $primary-color-light;
                     }
@@ -2533,7 +2534,6 @@ input, select {
                         transform: scale(1.08);
                     }
                 }
-                
             }
             .deselect{
                 cursor: pointer;
@@ -2552,6 +2552,38 @@ input, select {
                 }
                 &:hover{
                     transform: scale(1.1);
+                }
+            }
+            .header-wrap{
+                display: flex;
+                gap: 1rem;
+                width: 100%;
+                img{
+                    cursor: pointer;
+                    transition: .3s ease-out;
+                    filter: invert(1);
+                    &.active{
+                        transform: rotate(180deg);
+                    }
+                }
+                input{
+                    border: none;
+                    background-color: transparent;
+                    font-size: 14px;
+                    outline: none;
+                    font-weight: 600;
+                    border-bottom: solid 2px $gray-color-light;
+                    transition: .3s ease-out;
+                    color: $-color-white;
+                    font-size: 16px;
+                    width: 100%;
+                    &::placeholder{
+                        color: $gray-color-light;
+                    }
+                    &:focus{
+                        color: $-color-white;
+                        border-bottom: solid 2px $primary-color-light;
+                    }
                 }
             }
         }

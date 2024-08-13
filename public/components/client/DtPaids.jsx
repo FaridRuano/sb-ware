@@ -6,6 +6,7 @@ import RightArrow from '@public/assets/icons/right-arrow.png'
 import LeftArrow from '@public/assets/icons/left-arrow.png'
 import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
+import SearchIcon from '@public/assets/icons/search-icon.png'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
@@ -17,8 +18,7 @@ const mongoPaymentData = async () => {
       storedUserStr = localStorage.getItem('app.AUTH')
     }else{
       storedUserStr = ''
-    }
-  
+    }  
     if(storedUserStr){
   
       const json = JSON.parse(storedUserStr)
@@ -84,6 +84,10 @@ const DtPaids = ({ isActive, handleActive }) => {
             const paymentData = await mongoPaymentData()
             if (paymentData.length >= 0) {
                 setPaidsData(paymentData)
+                setCurrentItems(paymentData.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage))
+                setTotalPages(Math.ceil(paymentData.length / itemsPerPage))
             }
 
         } catch (e) {
@@ -100,6 +104,8 @@ const DtPaids = ({ isActive, handleActive }) => {
     const [selRow, setSelRow] = useState({
         id: 0
     })
+
+    const [searchTerm, setSearchTerm] = useState('')
 
     const [totalPages, setTotalPages] = useState(Math.ceil(paidsData.length / itemsPerPage))
 
@@ -130,6 +136,27 @@ const DtPaids = ({ isActive, handleActive }) => {
                 (nextPage - 1) * itemsPerPage,
                 nextPage * itemsPerPage
             ))
+        }
+    }
+
+    const handleSearchTerm = (event) => {
+        setSearchTerm(event.target.value)
+        setCurrentPage(1)
+        if (event.target.value.length < 1) {
+            setCurrentItems(paidsData.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ))
+            setTotalPages(Math.ceil(paidsData.length / itemsPerPage))
+        } else {
+            const filtered = paidsData.filter(cli =>
+                cli.name.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+            setCurrentItems(filtered.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ))
+            setTotalPages(Math.ceil(filtered.length / itemsPerPage))
         }
     }
 
@@ -220,6 +247,12 @@ const DtPaids = ({ isActive, handleActive }) => {
                             </div>
                             <div className={selRow.id > 0 ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
+                            </div>
+                        </div>
+                        <div className="header">
+                            <div className="header-wrap">
+                                <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
+                                <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
                             </div>
                         </div>
                         <div className="body">

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
+import SearchIcon from '@public/assets/icons/search-icon.png'
 
 const mongoPlanData = async () => {
     
@@ -128,6 +129,10 @@ const DtPlans = ({ isActive, handleActive }) => {
             const planData = await mongoPlanData()
             if (planData.length >= 0) {
                 setPlanData(planData)
+                setCurrentItems(planData.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage))
+                setTotalPages(Math.ceil(planData.length / itemsPerPage))
             }
 
         } catch (e) {
@@ -189,10 +194,14 @@ const DtPlans = ({ isActive, handleActive }) => {
             ))
             setTotalPages(Math.ceil(planData.length / itemsPerPage))
         } else {
-            setTotalPages(1)
-            setCurrentItems(planData.filter(cli =>
+            const filtered = planData.filter(cli =>
                 cli.name.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+            setCurrentItems(filtered.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
             ))
+            setTotalPages(Math.ceil(filtered.length / itemsPerPage))
         }
     }
 
@@ -495,6 +504,12 @@ const DtPlans = ({ isActive, handleActive }) => {
                             </div>
                             <div className={deselectBtn() ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
+                            </div>
+                        </div>
+                        <div className="header">
+                            <div className="header-wrap">
+                                <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
+                                <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
                             </div>
                         </div>
                         {

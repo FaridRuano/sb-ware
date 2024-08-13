@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
+import SearchIcon from '@public/assets/icons/search-icon.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
 
 
@@ -164,6 +165,10 @@ const DtClients = ({ isActive, handleActive }) => {
             const planData = await mongoPlanData()
             if (clientData.length >= 0) {
                 setClientData(clientData)
+                setCurrentItems(clientData.slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage))
+                setTotalPages(Math.ceil(clientData.length / itemsPerPage))
             }
             if (planData.length >= 0) {
                 setPlanData(planData)
@@ -227,10 +232,14 @@ const DtClients = ({ isActive, handleActive }) => {
             ))
             setTotalPages(Math.ceil(clientData.length / itemsPerPage))
         } else {
-            setTotalPages(1)
-            setCurrentItems(clientData.filter(cli =>
+            const filtered = clientData.filter(cli =>
                 cli.name.toLowerCase().includes(event.target.value.toLowerCase())
+            )
+            setCurrentItems(filtered.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
             ))
+            setTotalPages(Math.ceil(filtered.length / itemsPerPage))
         }
     }
 
@@ -498,7 +507,7 @@ const DtClients = ({ isActive, handleActive }) => {
         const selPlan = planData.find(plan => plan.id === Number(row.plan.id))
         if (selPlan) {
             setDurationPlan(row.plan.dura)
-            setAsisPlan(row.plan.dura)
+            setAsisPlan(row.plan.asis)
             setDeudPlan(row.plan.deud)
             const dateString = row.plan.ini
             const date = new Date(dateString)
@@ -624,12 +633,6 @@ const DtClients = ({ isActive, handleActive }) => {
     }, [isActive])
 
     useEffect(() => {
-        setCurrentItems(clientData.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage))
-    }, [clientData])
-
-    useEffect(() => {
         let storedUserStr = ''
 
         if (typeof window !== "undefined") {
@@ -713,6 +716,12 @@ const DtClients = ({ isActive, handleActive }) => {
                             </div>
                             <div className={deselectBtn() ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
+                            </div>
+                        </div>
+                        <div className="header">
+                            <div className="header-wrap">
+                                <Image src={SearchIcon} width={27} height={'auto'} alt='Search' />
+                                <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
                             </div>
                         </div>
                         {
