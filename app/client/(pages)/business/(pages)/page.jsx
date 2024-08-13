@@ -422,8 +422,7 @@ const Clients = () => {
 
   const handleClientActive = (cli) => {
     const isDate = new Date(cli.plan.end)
-
-    const asis = cli.asis
+    const asis = cli.plan.asis
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
