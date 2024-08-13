@@ -14,56 +14,65 @@ export const UserProvider = ({children}) => {
             data: data,
             expiry: expiryTime,
         }
-        localStorage.setItem('app.AUTH', JSON.stringify(userData))
+        if (typeof window !== "undefined") {
+            localStorage.setItem('app.AUTH', JSON.stringify(userData))
+        }
     }
 
     const deleteUserInfo = () => {
         setUserInfo(null)
-        localStorage.removeItem('app.AUTH')
+        if (typeof window !== "undefined") {
+            localStorage.removeItem('app.AUTH')
+        }
     }
 
 
 
     useEffect(()=> {
-        const storedUserStr = localStorage.getItem('app.AUTH')
-        if (storedUserStr) {
-            const storedUser = JSON.parse(storedUserStr);
-            if (storedUser.expiry && new Date().getTime() > storedUser.expiry) {
-                deleteUserInfo()
-            } else {
-                setUserInfo(storedUser.data);
+        if (typeof window !== "undefined") {
+            const storedUserStr = localStorage.getItem('app.AUTH')
+            if (storedUserStr) {
+                const storedUser = JSON.parse(storedUserStr);
+                if (storedUser.expiry && new Date().getTime() > storedUser.expiry) {
+                    deleteUserInfo()
+                } else {
+                    setUserInfo(storedUser.data);
+                }
             }
         }
     },[])
     
     useEffect(() => {
-        const storedUserStr = localStorage.getItem('app.AUTH')
-        if(storedUserStr){
-            const storedUser = JSON.parse(storedUserStr)
 
-            const checkServerUpdates = async () => {
-                try {
-                    const response = await fetch(`/api/sesion/login?email=${storedUser.data.email}`, {
-                        method: "GET",
-                        headers: {
-                        "Content-Type": "application/json"
+        if (typeof window !== "undefined") {
+            const storedUserStr = localStorage.getItem('app.AUTH')
+            if(storedUserStr){
+                const storedUser = JSON.parse(storedUserStr)
+    
+                const checkServerUpdates = async () => {
+                    try {
+                        const response = await fetch(`/api/sesion/login?email=${storedUser.data.email}`, {
+                            method: "GET",
+                            headers: {
+                            "Content-Type": "application/json"
+                            }
+                        })
+                        const data = await response.json()
+                        if(data){
+                            const updatedUserData = {
+                                data: data.user,
+                                expiry: storedUser.expiry 
+                            }
+                            localStorage.setItem('app.AUTH', JSON.stringify(updatedUserData))
+                            setUserInfo(data.user)
                         }
-                    })
-                    const data = await response.json()
-                    if(data){
-                        const updatedUserData = {
-                            data: data.user,
-                            expiry: storedUser.expiry 
-                        }
-                        localStorage.setItem('app.AUTH', JSON.stringify(updatedUserData))
-                        setUserInfo(data.user)
+                    } catch (error) {
+                        console.error('Error fetching user info:', error)
                     }
-                } catch (error) {
-                    console.error('Error fetching user info:', error)
                 }
+                const intervalId = setInterval(checkServerUpdates, 60000)
+                return () => clearInterval(intervalId)
             }
-            const intervalId = setInterval(checkServerUpdates, 60000)
-            return () => clearInterval(intervalId)
         }
     }, []);
 
