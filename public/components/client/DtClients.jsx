@@ -500,14 +500,14 @@ const DtClients = ({ isActive, handleActive }) => {
 
     const setEditClient = (row) => {
         setSelRow(row)
-        const selPlan = planData.find(plan => plan.id === Number(row.plan[0].id))
+        const selPlan = planData.find(plan => plan.id === Number(row.plan.id))
         if (selPlan) {
-            setDurationPlan(row.plan[0].dura)
-            setAsisPlan(row.plan[0].dura)
-            const [year, month, day] = row.plan[0].ini.split('-')
+            setDurationPlan(row.plan.dura)
+            setAsisPlan(row.plan.dura)
+            const [year, month, day] = row.plan.ini.split('-')
             const date = new Date(year, month - 1, day)
             setStartDate(getFormattedDate(date))
-            const [year2, month2, day2] = row.plan[0].end.split('-')
+            const [year2, month2, day2] = row.plan.end.split('-')
             const date2 = new Date(year2, month2 - 1, day2)
             setEndDate(getFormattedDate(date2))
             setPlanSel(selPlan)
