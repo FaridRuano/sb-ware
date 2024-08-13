@@ -13,7 +13,13 @@ import WarningIcon from '@public/assets/icons/warning-icon.png'
 
 const mongoClientData = async () => {
 
-    const storedUserStr = localStorage.getItem('app.AUTH')
+    let storedUserStr = ''
+
+    if (typeof window !== "undefined") {
+      storedUserStr = localStorage.getItem('app.AUTH')
+    }else{
+      storedUserStr = ''
+    }
 
     if(storedUserStr){
 
@@ -41,7 +47,13 @@ const mongoClientData = async () => {
 
 const mongoPlanData = async () => {
 
-    const storedUserStr = localStorage.getItem('app.AUTH')
+    let storedUserStr = ''
+
+    if (typeof window !== "undefined") {
+      storedUserStr = localStorage.getItem('app.AUTH')
+    }else{
+      storedUserStr = ''
+    }
   
     if(storedUserStr){
   
@@ -633,7 +645,13 @@ const DtClients = ({ isActive, handleActive }) => {
     }, [clientData])
 
     useEffect(() => {
-        const storedUserStr = localStorage.getItem('app.AUTH')
+        let storedUserStr = ''
+
+        if (typeof window !== "undefined") {
+          storedUserStr = localStorage.getItem('app.AUTH')
+        }else{
+          storedUserStr = ''
+        }
       
         if(storedUserStr){
           const json = JSON.parse(storedUserStr)

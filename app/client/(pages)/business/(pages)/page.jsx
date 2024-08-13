@@ -20,7 +20,13 @@ import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 const mongoClientData = async () => {
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
@@ -47,7 +53,14 @@ const mongoClientData = async () => {
 }
 
 const mongoPlanData = async () => {
-  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
@@ -662,7 +675,13 @@ useEffect(() => {
 useEffect(() => {
   fetchAndLoadPersons()
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
     const json = JSON.parse(storedUserStr)

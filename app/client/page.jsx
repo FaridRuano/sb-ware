@@ -7,6 +7,7 @@ import DollarIcon from '@public/assets/icons/dollar-icon.png'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useUser } from '@context/UserContext'
 
 const mongoClientData = async () => {
 
@@ -40,7 +41,14 @@ const Client = () => {
 
   /* User */
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
+
 
   /* Loading Page */
 

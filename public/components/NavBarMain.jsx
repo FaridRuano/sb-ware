@@ -55,8 +55,15 @@ const NavBarMain = () => {
     }, [menu])
 
     useEffect(()=>{
-        const storedUser = localStorage.getItem('app.AUTH');
-        if(storedUser){
+        let storedUserStr = ''
+
+        if (typeof window !== "undefined") {
+          storedUserStr = localStorage.getItem('app.AUTH')
+        }else{
+          storedUserStr = ''
+        }
+
+        if(storedUserStr){
             setLogged(true)
         }else{
             setLogged(false)

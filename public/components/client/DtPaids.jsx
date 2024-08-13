@@ -10,7 +10,14 @@ import StatusModal from './StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
 const mongoPaymentData = async () => {
-    const storedUserStr = localStorage.getItem('app.AUTH')
+    
+    let storedUserStr = ''
+
+    if (typeof window !== "undefined") {
+      storedUserStr = localStorage.getItem('app.AUTH')
+    }else{
+      storedUserStr = ''
+    }
   
     if(storedUserStr){
   

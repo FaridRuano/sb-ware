@@ -7,7 +7,13 @@ import Dtpaids from '@public/components/client/DtPaids'
 
 const mongoClientData = async () => {
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
@@ -34,7 +40,14 @@ const mongoClientData = async () => {
 }
 
 const mongoPlanData = async () => {
-  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
@@ -62,7 +75,13 @@ const mongoPlanData = async () => {
 
 const mongoAttenData = async () => {
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
@@ -88,7 +107,14 @@ const mongoAttenData = async () => {
 }
 
 const mongoPyamentData = async () => {
-  const storedUserStr = localStorage.getItem('app.AUTH')
+  
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 

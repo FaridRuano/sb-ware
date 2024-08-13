@@ -12,7 +12,14 @@ import { useEffect, useState } from 'react'
 
 const fetchCliData = async () => {
 
-  const storedUserStr = localStorage.getItem('app.AUTH')
+
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
 
   if(storedUserStr){
 
