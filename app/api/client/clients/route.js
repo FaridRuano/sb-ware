@@ -10,7 +10,7 @@ export async function POST(request) {
     const highestIdClient = await Client.findOne().sort({ id: -1 }).exec()
     const newId = highestIdClient ? highestIdClient.id + 1 : 1
 
-    await Client.create({ id: newId, ced, name, email, phone, address, plan: plan, payments: null, attent: null, user })
+    await Client.create({ id: newId, ced, name: name.toUpperCase(), email, phone, address, plan: plan, payments: null, attent: null, user })
     return NextResponse.json({ message: "Data created" }, { status: 200 })
 }
 
@@ -24,7 +24,7 @@ export async function GET(request) {
         return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const clients = await Client.find({ user: email })
+    const clients = await Client.find({ user: email }).sort({ createdAt: -1 }).exec()
     return NextResponse.json({ clients })
 }
 
@@ -44,7 +44,6 @@ export async function DELETE(request) {
 
 export async function PUT(request) {
     const { action, id, data } = await request.json();
-    
     await connectMongoDB();
 
     if (action === 'renew') {
@@ -199,17 +198,23 @@ export async function PUT(request) {
         await Client.findOneAndUpdate(
             { id: id },
             {
-                ced: data.ced,
-                name: data.name,
-                plan: data.plan,
-                asis: data.asisPlan,
-                deud: data.durationPlan,
-                email: data.email,
-                phone: data.phone,
-                address: data.address,
+                $set: { // Use $set to update fields
+                    ced: data.ced,
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone,
+                    address: data.address,
+                    'plan.asis': data.plan.asis,
+                    'plan.deud': data.plan.deud,
+                    'plan.ini': data.plan.ini,
+                    'plan.end': data.plan.end,
+                    'plan.dura': data.plan.dura,
+                    'plan.name': data.plan.name,
+                    'plan.id': data.plan.id
+                }
             },
             { new: true }
-        );
+        )
 
         return NextResponse.json({ message: "Data created" }, { status: 200 })
 

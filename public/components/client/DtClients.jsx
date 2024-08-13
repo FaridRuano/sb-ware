@@ -294,10 +294,12 @@ const DtClients = ({ isActive, handleActive }) => {
         if (selPlan) {
             setDurationPlan(selPlan.dura)
             setAsisPlan(selPlan.asis)
+            setDeudPlan(selPlan.cost)
             const [year, month, day] = startDate.split('-')
             const date = new Date(year, month - 1, day)
             setEndDate(getFormattedDate(addDays(date, selPlan.dura)))
             setPlanSel(selPlan)
+
             setNewClient((prev) => ({
                 ...prev,
                 debt: selPlan.cost,
@@ -318,6 +320,8 @@ const DtClients = ({ isActive, handleActive }) => {
     const [durationPlan, setDurationPlan] = useState(0)
 
     const [asisPlan, setAsisPlan] = useState(0)
+
+    const [deudPlan, setDeudPlan] = useState(0)
 
     const currentDate = new Date()
 
@@ -385,89 +389,85 @@ const DtClients = ({ isActive, handleActive }) => {
 
     const handleNewClient = (e) => {
         const { name, value } = e.target
-
-        /* Ced Controller */
+    
         if (name === 'ced' || name === 'phone') {
-            if (!/^\d*$/.test(value) || value.length > 10) {
-                return
-            }
+          const isNumeric = /^[0-9]*$/.test(value);
+    
+          if (!isNumeric && value !== '') {
+            return;
+          }
         }
-        if (name === 'email') {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                if (value.length < 1) {
-                    setErrorMsg("")
-                    setErrorForm(false)
-                } else {
-                    setErrorForm(true)
-                    setErrorMsg("Email no válido.")
-                }
-            } else {
-                setErrorForm(false)
-                setErrorMsg("")
-            }
-        }
+    
         setNewClient({
-            ...newClient,
-            [name]: value,
+          ...newClient,
+          [name]: value,
         })
-    }
-
-    const isClientSendable = () => {
-
-        if (newClient.ced.length < 10 || newClient.name.length < 2
-            || errorForm || newClient.email.length < 1 || newClient.ced.length < 7 || newClient.address.length < 1
-            || !planSel > 0 || currentUser.email.length < 1
-        ) {
-            return false
-        } else {
-            return true
-        }
-    }
+      }
 
     const handleSubmitAdd = async () => {
-
-        const newClientData = {
-            ced: newClient.ced,
-            name: newClient.name,
-            plan: [{
-                ...planSel,   // Copia las propiedades existentes de planSel
-                ini: startDate,
-                end: endDate
-            }],
-            ini: startDate,
-            end: endDate,
-            asis: asisPlan,
-            debt: durationPlan,
-            email: newClient.email,
-            phone: newClient.phone,
-            address: newClient.address,
-            payments: [],
-            user: currentUser.email
+        if (newClient.name.length < 2 || newClient.ced.length < 1 || newClient.email.length < 1 || newClient.phone.length < 1 || newClient.address.length < 1 || planSel.id === 0) {
+            if (newClient.ced.length < 1) {
+              setNewClient((prev) => ({
+                ...prev,
+                ced: '9999999999999',
+              }));
+            }
+            
+            if (newClient.email.length < 1) {
+              setNewClient((prev) => ({
+                ...prev,
+                email: 'default@email.com',
+              }));
+            }
+            if (newClient.phone.length < 1) {
+              setNewClient((prev) => ({
+                ...prev,
+                phone: '9999999999',
+              }));
+            }
+            if (newClient.address.length < 1) {
+              setNewClient((prev) => ({
+                ...prev,
+                address: 'Ecuador',
+              }));
+            }
+            setErrorForm(true)
+            setErrorMsg('Nombre y Plan son los únicos campos obligatorios!')
         }
-
-        //Send Data Here
-        await postNewClient(newClientData)
-        await fetchAndLoadData()
-
-        setNewClient({
-            ced: '',
-            name: '',
-            email: '',
-            phone: '',
-            address: '',
-            debt: '',
-            plan: {
-                id: '',
-                name: '',
-                dura: '',
-                asis: '',
-            },
-            user: currentUser.email
-        })
-
-        handleStatus('Se agrego con exito.')
-        handleIsAdd()
+        else{
+            setErrorForm(false)
+            setErrorMsg('')
+            const newClientData = {
+                ced: newClient.ced,
+                name: newClient.name.toUpperCase(),
+                plan: {
+                    id: planSel.id,
+                    name: planSel.name,
+                    dura: durationPlan,
+                    asis: asisPlan,
+                    deud: planSel.cost,
+                    ini: startDate,
+                    end: endDate,
+                },
+                ini: startDate,
+                end: endDate,
+                asis: asisPlan,
+                debt: durationPlan,
+                email: newClient.email.toLowerCase(),
+                phone: newClient.phone,
+                address: newClient.address,
+                payments: [],
+                user: currentUser.email
+            }
+    
+            try {
+                await postNewClient(newClientData)
+                await fetchAndLoadData()
+                handleIsAdd()
+              } catch (error) {
+                console.error('Error posting new person:', error)
+              }
+        }
     }
 
     /* Edit Client */
@@ -480,19 +480,14 @@ const DtClients = ({ isActive, handleActive }) => {
             setPlanSel({ id: 0 })
             setDurationPlan(0)
             setAsisPlan(0)
+            setStartDate(getFormattedDate(currentDate))
+            setEndDate(getFormattedDate(currentDate))
             setNewClient({
                 ced: '',
                 name: '',
                 email: '',
                 phone: '',
                 address: '',
-                debt: '',
-                plan: {
-                    id: '',
-                    name: '',
-                    dura: '',
-                    asis: '',
-                }
             })
         }
         setIsEdit(current => !current)
@@ -504,11 +499,12 @@ const DtClients = ({ isActive, handleActive }) => {
         if (selPlan) {
             setDurationPlan(row.plan.dura)
             setAsisPlan(row.plan.dura)
-            const [year, month, day] = row.plan.ini.split('-')
-            const date = new Date(year, month - 1, day)
+            setDeudPlan(row.plan.deud)
+            const dateString = row.plan.ini
+            const date = new Date(dateString)
             setStartDate(getFormattedDate(date))
-            const [year2, month2, day2] = row.plan.end.split('-')
-            const date2 = new Date(year2, month2 - 1, day2)
+            const dateString2 = row.plan.end
+            const date2 = new Date(dateString2)
             setEndDate(getFormattedDate(date2))
             setPlanSel(selPlan)
         } else {
@@ -524,13 +520,6 @@ const DtClients = ({ isActive, handleActive }) => {
             email: row.email,
             phone: row.phone,
             address: row.address,
-            debt: selPlan.cost,
-            plan: [{
-                id: selPlan.id,
-                name: selPlan.name,
-                dura: selPlan.dura,
-                asis: selPlan.asis,
-            }]
         })
     }
 
@@ -545,20 +534,23 @@ const DtClients = ({ isActive, handleActive }) => {
             id: selRow.id,
             data: {
                 ced: newClient.ced,
-                name: newClient.name,
-                plan: [{
-                    ...planSel,
+                name: newClient.name.toUpperCase(),
+                plan: {
+                    id: planSel.id,
+                    name: planSel.name,
+                    dura: durationPlan,
+                    asis: asisPlan,
+                    deud: deudPlan || 0,
                     ini: startDate,
                     end: endDate
-                }],
-                asis: asisPlan,
-                debt: durationPlan,
-                email: newClient.email,
+                },
+                email: newClient.email.toLowerCase(),
                 phone: newClient.phone,
                 address: newClient.address,
                 user: currentUser.email
             }
-        };
+        }
+        console.log(data)
         await updateClient(data)
         await fetchAndLoadData()
         //Send Data Here
@@ -569,13 +561,6 @@ const DtClients = ({ isActive, handleActive }) => {
             email: '',
             phone: '',
             address: '',
-            debt: '',
-            plan: {
-                id: '',
-                name: '',
-                dura: '',
-                asis: '',
-            },
             user: currentUser.email
         })
         setPlanSel({ id: 0 })
@@ -898,6 +883,10 @@ const DtClients = ({ isActive, handleActive }) => {
                                                         <div>Fin</div>
                                                         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                                                     </div>
+                                                    <div className="input-form">
+                                                        <div>Deuda</div>
+                                                        <input type="number" value={deudPlan} onChange={(e) => setDeudPlan(e.target.value)} placeholder='0'/>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="form-submit">
@@ -912,7 +901,7 @@ const DtClients = ({ isActive, handleActive }) => {
                                                                     }
                                                                 </span>
                                                             </div>
-                                                            <div className={isClientSendable() ? "submit" : "submit disabled"}>
+                                                            <div className="submit">
                                                                 <button onClick={() => handleSubmitAdd()}>
                                                                     Guardar
                                                                 </button>

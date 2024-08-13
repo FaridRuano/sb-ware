@@ -102,26 +102,35 @@ const Config = () => {
 
   const [editInfo, setEditInfo] = useState(false)
 
-  const daysUntilPay = (date) => {
-
-    const inputDate = new Date(date)
-  
-    const dayOfMonth = inputDate.getDate()
-  
-    const currentMonth = inputDate.getMonth()
-    const currentYear = inputDate.getFullYear()
-  
-    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1
-    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear
-  
-    const nextDate = new Date(nextYear, nextMonth, dayOfMonth)
-  
-    const differenceInMillis = nextDate - inputDate
-  
-    const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24))
-  
-    setExpireDate(differenceInDays)
-  }
+  const daysUntilPay = (date, plan) => {
+    const inputDate = new Date(date);
+    
+    const dayOfMonth = inputDate.getDate();
+    const currentMonth = inputDate.getMonth();
+    const currentYear = inputDate.getFullYear();
+    
+    let nextDate;
+    
+    if (plan.endsWith('M')) { // Monthly plan
+        const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+        const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+        nextDate = new Date(nextYear, nextMonth, dayOfMonth);
+    } else if (plan.endsWith('A')) { // Annual plan
+        const nextYear = currentYear + 1;
+        nextDate = new Date(nextYear, currentMonth, dayOfMonth);
+    } else if (plan.endsWith('360')) { // Special case for 360-day plans
+        nextDate = new Date(inputDate);
+        nextDate.setDate(nextDate.getDate() + 360); // Add 360 days
+    } else {
+        console.error('Unknown plan type');
+        return;
+    }
+    
+    const differenceInMillis = nextDate - inputDate;
+    const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
+    
+    setExpireDate(differenceInDays);
+}
 
   const handleEditInfo = () => {
     setEditForm(businesInfo)
@@ -517,7 +526,7 @@ const Config = () => {
         setSubType(fetchData.sub.plan)
         setSpace(fetchData.sub.space)
         setSpaceRemain(fetchData.sub.space - fetchData.totalCli)
-        daysUntilPay(fetchData.sub.paydate)
+        daysUntilPay(fetchData.sub.paydate, fetchData.sub.plan)
         
       }
       setLoading(false)

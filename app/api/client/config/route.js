@@ -19,7 +19,7 @@ export async function GET (request) {
             )
         }
 
-        const totalClients = await Client.countDocuments()
+        const totalClients = await Client.countDocuments({ userEmail: email });
 
         return NextResponse.json(
             { 

@@ -146,9 +146,9 @@ const Client = () => {
       let progress = setInterval(() => {
   
         if(progressStartValue <= progressEndValue * 0.999){
-          progressStartValue = progressStartValue + 0.1
+          progressStartValue = progressStartValue + 10
         }else{
-          progressStartValue = progressStartValue + 0.01
+          progressStartValue = progressStartValue + 1
         }
   
         progressValue.textContent = `$${progressStartValue.toFixed(2)}`
@@ -158,7 +158,7 @@ const Client = () => {
           progressValue.textContent = `$${totalMoney.toFixed(2)}`
           clearInterval(progress)
         }
-      }, speed)
+      }, .01)
   
       let paidsText = document.getElementById('paids'),
       nopaidsText = document.getElementById('nopaids'),
@@ -232,7 +232,7 @@ const Client = () => {
           averageText.textContent = `$${monthlyRealTimeAverage.toFixed(2)}`
           clearInterval(progressAverage)
         }else{
-          averageStartValue = averageStartValue + 0.1
+          averageStartValue = averageStartValue + 1
         }
         averageText.textContent = `$${averageStartValue.toFixed(2)}`
   

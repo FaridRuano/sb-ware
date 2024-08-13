@@ -101,8 +101,7 @@ const postNewClient = async (newClient) => {
       throw new Error('Failed to post new data')
     }
 
-    // Optionally, you can handle the response after posting if needed
-    const postedFaculty = await res.json()
+    const posted = await res.json()
   } catch (error) {
     console.error('Error:', error)
     throw error
@@ -127,12 +126,8 @@ const deleteClient = async (client) => {
       throw new Error('Failed to post new data')
     }
 
-    // Optionally, you can handle the response after posting if needed
-    const postedFaculty = await res.json()
+    const posted = await res.json()
 
-    // Fetch updated data after posting
-    //const updatedData = await personData()
-    //return updatedData
   } catch (error) {
     console.error('Error:', error)
     throw error
@@ -157,12 +152,8 @@ const updateClient = async (data) => {
       throw new Error('Failed to post new data')
     }
 
-    // Optionally, you can handle the response after posting if needed
-    const postedFaculty = await res.json()
+    const posted = await res.json()
 
-    // Fetch updated data after posting
-    //const updatedData = await personData()
-    //return updatedData
   } catch (error) {
     console.error('Error:', error)
     throw error
@@ -220,7 +211,7 @@ const Clients = () => {
         return false;
       }
 
-      return cli.asis > 0 && cliDate > current
+      return cli.plan.asis > 0 && cliDate > current
     }))
     return filteredData.length
   }
@@ -254,7 +245,15 @@ const Clients = () => {
 
   const handleAddClient = () => {
     setAddClient(current => !current)
+    setNewClient({
+      ced: '',
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+    })
     setSelRow({ id: 0 })
+    setStartDate(getFormattedDate(currentDate))
   }
 
   const [durationPlan, setDurationPlan] = useState(0)
@@ -298,6 +297,14 @@ const Clients = () => {
   const handleNewClient = (e) => {
     const { name, value } = e.target
 
+    if (name === 'ced' || name === 'phone') {
+      const isNumeric = /^[0-9]*$/.test(value);
+
+      if (!isNumeric && value !== '') {
+        return;
+      }
+    }
+
     setNewClient({
       ...newClient,
       [name]: value,
@@ -312,7 +319,7 @@ const Clients = () => {
   }
 
   const handleSubmit = async () => {
-    if (newClient.name.length < 2 || newClient.ced.length < 1 || newClient.email.length < 1 || newClient.phone.length < 1 || newClient.address.length < 1 ) {
+    if (newClient.name.length < 2 || newClient.ced.length < 1 || newClient.email.length < 1 || newClient.phone.length < 1 || newClient.address.length < 1 || planSel.id === 0) {
       if (newClient.ced.length < 1) {
         setNewClient((prev) => ({
           ...prev,
@@ -339,13 +346,13 @@ const Clients = () => {
         }));
       }
       setSendable(true)
-      setErrorMsg('Nombre es el único campo obligatorio!')
+      setErrorMsg('Nombre y plan son los únicos campos obligatorios!')
     } else {
       setSendable(false)
       const newClientData = {
         ced: newClient.ced,
-        name: newClient.name,
-        email: newClient.email,
+        name: newClient.name.toUpperCase(),
+        email: newClient.email.toLowerCase(),
         phone: newClient.phone,
         address: newClient.address,
         plan: {
@@ -468,8 +475,7 @@ const Clients = () => {
           console.warn(`Invalid date: ${cli.plan.end}`)
           return false;
         }
-
-        return cli.asis > 0 && cliDate > current
+        return cli.plan.asis > 0 && cliDate > current
       }))
       setClientData(filteredData)
       setTotalPages(Math.ceil(filteredData.length / itemsPerPage))
@@ -562,7 +568,6 @@ const Clients = () => {
         id: selRow.id,
         data: startDate
       };
-      console.log(data)
       await updateClient(data)
       await fetchAndLoadPersons()
     } else {
