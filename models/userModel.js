@@ -5,11 +5,7 @@ const SchemaTypes = mongoose.Schema.Types;
 
 const paySchema = new Schema({
     date: Date,
-    amount: {
-        type: SchemaTypes.Double,
-        default: null,  
-        required: false 
-    },
+    amount: Number,
     auth: Number,
     plan: String,
 })
@@ -18,11 +14,7 @@ const subSchema = new Schema({
     active: Boolean,
     plan: String,
     paydate: Date,
-    cost: {
-        type: SchemaTypes.Double,
-        default: null,  
-        required: false 
-    },
+    cost: Number,
     space: Number,
     pays: [paySchema],
 })
