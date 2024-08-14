@@ -192,6 +192,7 @@ const Company = () => {
     if (action === 'open') {
       setDtPlan(true)
     } else {
+      fetchAndLoadData()
       setDtPlan(false)
     }
   }
@@ -206,6 +207,7 @@ const Company = () => {
     if (action === 'open') {
       setDtAsis(true)
     } else {
+      fetchAndLoadData()
       setDtAsis(false)
     }
   }
@@ -228,6 +230,7 @@ const Company = () => {
     if (action === 'open') {
       setDtPaids(true)
     } else {
+      fetchAndLoadData()
       setDtPaids(false)
     }
   }

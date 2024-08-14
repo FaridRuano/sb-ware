@@ -34,12 +34,10 @@ const RenewModal = ({isActive, handleModal, handleResponse, dataModal, dataModal
     
     const handlePlan = (e) => {
         const selPlan = dataModal2.find(plan => plan.id === Number(e.target.value))
-    
         if(selPlan){
-          //setPlan(e.target.value)
-          setPlan(selPlan)
+            setPlan(selPlan.id)
         }else{
-          setPlan([])
+          setPlan(0)
         }
     }
 

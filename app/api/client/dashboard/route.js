@@ -109,7 +109,7 @@ export async function GET(request) {
 
     const paids = clients.filter(client => (client.payments || []).length > 0).length
 
-    const totalClients = await Client.countDocuments()
+    const totalClients = await Client.countDocuments({ user:email })
 
     const totalAmount = clients.reduce((sum, client) => {
         const payments = client.payments || []

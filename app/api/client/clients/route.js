@@ -1,5 +1,6 @@
 import connectMongoDB from "@libs/mongodb"
 import Client from "@models/clientModel"
+import Plan from "@models/planModel"
 import mongoose from "mongoose"
 import { NextResponse } from "next/server"
 
@@ -48,40 +49,34 @@ export async function PUT(request) {
 
     if (action === 'renew') {
 
-        const client = await Client.findOne({ id: id });
+        
+        const client = await Client.findById( id );
         if (!client) {
             return NextResponse.json({ message: "Client not found" }, { status: 404 });
         }
 
-        const lastPlan = client.plan[client.plan.length - 1];
-        const deud = client.deud
-        if (!lastPlan || !lastPlan.dura) {
-            return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
-        }
+        const lastPlan = client.plan.id
 
-        // Calcular la nueva fecha de finalización sumando los días de duración al startDate
+        const plan = await Plan.findOne({id: lastPlan});
+
         const newIni = new Date(data);
         const newEnd = new Date(newIni);
-        newEnd.setDate(newEnd.getDate() + lastPlan.dura);
+        newEnd.setDate(newEnd.getDate() + plan.dura);
 
-        const updateQuery = {};
-        updateQuery[`plan.${0}.ini`] = newIni;
-        updateQuery[`plan.${0}.end`] = newEnd;
-        // Actualizar el cliente con el nuevo plan y fechas
-        const updatedClient = await Client.findOneAndUpdate(
-            { id: id },
+        await Client.findOneAndUpdate(
+            { _id: id },
             {
-                dura: lastPlan.dura,
-                //ini: newIni,
-                //end: newEnd,
-                asis: lastPlan.asis,
-                deud: deud + lastPlan.cost,
-                $set: updateQuery,
+                "plan.name": plan.name,
+                "plan.dura": plan.dura,
+                "plan.asis": plan.asis,
+                "plan.deud": plan.cost,
+                "plan.ini": newIni,
+                "plan.end": newEnd,
+
             },
             { new: true }
         );
-
-        return NextResponse.json({ message: "Data created" }, { status: 200 })
+        return NextResponse.json({ message: "Client updated!"}, { status: 200 })
 
     } else if (action === 'registerPayment') {
 
@@ -147,52 +142,36 @@ export async function PUT(request) {
         }
 
     }else if (action === 'change') {
-        const client = await Client.findOne({ id: id });
+
+        const client = await Client.findById( id );
+        
         if (!client) {
             return NextResponse.json({ message: "Client not found" }, { status: 404 });
         }
 
-        //const lastPlan = client.plan[client.plan.length - 1];
-        const plan = data[0]
-        console.log(plan)
-        //const date = data[1]
-        const deud = client.deud
-        // if (!lastPlan || !lastPlan.duration) {
-        //     return NextResponse.json({ message: "No valid plan found for the client" }, { status: 400 });
-        // }
-
-        // Calcular la nueva fecha de finalización sumando los días de duración al startDate
-        const newIni = new Date(plan.ini);
+        const plan = data.plan
+        const newIni = new Date(data.date);
         const newEnd = new Date(newIni);
         newEnd.setDate(newEnd.getDate() + plan.dura);
-        const updateQuery = {};
-        //updateQuery[`plan.${0}.ini`] = newIni;
-        const newEndString = newEnd.toISOString();
-        updateQuery[`plan.${0}.end`] = newEndString;
 
-        // Actualizar el cliente con el nuevo plan y fechas
-        const updatedClient = await Client.findOneAndUpdate(
-            { id: id },
+        await Client.findOneAndUpdate(
+            { _id: id },
             {
-                dura: plan.dura,
-                //ini: newIni,
-                //end: newEnd,
-                asis: plan.asis,
-                deud: deud + plan.cost,
-                plan: plan,
-                //$set: updateQuery,
+                "plan.name": plan.name,
+                "plan.id": plan.id,
+                "plan.dura": plan.dura,
+                "plan.asis": plan.asis,
+                "plan.deud": plan.cost,
+                "plan.ini": newIni,
+                "plan.end": newEnd,
+
             },
             { new: true }
-        );
-        const updatedClient2 = await Client.findOneAndUpdate(
-            { id: id },
-            {
-                $set: updateQuery,
-            },
-            { new: true }
-        );
-        return NextResponse.json({ message: "Data created" }, { status: 200 })
+        )
 
+        
+        return NextResponse.json({ message: "Client updated!"}, { status: 200 })
+        
     }else if (action === "update") {
 
         await Client.findOneAndUpdate(

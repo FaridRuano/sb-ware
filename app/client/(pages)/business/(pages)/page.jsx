@@ -138,7 +138,6 @@ const updateClient = async (data) => {
   try {
     const uri = process.env.NEXT_PUBLIC_API_URL;
 
-
     const res = await fetch(`${uri}/api/client/clients`, {
       method: 'PUT',
       headers: {
@@ -151,8 +150,6 @@ const updateClient = async (data) => {
     if (!res.ok) {
       throw new Error('Failed to post new data')
     }
-
-    const posted = await res.json()
 
   } catch (error) {
     console.error('Error:', error)
@@ -558,35 +555,38 @@ const Clients = () => {
     setRenewModal(current => !current)
   }
 
-  const handleRenewResponse = async (pl, dt) => {
+  const handleRenewResponse = async (plId, dt) => {
     setRenewModal(current => !current)
+
+    const pl = planData.find(plan => plan.id === Number(plId))
+
     if (pl == undefined && dt == undefined) {
 
       const data = {
         action: "renew",
-        id: selRow.id,
+        id: selRow._id,
         data: startDate
-      };
+      }
+      
       await updateClient(data)
       await fetchAndLoadPersons()
+
     } else {
  
-    const data = {
-      action: "change",
-      id: selRow.id,
-      data: [{
-        ...pl,   
-        ini: dt,
-      }]
-    };
-    console.log(data)
-    await updateClient(data)
-    await fetchAndLoadPersons()
+      const data = {
+        action: "change",
+        id: selRow._id,
+        data: {
+          plan: pl,
+          date: dt,
+        }
+      }
+      await updateClient(data)
+      await fetchAndLoadPersons()
+    }
+    handleStatus('El plan de ' + selRow.name + ' renovo correctamente.')
+    setSelRow({ id: 0 })
   }
-
-  handleStatus('El plan de ' + selRow.name + ' renovo correctamente.')
-  setSelRow({ id: 0 })
-}
 
 /* Pay */
 
