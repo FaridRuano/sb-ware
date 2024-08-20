@@ -25,7 +25,7 @@ export async function GET(request) {
         return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const clients = await Client.find({ user: email }).sort({ createdAt: -1 }).exec()
+    const clients = await Client.find({ user: email }).sort({ updatedAt: -1 }).exec()
     return NextResponse.json({ clients })
 }
 
