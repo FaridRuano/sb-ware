@@ -50,12 +50,12 @@ const PayModal = ({ isActive, handleModal, handleResponse, dataModal }) => {
     }
 
     useEffect(()=>{
-        if(dataModal.id > 0){
+        if(dataModal._id !== ''){
             setActual(dataModal.plan.deud)
         }
     },[])
 
-    if(dataModal.id>0){
+    if(dataModal._id !== ''){
         if (changeModal) {
             return (
                 <div className={isActive ? 'modal-container' : 'modal-container hidden'} id='confirm-container'>

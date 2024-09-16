@@ -48,7 +48,7 @@ export const UserProvider = ({children}) => {
             const storedUserStr = localStorage.getItem('app.AUTH')
             if(storedUserStr){
                 const storedUser = JSON.parse(storedUserStr)
-                const checkServerUpdates = async () => {
+                const checkServerUpdates = async() => {
                     try {
                         const response = await fetch(`/api/sesion/login?email=${storedUser.data.email}`, {
                             method: "GET",
@@ -69,11 +69,13 @@ export const UserProvider = ({children}) => {
                         console.error('Error fetching user info:', error)
                     }
                 }
-                const intervalId = setInterval(checkServerUpdates, 10000)
+                const intervalId = setInterval(checkServerUpdates, 60000)
                 return () => clearInterval(intervalId)
             }
+            
         }
-    }, []);
+        
+    }, [])
 
     return(
         <UserContext.Provider value = {{userInfo, handleUserInfo, deleteUserInfo}}>

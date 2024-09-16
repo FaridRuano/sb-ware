@@ -2277,6 +2277,13 @@ input, select {
             opacity: .5;
         }
     }
+    div{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 70px;
+    }
     &.dark{
         filter: invert(1);
     }

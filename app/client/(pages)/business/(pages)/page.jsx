@@ -9,7 +9,9 @@ import AsisBtn from '@public/assets/icons/btn-asis.png'
 import PayBtn from '@public/assets/icons/btn-pay.png'
 import SearchIcon from '@public/assets/icons/search-icon.png'
 import RightArrow from '@public/assets/icons/right-arrow.png'
+import RightTop from '@public/assets/icons/right-top.png'
 import LeftArrow from '@public/assets/icons/left-arrow.png'
+import LeftTop from '@public/assets/icons/left-top.png'
 import DeselectIcon from '@public/assets/icons/deselect-icon.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
 import ConfirmModal from '@public/components/client/ConfirmModal'
@@ -18,7 +20,7 @@ import PayModal from '@public/components/client/PayModal'
 import StatusModal from '@public/components/client/StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
-const mongoClientData = async () => {
+const mongoClientData = async (page, limit, type, signal ) => {
 
   let storedUserStr = ''
 
@@ -34,18 +36,66 @@ const mongoClientData = async () => {
 
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&limit=${limit}&type=${type}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            }
+            },
+            signal: signal
         })
 
         if (!res.ok) {
             throw new Error("Failed")
         }
         const ponse = await res.json()
-        return ponse.clients
+        return {
+          clients: ponse.clients,
+          totalPages: ponse.totalPages,
+          currentPage: ponse.currentPage,
+          totalCli : ponse.totalCli,
+          totalActive: ponse.totalCliActive,
+          totalInactive: ponse.totalCliInactive,
+        }
+    } catch (error) {
+        console.log(error)
+    }
+  }
+}
+
+const mongoSearchData = async (page, limit, term, signal ) => {
+
+  let storedUserStr = ''
+
+  if (typeof window !== "undefined") {
+    storedUserStr = localStorage.getItem('app.AUTH')
+  }else{
+    storedUserStr = ''
+  }
+
+  if(storedUserStr){
+
+    const json = JSON.parse(storedUserStr)
+
+    try {
+        const uri = process.env.NEXT_PUBLIC_API_URL;
+        console.log(term)
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&limit=${limit}&term=${term}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            signal: signal
+        })
+
+        if (!res.ok) {
+            throw new Error("Failed")
+        }
+        const ponse = await res.json()
+        return {
+          clients: ponse.clients,
+          totalPages: ponse.totalPages,
+          currentPage: ponse.currentPage,
+        }
     } catch (error) {
         console.log(error)
     }
@@ -173,51 +223,21 @@ const Clients = () => {
 
   /* Client Data */
 
-  const [baseData, setBaseData] = useState([])
-
   const [clientData, setClientData] = useState([])
 
-  const countClients = () => {
-    return baseData.length
-  }
+  const [ totalClients, setTotalClients ] = useState(0)
 
-  const countClientsInactive = () => {
-    const current = new Date()
-    const filteredData = (baseData.filter(cli => {
-      const cliDate = new Date(cli.plan.end)
+  const [ totalActive, setTotalActive ] = useState(0)
 
-      if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.plan.end}`)
-        return false;
-      }
-
-      return cli.asis === 0 || cliDate < current
-    }))
-    return filteredData.length
-
-  }
-
-  const countClientsActive = () => {
-    const current = new Date()
-    const filteredData = (baseData.filter(cli => {
-      const cliDate = new Date(cli.plan.end)
-
-      // Control date validness
-      if (isNaN(cliDate)) {
-        console.warn(`Invalid date: ${cli.plan.end}`)
-        return false;
-      }
-
-      return cli.plan.asis > 0 && cliDate > current
-    }))
-    return filteredData.length
-  }
+  const [ totalInactive, setTotalInactive ] = useState(0)
 
   /* Plan Data */
 
   const [planData, setPlanData] = useState([])
 
-  const [planSel, setPlanSel] = useState([])
+  const [planSel, setPlanSel] = useState({
+    id: 0
+  })
 
   const handlePlan = (e) => {
     const selPlan = planData.find(plan => plan.id === Number(e.target.value))
@@ -232,7 +252,7 @@ const Clients = () => {
       setDurationPlan(0)
       setAsisPlan(0)
       setEndDate(getFormattedDate(addDays(currentDate, 0)))
-      setPlanSel(0)
+      setPlanSel({ _id: 0})
     }
   }
 
@@ -249,7 +269,8 @@ const Clients = () => {
       phone: '',
       address: '',
     })
-    setSelRow({ id: 0 })
+    setPlanSel({ id: 0})
+    setSelRow({ _id: '' })
     setStartDate(getFormattedDate(currentDate))
   }
 
@@ -289,7 +310,6 @@ const Clients = () => {
   const [errorEmail, setErrorEmail] = useState(false)
 
   const [errorMsg, setErrorMsg] = useState('')
-
 
   const handleNewClient = (e) => {
     const { name, value } = e.target
@@ -380,41 +400,35 @@ const Clients = () => {
   const itemsPerPage = 10
 
   const [selRow, setSelRow] = useState({
-    id: 0
+    _id: ''
   })
 
   const [searchTerm, setSearchTerm] = useState('')
 
-  const [totalPages, setTotalPages] = useState(Math.ceil(clientData.length / itemsPerPage))
+  const [totalPages, setTotalPages] = useState(1)
 
-  const [currentItems, setCurrentItems] = useState(clientData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  ))
+  const handleFirstPage = () => {
+    setSelRow({ _id: '' })
+    setCurrentPage(1)
+  }
 
   const handlePreviousPage = () => {
-    setSelRow({ id: 0 })
-    if (currentPage > 1) {
+    setSelRow({ _id: '' })
+    if(currentPage > 1){
       setCurrentPage(currentPage - 1)
-      const nextPage = currentPage - 1
-      setCurrentPage(nextPage)
-      setCurrentItems(clientData.slice(
-        (nextPage - 1) * itemsPerPage,
-        nextPage * itemsPerPage
-      ))
     }
   }
 
   const handleNextPage = () => {
-    setSelRow({ id: 0 })
-    if (currentPage < totalPages) {
-      const nextPage = currentPage + 1
-      setCurrentPage(nextPage)
-      setCurrentItems(clientData.slice(
-        (nextPage - 1) * itemsPerPage,
-        nextPage * itemsPerPage
-      ))
+    setSelRow({ _id: '' })
+    if(currentPage < totalPages){
+      setCurrentPage(currentPage + 1)
     }
+  }
+
+  const handleTopPage = () => {
+    setSelRow({ _id: '' })
+    setCurrentPage(totalPages)
   }
 
   const handleClientActive = (cli) => {
@@ -434,87 +448,55 @@ const Clients = () => {
   }
 
   const handleSearchTerm = (event) => {
-    setSearchTerm(event.target.value)
     setCurrentPage(1)
-    if (event.target.value.length < 1) {
-      setCurrentItems(clientData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ))
-      setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-    } else {
-      setTotalPages(1)
-      setCurrentItems(clientData.filter(cli =>
-        cli.name.toLowerCase().includes(event.target.value.toLowerCase())
-      ))
-    }
+    setSearchTerm(event.target.value);
   }
 
   const handleDataClient = (n) => {
+    setSearchTerm('')
     setActiveTable(n)
-    const current = new Date()
-    if (n === 1) {
-      setClientData(baseData)
-      setTotalPages(Math.ceil(baseData.length / itemsPerPage))
-      setCurrentItems(baseData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ))
-    }
-
-    if (n === 2) {
-      const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.plan.end)
-
-        // Control date validness
-        if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.plan.end}`)
-          return false;
-        }
-        return cli.plan.asis > 0 && cliDate > current
-      }))
-      setClientData(filteredData)
-      setTotalPages(Math.ceil(filteredData.length / itemsPerPage))
-      setCurrentItems(filteredData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ))
-    }
-    if (n === 3) {
-      const filteredData = (baseData.filter(cli => {
-        const cliDate = new Date(cli.plan.end)
-
-        // Control date validness
-        if (isNaN(cliDate)) {
-          console.warn(`Invalid date: ${cli.plan.end}`)
-          return false;
-        }
-
-        return cli.asis === 0 || cliDate < current
-      }))
-      setClientData(filteredData)
-      setTotalPages(Math.ceil(filteredData.length / itemsPerPage))
-      setCurrentItems(filteredData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ))
-    }
+    setSearchTerm('')
+    setCurrentPage(1)
+    fetchAndLoadPersons(1, n)
   }
 
-  const fetchAndLoadPersons = async () => {
+  const fetchAndLoadPersons = async (page, type, signal) => {
     try {
-      setLoading(true)
-      const fetchData = await mongoClientData()
+
+      const { clients, totalPages, currentPage, totalCli, totalActive, totalInactive } = await mongoClientData(page, itemsPerPage, type, signal)
       const planData = await mongoPlanData()
-      if (fetchData.length >= 0) {
-        setBaseData(fetchData)
-        setClientData(fetchData)
+      if (clients.length > 0) {
+        setClientData(clients)
       }
       if (planData.length >= 0) {
         setPlanData(planData)
       }
+
+      setTotalInactive(totalInactive)
+      setTotalActive(totalActive)
+      setTotalClients(totalCli)
+      setTotalPages(totalPages) 
+      setCurrentPage(currentPage) 
       setLoading(false)
+
     } catch (e) {
+      console.log(e)
+    }
+    
+  }
+
+  const fetchAndLoadPersonsSearch = async (term, signal) => {
+    try{
+      const { clients, totalPages, currentPage } = await mongoSearchData(1, itemsPerPage, term, signal)
+      if(clients.length > 0){
+        setClientData(clients)
+      }else{
+        setClientData([])
+      }
+      setTotalPages(totalPages) 
+      setCurrentPage(currentPage) 
+      setLoading(false)
+    }catch (e) {
       console.log(e)
     }
   }
@@ -533,17 +515,14 @@ const Clients = () => {
   const handleConfirmResponse = async () => {
     setConfirmModal(current => !current)
     const data = {
-      id: selRow.id
+      id: selRow._id
     }
     await deleteClient(data)
     await fetchAndLoadPersons()
-    setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-    setCurrentItems(clientData.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    ))
+
     handleStatus('Se elimino correctamente a ' + selRow.name + '.')
-    setSelRow({ id: 0 })
+    setSelRow({ _id: '' })
+    setSearchTerm('')
   }
 
   /* Renew */
@@ -585,114 +564,118 @@ const Clients = () => {
       await fetchAndLoadPersons()
     }
     handleStatus('El plan de ' + selRow.name + ' renovo correctamente.')
-    setSelRow({ id: 0 })
+    setSelRow({ _id: '' })
+    setSearchTerm('')
   }
 
-/* Pay */
+  /* Pay */
 
-const [payModal, setPayModal] = useState(false)
+  const [payModal, setPayModal] = useState(false)
 
-const handlePay = () => {
-  if (selRow.plan.deud === 0) {
-    return
-  } else {
-    handleStatusClose()
+  const handlePay = () => {
+    if (selRow.plan.deud === 0) {
+      return
+    } else {
+      handleStatusClose()
+      setPayModal(current => !current)
+    }
+  }
+
+  const handlePayResponse = async (response) => {
     setPayModal(current => !current)
-  }
-}
-
-const handlePayResponse = async (response) => {
-  setPayModal(current => !current)
-  const data = {
-    action: "registerPayment",
-    id: selRow._id,
-    data: {
-      amount: parseFloat(response), 
-      date: currentDate
+    const data = {
+      action: "registerPayment",
+      id: selRow._id,
+      data: {
+        amount: parseFloat(response), 
+        date: currentDate
+      }
     }
+
+    await updateClient(data)
+    await fetchAndLoadPersons()
+
+    handleStatus('Se registro correctamente el pago de ' + selRow.name + '.')
+    setSelRow({ _id: '' })
+    setSearchTerm('')
   }
 
-  await updateClient(data)
-  await fetchAndLoadPersons()
+  /* Status */
 
-  handleStatus('Se registro correctamente el pago de ' + selRow.name + '.')
-  setSelRow({ id: 0 })
-}
+  const [statusModal, setStatusModal] = useState(false)
 
-/* Status */
+  const handleStatus = async (msg) => {
+    setStatusModal(current => !current)
+    handleStatusMsg(msg)
+    setSelRow({ _id: '' })
+  }
 
-const [statusModal, setStatusModal] = useState(false)
+  const handleAttent = async (msg) => {
+    setStatusModal(current => !current)
+    const data = {
+      action: "registerAttendance",
+      id: selRow._id,
+      data: currentDate
+    };
+    await updateClient(data)
+    await fetchAndLoadPersons()
+    handleStatusMsg(msg)
+    setSelRow({ _id: '' })
+    setSearchTerm('')
+  }
 
-const handleStatus = async (msg) => {
-  setStatusModal(current => !current)
-  handleStatusMsg(msg)
-  setSelRow({ id: 0 })
-}
+  const handleStatusClose = () => {
+    setStatusModal(false)
+  }
 
-const handleAttent = async (msg) => {
-  setStatusModal(current => !current)
-  const data = {
-    action: "registerAttendance",
-    id: selRow._id,
-    data: currentDate
-  };
-  await updateClient(data)
-  await fetchAndLoadPersons()
-  handleStatusMsg(msg)
-  setSelRow({ id: 0 })
-}
+  const [statusMsg, setStatusMsg] = useState('Proceso Exitoso.')
 
-const handleStatusClose = () => {
-  setStatusModal(false)
-}
+  const handleStatusMsg = (msg) => {
+    setStatusMsg(msg)
+  }
 
-const [statusMsg, setStatusMsg] = useState('Proceso Exitoso.')
+  const handleFormatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
-const handleStatusMsg = (msg) => {
-  setStatusMsg(msg)
-}
 
-const handleFormatDate = (isoDate) => {
-  const date = new Date(isoDate);
-  const day = date.getUTCDate().toString().padStart(2, '0');
-  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Los meses son 0-indexados
-  const year = date.getUTCFullYear();
-  return `${day}/${month}/${year}`;
-}
+  useEffect(() => {
+    fetchAndLoadPersons()
 
-useEffect(() => {
-  const fetchAndLoadPersons = async () => {
-    try {
-      setCurrentItems(clientData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ))
-      setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-      setLoading(false)
-    } catch (e) {
-      console.log(e)
+    let storedUserStr = ''
+
+    if (typeof window !== "undefined") {
+      storedUserStr = localStorage.getItem('app.AUTH')
+    }else{
+      storedUserStr = ''
     }
-  }
-  fetchAndLoadPersons()
-}, [clientData])
 
-useEffect(() => {
-  fetchAndLoadPersons()
+    if(storedUserStr){
+      const json = JSON.parse(storedUserStr)
+      setCurrentUser(json.data)
+    }
 
-  let storedUserStr = ''
+  }, [])
 
-  if (typeof window !== "undefined") {
-    storedUserStr = localStorage.getItem('app.AUTH')
-  }else{
-    storedUserStr = ''
-  }
+  useEffect(()=>{
+    const controller = new AbortController()
+    fetchAndLoadPersons(currentPage, activeTable, controller.signal)
+    return () => controller.abort()
+  },[currentPage])
 
-  if(storedUserStr){
-    const json = JSON.parse(storedUserStr)
-    setCurrentUser(json.data)
-  }
-
-}, [])
+  useEffect(()=>{
+    const controller = new AbortController()
+    if(searchTerm !== '') {
+      fetchAndLoadPersonsSearch(searchTerm, controller.signal)
+    }else{
+      fetchAndLoadPersons()
+    }
+    return () => controller.abort()
+  },[searchTerm])
 
 if(isLoading){
   return (
@@ -736,7 +719,7 @@ if(isLoading){
             Clientes
           </span>
           <h1>
-            {countClients()}
+            {totalClients}
           </h1>
           <div className="active-bar" />
         </div>
@@ -745,7 +728,7 @@ if(isLoading){
             Activos
           </span>
           <h1>
-            {countClientsActive()}
+            {totalActive}
           </h1>
           <div className="active-bar" />
         </div>
@@ -754,7 +737,7 @@ if(isLoading){
             Inactivos
           </span>
           <h1>
-            {countClientsInactive()}
+            {totalInactive}
           </h1>
           <div className="active-bar" />
         </div>
@@ -777,7 +760,7 @@ if(isLoading){
           </div>
         </div>
         <div className="tools-02">
-          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleRenew()}>
+          <div className={selRow._id !== '' ? "btn secondary" : "btn secondary disabled"} onClick={() => handleRenew()}>
             <div className="btn-img">
               <Image src={RenewBtn} width={19} height={'auto'} alt="Renew" />
             </div>
@@ -785,7 +768,7 @@ if(isLoading){
               Renovar
             </div>
           </div>
-          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handlePay()}>
+          <div className={selRow._id !== '' ? "btn secondary" : "btn secondary disabled"} onClick={() => handlePay()}>
             <div className="btn-img">
               <Image src={PayBtn} width={11} height={'auto'} alt="Pay" />
             </div>
@@ -793,7 +776,7 @@ if(isLoading){
               Reg. Pago
             </div>
           </div>
-          <div className={selRow.id > 0 ? "btn secondary" : "btn secondary disabled"} onClick={() => handleAttent('Se marco la asistencia de ' + selRow.name + ' con exito.')}>
+          <div className={selRow._id !== '' ? "btn secondary" : "btn secondary disabled"} onClick={() => handleAttent('Se marco la asistencia de ' + selRow.name + ' con exito.')}>
             <div className="btn-img">
               <Image src={AsisBtn} width={17} height={'auto'} alt="Asis" />
             </div>
@@ -801,7 +784,7 @@ if(isLoading){
               Reg. Asis
             </div>
           </div>
-          <div className={selRow.id > 0 ? "btn warning" : "btn warning disabled"} onClick={() => handleConfirm()}>
+          <div className={selRow._id !== '' ? "btn warning" : "btn warning disabled"} onClick={() => handleConfirm()}>
             <div className="btn-img">
               <Image src={TrashBtn} width={12} height={'auto'} alt="Delete" />
             </div>
@@ -821,16 +804,16 @@ if(isLoading){
                   <input placeholder='Buscar' type='text' onChange={handleSearchTerm} value={searchTerm} />
                 </div>
                 {
-                  selRow.id > 0 && (
+                  selRow._id !== '' && (
                     <div className="header-deselect">
-                      <Image src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ id: 0 })} />
+                      <Image src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ _id: '' })} />
                     </div>
                   )
                 }
               </div>
               <div className="dt-body">
                 {
-                  currentItems.length > 0 ? (
+                  clientData.length > 0 ? (
                     <table className="dt-all">
                       <thead>
                         <tr className='client-dt'>
@@ -858,8 +841,8 @@ if(isLoading){
                       </thead>
                       <tbody>
                         {
-                          currentItems.map((cli, id) => (
-                            <tr className={selRow.id === cli.id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
+                          clientData.map((cli, id) => (
+                            <tr className={selRow._id === cli._id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
                               {
                                 handleClientActive(cli) ? (
                                   <td className='primary' />
@@ -901,11 +884,13 @@ if(isLoading){
               </div>
             </div>
             <div className="dt-pagination">
+              <Image src={LeftTop} width={16} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handleFirstPage} />
               <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-              <span>
+              <div>
                 {currentPage} de {totalPages}
-              </span>
+              </div>
               <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+              <Image src={RightTop} width={16} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleTopPage} />
             </div>
           </section>
         ) : (
@@ -938,7 +923,7 @@ if(isLoading){
                     </div>
                     <div className="input-form">
                       <div>Dirección</div>
-                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} autoComplete='off'/>
+                      <input type="text" name='address' onChange={handleNewClient} value={newClient.address} autoComplete='on'/>
                     </div>
                   </div>
                 </div>

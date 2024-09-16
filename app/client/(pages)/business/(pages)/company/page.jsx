@@ -21,7 +21,7 @@ const mongoClientData = async () => {
 
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+        const res = await fetch(`${uri}/api/client/clients/company?email=${json.data.email}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
