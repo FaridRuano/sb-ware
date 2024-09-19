@@ -32,109 +32,14 @@ const mongoClientData = async () => {
             throw new Error("Failed")
         }
         const ponse = await res.json()
-        return ponse.clients
+        return {
+          clients: ponse.clients,
+          plans: ponse.plans,
+          attents: ponse.attents,
+          payments: ponse.payments
+        }
     } catch (error) {
         console.log(error)
-    }
-  }
-}
-
-const mongoPlanData = async () => {
-
-  let storedUserStr = ''
-
-  if (typeof window !== "undefined") {
-    storedUserStr = localStorage.getItem('app.AUTH')
-  }else{
-    storedUserStr = ''
-  }
-
-  if(storedUserStr){
-
-    const json = JSON.parse(storedUserStr)
-
-    try {
-      const uri = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed")
-      }
-      const ponse = await res.json()
-      return ponse.plans
-    } catch (error) {
-      console.log(error)
-    }
-  }
-}
-
-const mongoAttenData = async () => {
-
-  let storedUserStr = ''
-
-  if (typeof window !== "undefined") {
-    storedUserStr = localStorage.getItem('app.AUTH')
-  }else{
-    storedUserStr = ''
-  }
-
-  if(storedUserStr){
-
-    const json = JSON.parse(storedUserStr)
-    try {
-      const uri = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${uri}/api/client/attent?email=${json.data.email}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed")
-      }
-      const ponse = await res.json()
-      return ponse.clients
-    } catch (error) {
-      console.log(error)
-    }
-  }
-}
-
-const mongoPyamentData = async () => {
-  
-  let storedUserStr = ''
-
-  if (typeof window !== "undefined") {
-    storedUserStr = localStorage.getItem('app.AUTH')
-  }else{
-    storedUserStr = ''
-  }
-
-  if(storedUserStr){
-
-    const json = JSON.parse(storedUserStr)
-    try {
-      const uri = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${uri}/api/client/payment?email=${json.data.email}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed")
-      }
-      const ponse = await res.json()
-      return ponse.payments
-    } catch (error) {
-      console.log(error)
     }
   }
 }
@@ -161,21 +66,18 @@ const Company = () => {
   const fetchAndLoadData = async () => {
     try {
       setLoading(true)
-      const fetchData = await mongoClientData()
-      const planData = await mongoPlanData()
-      const attenData= await mongoAttenData()
-      const paymentData= await mongoPyamentData()
-      if (fetchData.length >= 0) {
-        setClientData(fetchData)
+      const { clients, plans, attents, payments } = await mongoClientData()
+      if (clients.length >= 0) {
+        setClientData(clients)
       }
-      if (planData.length >= 0) {
-        setPlanData(planData)
+      if (plans.length >= 0) {
+        setPlanData(plans)
       }
-      if (attenData.length >= 0) {
-        setAsisData(attenData)
+      if (attents.length >= 0) {
+        setAsisData(attents)
       }
-      if (paymentData.length >= 0) {
-        setPaidsData(paymentData)
+      if (payments.length >= 0) {
+        setPaidsData(payments)
       }
       setLoading(false)
     } catch (e) {
@@ -246,10 +148,6 @@ const Company = () => {
   if(isLoading){
     return (
       <div className='company-page'>
-        <DtPlans isActive={isDtPlan} handleActive={handleDtPlan} />
-        <DtClients isActive={isDtClient} handleActive={handleDtClient} />
-        <DtAsis isActive={isDtAsis} handleActive={handleDtAsis} />
-        <Dtpaids isActive={isDtPaids} handleActive={handleDtPaids} />
         <section className='charts-section loading'>
           <div className="container-option">
           </div>
@@ -297,24 +195,15 @@ const Company = () => {
                     <tbody>
                       {
                         clientData.map((cli, id) => (
-                          <tr key={id} className='clients-dt'>
-                            <td>
-                              {cli.id}
-                            </td>
+                          <tr key={id} className='clients-dt1'>
                             <td>
                               {cli.name}
-                            </td>
-                            <td>
-                              {cli.ced}
                             </td>
                             <td>
                               {cli.email}
                             </td>
                             <td>
                               {cli.phone}
-                            </td>
-                            <td>
-                              {cli.address}
                             </td>
                           </tr>
                         ))
@@ -345,9 +234,6 @@ const Company = () => {
                       {
                         planData.map((pla, id) => (
                           <tr key={id} className='plan-dt' onClick={() => handleDtPlan('open')}>
-                            <td>
-                              {pla.id}
-                            </td>
                             <td>
                               {pla.name}
                             </td>
@@ -390,9 +276,6 @@ const Company = () => {
                         asisData.map((asi, id) => (
                           <tr key={id} className='asis-dt' onClick={() => handleDtAsis('open')}>
                             <td>
-                              {asi.id}
-                            </td>
-                            <td>
                               {asi.name}
                             </td>
                             <td>
@@ -427,9 +310,6 @@ const Company = () => {
                       {
                         paidsData.map((pai, id) => (
                           <tr key={id} className='paids-dt' onClick={() => handleDtPaids('open')}>
-                            <td>
-                              {pai.id}
-                            </td>
                             <td>
                               {pai.name}
                             </td>

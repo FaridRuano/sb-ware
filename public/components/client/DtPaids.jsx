@@ -24,7 +24,7 @@ const mongoPaymentData = async () => {
       const json = JSON.parse(storedUserStr)
       try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/payment?email=${json.data.email}`, {
+        const res = await fetch(`${uri}/api/client/clients/company/payment?email=${json.data.email}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -36,6 +36,7 @@ const mongoPaymentData = async () => {
         }
         const ponse = await res.json()
         return ponse.payments
+
       } catch (error) {
         console.log(error)
       }
@@ -47,7 +48,7 @@ const deletePayment = async (client) => {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/client/payment`, {
+        const res = await fetch(`${uri}/api/client/clients/company/payment`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -102,7 +103,7 @@ const DtPaids = ({ isActive, handleActive }) => {
     const itemsPerPage = 10
 
     const [selRow, setSelRow] = useState({
-        id: 0
+        id: ''
     })
 
     const [searchTerm, setSearchTerm] = useState('')
@@ -115,7 +116,7 @@ const DtPaids = ({ isActive, handleActive }) => {
     ))
 
     const handlePreviousPage = () => {
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
             const nextPage = currentPage - 1
@@ -128,7 +129,7 @@ const DtPaids = ({ isActive, handleActive }) => {
     }
 
     const handleNextPage = () => {
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
         if (currentPage < totalPages) {
             const nextPage = currentPage + 1
             setCurrentPage(nextPage)
@@ -200,7 +201,7 @@ const DtPaids = ({ isActive, handleActive }) => {
     const handleStatus = (msg) => {
         setStatusModal(current => !current)
         handleStatusMsg(msg)
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
     }
 
     const handleStatusClose = () => {
@@ -214,7 +215,9 @@ const DtPaids = ({ isActive, handleActive }) => {
     }
 
     useEffect(() => {
-        fetchAndLoadData()
+        if(isActive){
+            fetchAndLoadData()
+        }
     }, [isActive])
 
     useEffect(() => {
@@ -238,14 +241,14 @@ const DtPaids = ({ isActive, handleActive }) => {
                         </div>
                         <div className="header">
                             <div className="toolbar">
-                                <div className={selRow.id > 0 ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
+                                <div className={selRow.id !== '' ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
                                     <Image src={TrashBtn} width={15} height={'auto'} alt='Delete' />
                                     <span>
                                         Eliminar
                                     </span>
                                 </div>
                             </div>
-                            <div className={selRow.id > 0 ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
+                            <div className={selRow.id !== '' ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: '' })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
                             </div>
                         </div>
@@ -262,9 +265,6 @@ const DtPaids = ({ isActive, handleActive }) => {
                                         <thead>
                                             <tr className='paids-dt'>
                                                 <th>
-                                                    ID
-                                                </th>
-                                                <th>
                                                     Nombre
                                                 </th>
                                                 <th>
@@ -279,9 +279,6 @@ const DtPaids = ({ isActive, handleActive }) => {
                                             {
                                                 currentItems.map((pai, id) => (
                                                     <tr key={id} className={selRow.id === pai.id && selRow.date === pai.date ? 'paids-dt active' : 'paids-dt'} onClick={() => setSelRow(pai)}>
-                                                        <td>
-                                                            {pai.id}
-                                                        </td>
                                                         <td>
                                                             {pai.name}
                                                         </td>

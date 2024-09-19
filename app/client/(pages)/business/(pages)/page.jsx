@@ -20,7 +20,7 @@ import PayModal from '@public/components/client/PayModal'
 import StatusModal from '@public/components/client/StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
 
-const mongoClientData = async (page, limit, type, signal ) => {
+const mongoClientData = async (page, type, signal ) => {
 
   let storedUserStr = ''
 
@@ -36,7 +36,7 @@ const mongoClientData = async (page, limit, type, signal ) => {
 
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&limit=${limit}&type=${type}`, {
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&type=${type}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -49,7 +49,7 @@ const mongoClientData = async (page, limit, type, signal ) => {
         }
         const ponse = await res.json()
         return {
-          clients: ponse.clients,
+          clientsData: ponse.clients,
           totalPages: ponse.totalPages,
           currentPage: ponse.currentPage,
           totalCli : ponse.totalCli,
@@ -57,12 +57,24 @@ const mongoClientData = async (page, limit, type, signal ) => {
           totalInactive: ponse.totalCliInactive,
         }
     } catch (error) {
-        console.log(error)
+      if (error.name === 'AbortError') {
+        /* console.log('Fetch aborted'); */
+      } else {
+        console.error('Fetch error:', err);
+      }
+      return {
+        clientsData: null,
+        totalPages: 1,
+        currentPage: page,
+        totalCli: 0,
+        totalActive: 0,
+        totalInactive: 0
+      }
     }
   }
 }
 
-const mongoSearchData = async (page, limit, term, signal ) => {
+const mongoSearchData = async (page, term, signal ) => {
 
   let storedUserStr = ''
 
@@ -78,8 +90,7 @@ const mongoSearchData = async (page, limit, term, signal ) => {
 
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        console.log(term)
-        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&limit=${limit}&term=${term}`, {
+        const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}&page=${page}&term=${term}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -92,12 +103,24 @@ const mongoSearchData = async (page, limit, term, signal ) => {
         }
         const ponse = await res.json()
         return {
-          clients: ponse.clients,
+          clientsData: ponse.clients,
           totalPages: ponse.totalPages,
           currentPage: ponse.currentPage,
         }
     } catch (error) {
-        console.log(error)
+      if (error.name === 'AbortError') {
+        /* console.log('Fetch aborted'); */
+      } else {
+        console.error('Fetch error:', err);
+      }
+      return {
+        clientsData: null,
+        totalPages: 1,
+        currentPage: page,
+        totalCli: 0,
+        totalActive: 0,
+        totalInactive: 0
+      }
     }
   }
 }
@@ -209,6 +232,10 @@ const updateClient = async (data) => {
 
 const Clients = () => {
 
+  /* Screen */
+
+  const [screenSize, setScreenSize] = useState(1000)
+
   /* User */
 
   const [currentUser, setCurrentUser] = useState(null)
@@ -219,7 +246,7 @@ const Clients = () => {
 
   /* Active Table */
 
-  const [activeTable, setActiveTable] = useState(1)
+  const  [activeTable, setActiveTable ] = useState(1)
 
   /* Client Data */
 
@@ -397,8 +424,6 @@ const Clients = () => {
 
   const [currentPage, setCurrentPage] = useState(1)
 
-  const itemsPerPage = 10
-
   const [selRow, setSelRow] = useState({
     _id: ''
   })
@@ -457,45 +482,96 @@ const Clients = () => {
     setActiveTable(n)
     setSearchTerm('')
     setCurrentPage(1)
-    fetchAndLoadPersons(1, n)
+  }
+
+  const [colData, setColData] = useState(1)
+
+  const handleColData = () =>{
+    if(screenSize < 601){
+      if(colData === 4){
+        setColData(1)
+      }else{
+        setColData(current => current + 1)
+      }
+      return
+    }else{
+      setColData(1)
+      return
+    }
+  }
+
+  const handleShowCol = () => {
+    if(screenSize < 601){
+      switch (colData) {
+        case 1 : 
+          return "Plan"
+        case 2 : 
+          return "Inicio"
+        case 3 : 
+          return "Fin"
+        case 4 : 
+          return "Asis"
+      }
+    }else{
+      return "Plan"
+    }
+  }
+
+  const handleShowData = (cli) => {
+    if(screenSize < 601){
+      switch (colData) {
+        case 1 : 
+          return cli.plan.name
+        case 2 : 
+          return handleFormatDate(cli.plan.ini)
+        case 3 : 
+          return handleFormatDate(cli.plan.end)
+        case 4 : 
+          return cli.plan.asis  
+      }
+    }else{
+      return cli.plan.name
+    }
   }
 
   const fetchAndLoadPersons = async (page, type, signal) => {
     try {
-
-      const { clients, totalPages, currentPage, totalCli, totalActive, totalInactive } = await mongoClientData(page, itemsPerPage, type, signal)
+      const { clientsData, totalPages, currentPage, totalCli, totalActive, totalInactive } = await mongoClientData(page, type, signal)
       const planData = await mongoPlanData()
-      if (clients.length > 0) {
-        setClientData(clients)
+      if(clientsData === null){
+        return
+      }
+      if (clientsData.length > 0) {
+        setClientData(clientsData)
       }
       if (planData.length >= 0) {
         setPlanData(planData)
       }
-
       setTotalInactive(totalInactive)
       setTotalActive(totalActive)
       setTotalClients(totalCli)
       setTotalPages(totalPages) 
       setCurrentPage(currentPage) 
       setLoading(false)
-
     } catch (e) {
       console.log(e)
-    }
-    
+    } 
   }
 
   const fetchAndLoadPersonsSearch = async (term, signal) => {
+
     try{
-      const { clients, totalPages, currentPage } = await mongoSearchData(1, itemsPerPage, term, signal)
-      if(clients.length > 0){
-        setClientData(clients)
+      const { clientsData, totalPages, currentPage } = await mongoSearchData(1, term, signal)
+      if(clientsData === null){
+        return
+      }
+      if(clientsData.length > 0){
+        setClientData(clientsData)
       }else{
         setClientData([])
       }
       setTotalPages(totalPages) 
       setCurrentPage(currentPage) 
-      setLoading(false)
     }catch (e) {
       console.log(e)
     }
@@ -642,9 +718,8 @@ const Clients = () => {
     return `${day}/${month}/${year}`;
   }
 
-
   useEffect(() => {
-    fetchAndLoadPersons()
+
 
     let storedUserStr = ''
 
@@ -659,13 +734,27 @@ const Clients = () => {
       setCurrentUser(json.data)
     }
 
+
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setScreenSize(window.innerWidth)
+      }
+      window.addEventListener('resize', handleResize)
+
+      return () => {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
   }, [])
 
   useEffect(()=>{
     const controller = new AbortController()
     fetchAndLoadPersons(currentPage, activeTable, controller.signal)
     return () => controller.abort()
-  },[currentPage])
+  },[currentPage, activeTable])
 
   useEffect(()=>{
     const controller = new AbortController()
@@ -822,8 +911,8 @@ if(isLoading){
                           <th>
                             Nombre
                           </th>
-                          <th>
-                            Plan
+                          <th onClick={()=>handleColData()}>
+                            {handleShowCol()}
                           </th>
                           <th>
                             Inicio
@@ -854,7 +943,7 @@ if(isLoading){
                                 {cli.name}
                               </td>
                               <td>
-                                {cli.plan.name}
+                                {handleShowData(cli)}
                               </td>
                               <td>
                                 {handleFormatDate(cli.plan.ini)}

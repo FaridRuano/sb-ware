@@ -19,7 +19,7 @@ export async function GET(request) {
     clients.forEach(client => {
         if(client.attent && Array.isArray(client.attent)){
             client.attent.forEach(date => {
-                clientDates.push({id:client.id, name: client.name, date: new Date(date) })
+                clientDates.push({id:client._id, name: client.name, date: new Date(date) })
             })
         }
     })
@@ -37,7 +37,7 @@ export async function DELETE(request) {
     const attentDate = new Date(date).toISOString();
     
     // Encontrar el cliente y eliminar el pago correspondiente
-    const client = await Client.findOne({ id: id });
+    const client = await Client.findOne({ _id: id });
 
     if (client) {
         // Encontrar el índice del elemento que coincide con la fecha

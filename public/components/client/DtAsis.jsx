@@ -25,7 +25,7 @@ const mongoAttenData = async () => {
       const json = JSON.parse(storedUserStr)
       try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/attent?email=${json.data.email}`, {
+        const res = await fetch(`${uri}/api/client/clients/company/attent?email=${json.data.email}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -47,8 +47,7 @@ const deleteAsis = async (client) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
-
-        const res = await fetch(`${uri}/api/client/attent`, {
+        const res = await fetch(`${uri}/api/client/clients/company/attent`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,12 +60,8 @@ const deleteAsis = async (client) => {
             throw new Error('Failed to post new data')
         }
 
-        // Optionally, you can handle the response after posting if needed
-        const postedFaculty = await res.json()
+        const posted = await res.json()
 
-        // Fetch updated data after posting
-        //const updatedData = await personData()
-        //return updatedData
     } catch (error) {
         console.error('Error:', error)
         throw error
@@ -103,7 +98,7 @@ const DtAsis = ({ isActive, handleActive }) => {
     const itemsPerPage = 10
 
     const [selRow, setSelRow] = useState({
-        id: 0
+        id: ''
     })
 
     const [searchTerm, setSearchTerm] = useState('')
@@ -116,7 +111,7 @@ const DtAsis = ({ isActive, handleActive }) => {
     ))
 
     const handlePreviousPage = () => {
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
             const nextPage = currentPage - 1
@@ -129,7 +124,7 @@ const DtAsis = ({ isActive, handleActive }) => {
     }
 
     const handleNextPage = () => {
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
         if (currentPage < totalPages) {
             const nextPage = currentPage + 1
             setCurrentPage(nextPage)
@@ -202,7 +197,7 @@ const DtAsis = ({ isActive, handleActive }) => {
     const handleStatus = (msg) => {
         setStatusModal(current => !current)
         handleStatusMsg(msg)
-        setSelRow({ id: 0 })
+        setSelRow({ id: '' })
     }
 
     const handleStatusClose = () => {
@@ -216,7 +211,9 @@ const DtAsis = ({ isActive, handleActive }) => {
     }
 
     useEffect(() => {
-        fetchAndLoadData()
+        if(isActive){
+            fetchAndLoadData()
+        }
     }, [isActive])
 
     useEffect(() => {
@@ -240,14 +237,14 @@ const DtAsis = ({ isActive, handleActive }) => {
                         </div>
                         <div className="header">
                             <div className="toolbar">
-                                <div className={selRow.id > 0 ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
+                                <div className={selRow.id !== '' ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
                                     <Image src={TrashBtn} width={15} height={'auto'} alt='Delete' />
                                     <span>
                                         Eliminar
                                     </span>
                                 </div>
                             </div>
-                            <div className={selRow.id > 0 ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
+                            <div className={selRow.id !== '' ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: '' })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
                             </div>
                         </div>
@@ -278,9 +275,6 @@ const DtAsis = ({ isActive, handleActive }) => {
                                             {
                                                 currentItems.map((asi, id) => (
                                                     <tr key={id} className={selRow.id === asi.id && selRow.date === asi.date ? 'asis-dt active' : 'asis-dt'} onClick={() => setSelRow(asi)}>
-                                                        <td>
-                                                            {asi.id}
-                                                        </td>
                                                         <td>
                                                             {asi.name}
                                                         </td>

@@ -8,10 +8,7 @@ export async function POST(request) {
     const { ced, name, email, phone, address, plan, user } = await request.json()
     await connectMongoDB()
 
-    const highestIdClient = await Client.findOne().sort({ id: -1 }).exec()
-    const newId = highestIdClient ? highestIdClient.id + 1 : 1
-
-    await Client.create({ id: newId, ced, name: name.toUpperCase(), email, phone, address, plan: plan, payments: null, attent: null, user })
+    await Client.create({ ced, name: name.toUpperCase(), email, phone, address, plan: plan, payments: null, attent: null, user })
     return NextResponse.json({ message: "Data created" }, { status: 200 })
 }
 

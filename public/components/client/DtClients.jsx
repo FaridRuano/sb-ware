@@ -3,7 +3,9 @@ import EditBtn from '@public/assets/icons/btn-edit.png'
 import AddBtn from '@public/assets/icons/btn-add.png'
 import Image from 'next/image'
 import RightArrow from '@public/assets/icons/right-arrow.png'
+import RightTop from '@public/assets/icons/right-top.png'
 import LeftArrow from '@public/assets/icons/left-arrow.png'
+import LeftTop from '@public/assets/icons/left-top.png'
 import { useEffect, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import StatusModal from './StatusModal'
@@ -12,7 +14,7 @@ import SearchIcon from '@public/assets/icons/search-icon.png'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
 
 
-const mongoClientData = async () => {
+const mongoClientData = async (page, signal) => {
 
     let storedUserStr = ''
 
@@ -28,28 +30,44 @@ const mongoClientData = async () => {
 
         try {
             const uri = process.env.NEXT_PUBLIC_API_URL;
-            const res = await fetch(`${uri}/api/client/clients?email=${json.data.email}`, {
+            const res = await fetch(`${uri}/api/client/clients/company/clients?email=${json.data.email}&page=${page}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
-                }
+                },
+                signal: signal
             })
     
             if (!res.ok) {
                 throw new Error("Failed")
             }
             const ponse = await res.json()
-            return ponse.clients
+            return {
+                clients: ponse.clients,
+                plans: ponse.plans,
+                currentPage: ponse.currentPage,
+                totalPages: ponse.totalPages
+            }
         } catch (error) {
-            console.log(error)
-        }
+            if (error.name === 'AbortError') {
+              /* console.log('Fetch aborted') */
+            } else {
+              console.error('Fetch error:', err);
+            }
+            return {
+                clients: null,
+                plans: null,
+                currentPage: page,
+                totalPages: 1
+            }
+          }
     }
 }
 
-const mongoPlanData = async () => {
+const mongoSearchData = async (page, term, signal ) => {
 
     let storedUserStr = ''
-
+  
     if (typeof window !== "undefined") {
       storedUserStr = localStorage.getItem('app.AUTH')
     }else{
@@ -61,29 +79,45 @@ const mongoPlanData = async () => {
       const json = JSON.parse(storedUserStr)
   
       try {
-        const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/plan?email=${json.data.email}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
+          const uri = process.env.NEXT_PUBLIC_API_URL;
+          const res = await fetch(`${uri}/api/client/clients/company/clients?email=${json.data.email}&page=${page}&term=${term}`, {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              signal: signal
+          })
   
-        if (!res.ok) {
-          throw new Error("Failed")
+          if (!res.ok) {
+              throw new Error("Failed")
+          }
+          const ponse = await res.json()
+          return {
+            clients: ponse.clients,
+            plans: ponse.plans,
+            currentPage: ponse.currentPage,
+            totalPages: ponse.totalPages
         }
-        const ponse = await res.json()
-        return ponse.plans
-      } catch (error) {
-        console.log(error)
+    } catch (error) {
+        if (error.name === 'AbortError') {
+          /* console.log('Fetch aborted'); */
+        } else {
+          console.error('Fetch error:', err);
+        }
+        return {
+            clients: null,
+            plans: null,
+            currentPage: page,
+            totalPages: 1
+        }
       }
     }
-}
+  }
 
 const postNewClient = async (newClient) => {
     try {
         const uri = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${uri}/api/client/clients`, {
+        const res = await fetch(`${uri}/api/client/clients/company/clients`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -106,12 +140,11 @@ const deleteClient = async (client) => {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/client/clients`, {
+        const res = await fetch(`${uri}/api/client/clients/company/clients`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-
             body: JSON.stringify(client),
         });
 
@@ -130,7 +163,7 @@ const updateClient = async (data) => {
         const uri = process.env.NEXT_PUBLIC_API_URL;
 
 
-        const res = await fetch(`${uri}/api/client/clients`, {
+        const res = await fetch(`${uri}/api/client/clients/company/clients`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -159,89 +192,100 @@ const DtClients = ({ isActive, handleActive }) => {
 
     const [clientData, setClientData] = useState([])
 
-    const fetchAndLoadData = async () => {
+    /* Datatable */
+
+    const [totalPages, setTotalPages] = useState(1)
+    
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const [selRow, setSelRow] = useState({
+        _id: ''
+    })
+
+    const [searchTerm, setSearchTerm] = useState('')
+
+    const handleFirstPage = () => {
+        setSelRow({ _id: '' })
+        setCurrentPage(1)
+      }
+    
+    const handlePreviousPage = () => {
+        setSelRow({ _id: '' })
+        if(currentPage > 1){
+            setCurrentPage(currentPage - 1)
+        }
+    }
+
+    const handleNextPage = () => {
+        setSelRow({ _id: '' })
+        if(currentPage < totalPages){
+            setCurrentPage(currentPage + 1)
+        }
+    }
+
+    const handleTopPage = () => {
+        setSelRow({ _id: '' })
+        setCurrentPage(totalPages)
+    }
+
+    const handleSearchTerm = (event) => {
+        setCurrentPage(1)
+        setSearchTerm(event.target.value);
+      }
+
+    const fetchAndLoadData = async (page, signal) => {
         try {
-            const clientData = await mongoClientData()
-            const planData = await mongoPlanData()
-            if (clientData.length >= 0) {
-                setClientData(clientData)
-                setCurrentItems(clientData.slice(
-                    (currentPage - 1) * itemsPerPage,
-                    currentPage * itemsPerPage))
-                setTotalPages(Math.ceil(clientData.length / itemsPerPage))
+            const {clients, plans, totalPages, currentPage} = await mongoClientData(page, signal)
+            if(clients === null){
+                return
             }
-            if (planData.length >= 0) {
-                setPlanData(planData)
+            if (clients.length >= 0) {
+                setClientData(clients)
             }
+            if (plans.length >= 0) {
+                setPlanData(plans)
+            }
+            setCurrentPage(currentPage)
+            setTotalPages(totalPages)
         } catch (e) {
             console.log(e)
         }
     }
 
-    /* Datatable */
-
-    const [currentPage, setCurrentPage] = useState(1)
-
-    const itemsPerPage = 10
-
-    const [selRow, setSelRow] = useState({
-        id: 0
-    })
-
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const [totalPages, setTotalPages] = useState(Math.ceil(clientData.length / itemsPerPage))
-
-    const [currentItems, setCurrentItems] = useState(clientData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    ))
-
-    const handlePreviousPage = () => {
-        setSelRow({ id: 0 })
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1)
-            const nextPage = currentPage - 1
-            setCurrentPage(nextPage)
-            setCurrentItems(clientData.slice(
-                (nextPage - 1) * itemsPerPage,
-                nextPage * itemsPerPage
-            ))
+    const fetchAndLoadDataSearch = async (term, signal) => {
+        try{
+          const { clients, plans, totalPages, currentPage } = await mongoSearchData(1, term, signal)
+            if(clients === null){
+                return
+            }
+            if(clients.length > 0){
+                setClientData(clients)
+            }
+            if (plans.length >= 0) {
+                setPlanData(plans)
+            }
+            setTotalPages(totalPages) 
+            setCurrentPage(currentPage) 
+        }catch (e) {
+            console.log(e)
         }
-    }
+      }
 
-    const handleNextPage = () => {
-        setSelRow({ id: 0 })
-        if (currentPage < totalPages) {
-            const nextPage = currentPage + 1
-            setCurrentPage(nextPage)
-            setCurrentItems(clientData.slice(
-                (nextPage - 1) * itemsPerPage,
-                nextPage * itemsPerPage
-            ))
-        }
-    }
+    useEffect(()=>{
+        const controller = new AbortController()
+        fetchAndLoadData(currentPage, controller.signal)
+        return () => controller.abort()
+      },[currentPage])
 
-    const handleSearchTerm = (event) => {
-        setSearchTerm(event.target.value)
-        setCurrentPage(1)
-        if (event.target.value.length < 1) {
-            setCurrentItems(clientData.slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
-            ))
-            setTotalPages(Math.ceil(clientData.length / itemsPerPage))
-        } else {
-            const filtered = clientData.filter(cli =>
-                cli.name.toLowerCase().includes(event.target.value.toLowerCase())
-            )
-            setCurrentItems(filtered.slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
-            ))
-            setTotalPages(Math.ceil(filtered.length / itemsPerPage))
+      useEffect(()=>{
+        const controller = new AbortController()
+        if(searchTerm !== '') {
+            fetchAndLoadDataSearch(searchTerm, controller.signal)
+        }else{
+            fetchAndLoadData()
         }
-    }
+        return () => controller.abort()
+      },[searchTerm])
 
     //Form Display
 
@@ -263,7 +307,7 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const deselectBtn = () => {
-        if (selRow.id > 0) {
+        if (selRow._id > '') {
             if (isEdit) {
                 return false
             } else {
@@ -369,7 +413,7 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     const handleIsAdd = () => {
-        setSelRow({ id: 0 })
+        setSelRow({ _id: '' })
         setNewClient({
             ced: '',
             name: '',
@@ -389,6 +433,7 @@ const DtClients = ({ isActive, handleActive }) => {
         setDurationPlan('')
         setEndDate(currentDate)
         setPlanSel({id:0})
+        setDeudPlan(0)
         setIsAdd(current => !current)
     }
 
@@ -485,7 +530,7 @@ const DtClients = ({ isActive, handleActive }) => {
 
     const handleIsEdit = () => {
         if (isEdit) {
-            setSelRow({ id: 0 })
+            setSelRow({ _id: '' })
             setPlanSel({ id: 0 })
             setDurationPlan(0)
             setAsisPlan(0)
@@ -539,8 +584,7 @@ const DtClients = ({ isActive, handleActive }) => {
     const handleSubmitEdit = async () => {
 
         const data = {
-            action: "update",
-            id: selRow.id,
+            id: selRow._id,
             data: {
                 ced: newClient.ced,
                 name: newClient.name.toUpperCase(),
@@ -559,7 +603,7 @@ const DtClients = ({ isActive, handleActive }) => {
                 user: currentUser.email
             }
         }
-        console.log(data)
+
         await updateClient(data)
         await fetchAndLoadData()
         //Send Data Here
@@ -589,7 +633,7 @@ const DtClients = ({ isActive, handleActive }) => {
     const handleSubmitDelete = async () => {
         
         const data = {
-            id: selRow.id
+            id: selRow._id
         }
         setIsEdit(false)
         await deleteClient(data)
@@ -629,7 +673,9 @@ const DtClients = ({ isActive, handleActive }) => {
     }
 
     useEffect(() => {
-        fetchAndLoadData()
+        if(isActive){
+            fetchAndLoadData()
+        }
     }, [isActive])
 
     useEffect(() => {
@@ -687,7 +733,7 @@ const DtClients = ({ isActive, handleActive }) => {
                                         )
                                     }
                                 </div>
-                                <div className={selRow.id > 0 ? "tool-btn edit" : "tool-btn disabled"} onClick={() => handleIsEdit()}>
+                                <div className={selRow._id !== '' ? "tool-btn edit" : "tool-btn disabled"} onClick={() => handleIsEdit()}>
                                     {
                                         isEdit ? (
                                             <>
@@ -707,14 +753,14 @@ const DtClients = ({ isActive, handleActive }) => {
                                     }
 
                                 </div>
-                                <div className={selRow.id > 0 ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
+                                <div className={selRow._id !== '' ? "tool-btn del" : "tool-btn disabled"} onClick={() => handleDeleteModal()}>
                                     <Image src={TrashBtn} width={15} height={'auto'} alt='Delete' />
                                     <span>
                                         Eliminar
                                     </span>
                                 </div>
                             </div>
-                            <div className={deselectBtn() ? "deselect active" : "deselect"} onClick={() => setSelRow({ id: 0 })}>
+                            <div className={deselectBtn() ? "deselect active" : "deselect"} onClick={() => setSelRow({ _id: '' })}>
                                 <Image src={DelBtn} width={25} height={'auto'} alt='Deselect' />
                             </div>
                         </div>
@@ -729,37 +775,31 @@ const DtClients = ({ isActive, handleActive }) => {
                                 <>
                                     <div className="body">
                                         {
-                                            currentItems.length > 0 ? (
+                                            clientData.length > 0 ? (
                                                 <table className='dt-all'>
                                                     <thead>
                                                         <tr className='clients-dt'>
                                                             <th>
-                                                                ID
-                                                            </th>
-                                                            <th>
                                                                 Nombre
                                                             </th>
                                                             <th>
-                                                                Cedula
+                                                                Cedúla
                                                             </th>
                                                             <th>
                                                                 Email
                                                             </th>
                                                             <th>
-                                                                Telefono
+                                                                Teléfono
                                                             </th>
                                                             <th>
-                                                                Direccion
+                                                                Dirección
                                                             </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {
-                                                            currentItems.map((cli, id) => (
-                                                                <tr key={id} className={selRow.id === cli.id ? 'clients-dt active' : 'clients-dt'} onClick={() => setEditClient(cli)}>
-                                                                    <td>
-                                                                        {cli.id}
-                                                                    </td>
+                                                            clientData.map((cli, id) => (
+                                                                <tr key={id} className={selRow._id === cli._id ? 'clients-dt active' : 'clients-dt'} onClick={() => setEditClient(cli)}>
                                                                     <td>
                                                                         {cli.name}
                                                                     </td>
@@ -789,14 +829,16 @@ const DtClients = ({ isActive, handleActive }) => {
                                         }
                                     </div>
                                     {
-                                        currentItems.length > 0 &&(
+                                        clientData.length > 0 &&(
 
                                             <div className="dt-pagination dark">
+                                                <Image src={LeftTop} width={16} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handleFirstPage} />
                                                 <Image src={LeftArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === 1 ? 'disabled' : ''} onClick={handlePreviousPage} />
-                                                <span>
+                                                <div>
                                                     {currentPage} de {totalPages}
-                                                </span>
+                                                </div>
                                                 <Image src={RightArrow} width={12} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleNextPage} />
+                                                <Image src={RightTop} width={16} height={'auto'} alt='Change Page' className={currentPage === totalPages ? 'disabled' : ''} onClick={handleTopPage} />
                                             </div>
                                         )
                                     }

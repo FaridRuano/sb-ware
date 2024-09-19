@@ -2156,11 +2156,6 @@ input, select {
             &.plan-dt{
                 padding: 0 5px;
                 width: calc(100% - 10px);
-
-                th:nth-child(1),
-                td:nth-child(1){
-                    display: none;
-                }
                 th:nth-child(2),
                 td:nth-child(2){
                     width: 150px; 
@@ -2181,23 +2176,36 @@ input, select {
                     justify-content: flex-end;
                 }
             }
-            &.clients-dt{
+            &.clients-dt1{
                 th,td{
-                    width: 115px;
-                }
-                th:nth-child(1),
-                td:nth-child(1){
-                    display: none;
+                    width: 200px;
                 }
                 th:nth-child(2),
                 td:nth-child(2){
-                    white-space: nowrap;
+                    width: 250px;
+                }
+                th:last-child,
+                td:last-child{
+                    width: 120px;
+                    display: flex;
+                    justify-content: flex-end;
+                }
+            }
+            &.clients-dt{
+                th,td{
+                    width: 200px;
+                }
+                th:nth-child(1),
+                td:nth-child(1){
                     width: 160px;
+                }
+                th:nth-child(2),
+                td:nth-child(2){
+                    width: 100px;
                 }
                 th:nth-child(4),
                 td:nth-child(4){
-                    width: 250px;
-                    overflow: hidden;
+                    width: 100px;
                 }
                 th:last-child,
                 td:last-child{
@@ -2206,10 +2214,6 @@ input, select {
                 }
             }
             &.asis-dt{
-                th:nth-child(1),
-                td:nth-child(1){
-                    display: none;
-                }
                 th:last-child,
                 td:last-child{
                     display: flex;
@@ -2217,10 +2221,6 @@ input, select {
                 }
             }
             &.paids-dt{
-                th:nth-child(1),
-                td:nth-child(1){
-                    display: none;
-                }
                 th:last-child,
                 td:last-child{
                     display: flex;

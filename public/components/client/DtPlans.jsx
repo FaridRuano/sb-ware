@@ -417,7 +417,9 @@ const DtPlans = ({ isActive, handleActive }) => {
     }
 
     useEffect(() => {
-        fetchAndLoadData()
+        if(isActive){
+            fetchAndLoadData()
+        }
     }, [isActive])
 
     useEffect(() => {
@@ -523,9 +525,6 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                     <thead>
                                                         <tr className='plan-dt'>
                                                             <th>
-                                                                ID
-                                                            </th>
-                                                            <th>
                                                                 Nombre
                                                             </th>
                                                             <th>
@@ -543,9 +542,6 @@ const DtPlans = ({ isActive, handleActive }) => {
                                                         {
                                                             currentItems.map((pla, id) => (
                                                                 <tr key={id} className={selRow.id === pla.id ? 'plan-dt active' : 'plan-dt'} onClick={() => setEditPlan(pla)}>
-                                                                    <td>
-                                                                        {pla.id}
-                                                                    </td>
                                                                     <td>
                                                                         {pla.name}
                                                                     </td>

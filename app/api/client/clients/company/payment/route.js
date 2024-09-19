@@ -20,7 +20,7 @@ export async function GET(request) {
         if (client.payments && Array.isArray(client.payments)) {
             client.payments.forEach(payment => {
                 paymentDates.push({
-                    id: client.id,
+                    id: client._id,
                     name: client.name,
                     date: new Date(payment.date),
                     amount: payment.amount
@@ -41,7 +41,7 @@ export async function DELETE(request) {
     const { id ,date} = await request.json();
     const paymentDate = new Date(date).toISOString();
     // Encontrar el cliente y eliminar el pago correspondiente
-    const client = await Client.findOne({ id: id });
+    const client = await Client.findOne({ _id: id });
 
     if (client) {
         // Encontrar el índice del elemento que coincide con la fecha
