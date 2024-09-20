@@ -2430,6 +2430,8 @@ input, select {
         width: 280px;
         max-width: 280px;
         border-radius: 0;
+        box-sizing: border-box;
+        appearance: none;
     }
     &.number-big{
         justify-content: center;
