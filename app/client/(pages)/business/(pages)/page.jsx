@@ -692,7 +692,7 @@ const Clients = () => {
       action: "registerAttendance",
       id: selRow._id,
       data: currentDate
-    };
+    }
     await updateClient(data)
     await fetchAndLoadPersons()
     handleStatusMsg(msg)

@@ -38,6 +38,9 @@ const NavBarBusiness = () => {
         <li className={activePage === '/client/business/company' ? 'active':''} onClick={()=>handleActivePage('/client/business/company')}>
           Negocio
         </li>
+        <li className={activePage === '/client/business/register' ? 'active':''} onClick={()=>handleActivePage('/client/business/register')}>
+          Registros
+        </li>
       </ul>
     </nav>
   )

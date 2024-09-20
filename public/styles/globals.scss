@@ -2068,11 +2068,29 @@ input, select {
                 height: 100%;
                 display: flex;
                 align-items: center;
+
                 &.primary{
                     background-color: $primary-color-light;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: $-color-white;
+                    font-weight: 700;
                 }
                 &.gray{
                     background-color: $gray-dark-color-light;
+                    color: $-color-white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-weight: 700;
+                }
+                &.btn-td{
+                    background-color: $secondary-color-light;
+                    color: $-color-white;                    
+                    font-weight: 700;
+                    border-radius: 20px;
+                    height: 80%;
                 }
                 .loan{
                     font-weight: 700;
@@ -2240,6 +2258,29 @@ input, select {
                 td:nth-child(5){
                     width: 82px;
                 }
+            }
+            &.reg-dt{
+                th:nth-child(1),
+                td:nth-child(1){
+                    width: 10px;
+                }
+                th:nth-child(2),
+                td:nth-child(2){
+                    width: 200px;
+                }
+                th:nth-child(3),
+                td:nth-child(3){
+                    width: 40px;
+                }
+                th:last-child,
+                td:last-child{
+                    display: flex;
+                    justify-content: center;
+                    width: 100px;
+                }
+            }
+            &.asisted{
+                background-color: rgba($primary-color-light, 0.1); 
             }
         }
     }
@@ -2681,6 +2722,73 @@ input, select {
         &.disabled{
             pointer-events: none;
             opacity: .5;
+        }
+    }
+}
+
+/* Reg Page */
+
+.register-page{
+    width: 100%;
+    height: fit-content;
+    .reg-tools{
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        .tool-option{
+            width: calc(50% - .5rem);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: $-color-white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            h3{
+                font-weight: 600;
+                font-size: 16px;
+            }
+            .input-field{
+                width: 100%;
+                input,select{
+                    font-family: "Pathway Extreme", sans-serif;
+                    outline: none;
+                    border: none;
+                    background-color: transparent;
+                    color: $-color-white;
+                    border-bottom: 1px solid $-color-white;
+                    width: 100%;
+                    padding: 3px;
+                    font-size: 15px;
+                    font-weight: 300;
+                    &::placeholder{
+                        color: rgba($-color-white, 1);
+                    }
+                    option{
+                        color: $-color-black;
+                    }
+                }
+            }
+            &.bg-01{
+                background-color: $-color-black;
+            }
+            &.bg-02{
+                background-color: $secondary-color-light;
+            }
+        }
+    }
+    .reg-datatable{
+        height: fit-content;
+        .register{
+            width: 100%;
+            height: 200px;
+            border-radius: 20px;
+            margin-top: 20px;
+            background-color: $-color-white;
+            color: $-color-black;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     }
 }
@@ -3628,7 +3736,7 @@ input, select {
         height: fit-content;
         .container-option{
             width: calc(100% - 40px);
-            height: 100px;
+            height: 80px;
             .options-body{
                 top: calc(50px - .5rem);
             }
@@ -3649,7 +3757,7 @@ input, select {
             }
             &:nth-child(2){
                 width: calc(100% - 40px);
-                height: 240px;
+                height: 160px;
             }
             .form-dt{
                 gap: .7rem;
@@ -3849,12 +3957,8 @@ input, select {
             }
         }
         .plan-dt{
-            th:nth-child(1),
-            td:nth-child(1),
             th:nth-child(3),
-            td:nth-child(3),
-            th:nth-child(4),
-            td:nth-child(4)
+            td:nth-child(3)
             {
                 display: none;
             }
@@ -4068,12 +4172,10 @@ input, select {
             }
         }
         .plan-dt{
-            th:nth-child(1),
-            td:nth-child(1),
             th:nth-child(3),
             td:nth-child(3),
-            th:nth-child(4),
-            td:nth-child(4)
+            th:nth-child(2),
+            td:nth-child(2)
             {
                 display: none;
             }
@@ -4115,7 +4217,6 @@ input, select {
                 width: 82px;
             }
         }
-
         
     }
 
@@ -4153,6 +4254,17 @@ input, select {
             flex-direction: column;
             gap: 20px;
             align-items: flex-start;
+        }
+    }
+
+    /* Register Page */
+
+    .register-page{
+        .reg-tools{
+            flex-direction: column;
+            .tool-option{
+                width: calc(100% - 40px );
+            }
         }
     }
 
