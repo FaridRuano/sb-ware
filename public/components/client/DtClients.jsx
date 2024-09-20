@@ -704,10 +704,10 @@ const DtClients = ({ isActive, handleActive }) => {
             <ConfirmModal isActive={deleteModal} handleModal={handleDeleteModal} handleResponse={handleSubmitDelete} dataModal={selRow} />
             <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose}/>
             <div className={isActive ? 'screen-overlay active' : 'screen-overlay'}>
+                <div className="close-overlay">
+                    <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={() => closeModal()} />
+                </div>
                 <div className="overlay-work">
-                    <div className="close-overlay">
-                        <Image src={DelBtn} width={25} height={'auto'} alt="Close" onClick={() => closeModal()} />
-                    </div>
                     <div className="dashboard">
                         <div className="title">
                             Clientes

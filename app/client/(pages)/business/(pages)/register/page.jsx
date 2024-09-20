@@ -229,8 +229,17 @@ const Register = () => {
 
     if(loading){
         return (
-            <div>
-
+                <div className='register-page loading'>
+                <div className='reg-tools'>
+                    <div className='tool-option bg-01'>
+                        
+                    </div>
+                    <div className='tool-option bg-02'>
+                        
+                    </div>
+                </div>
+                <div className='reg-datatable'>
+                </div>
             </div>
         )
     }else{

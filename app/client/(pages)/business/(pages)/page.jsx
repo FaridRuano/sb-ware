@@ -719,8 +719,6 @@ const Clients = () => {
   }
 
   useEffect(() => {
-
-
     let storedUserStr = ''
 
     if (typeof window !== "undefined") {
@@ -733,8 +731,6 @@ const Clients = () => {
       const json = JSON.parse(storedUserStr)
       setCurrentUser(json.data)
     }
-
-
   }, [])
 
   useEffect(() => {
@@ -742,6 +738,9 @@ const Clients = () => {
       const handleResize = () => {
         setScreenSize(window.innerWidth)
       }
+
+      handleResize()
+      
       window.addEventListener('resize', handleResize)
 
       return () => {

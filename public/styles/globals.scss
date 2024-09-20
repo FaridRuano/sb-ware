@@ -2501,32 +2501,33 @@ input, select {
 
 .screen-overlay{
  width: 100vw;   
- height: 100vh;
+ min-height: 100vh;
+ height: fit-content;
  position: fixed;
  top: 0;
  left: 0;
  background-color: rgba($-color-black, 1);
- z-index: 5;
+ z-index: 7;
  transform: translateY(-100vh);
  transition: .3s ease-out;
  display: flex;
  justify-content: center;
  align-items: center;
+ .close-overlay{
+     position: absolute;
+     top: 20px;
+     right: 20px;
+     cursor: pointer;
+     transition: .3s ease-out;
+     &:hover{
+         transform: scale(1.1);
+     }
+ }
  .overlay-work{
-    width: calc(95% - 80px);
-    height: calc(95% - 80px);
-    padding: 40px;
+    height: calc(100vh - 80px);
+    padding: 0 40px;
+    width: 100%;
     position: relative;
-    .close-overlay{
-        position: absolute;
-        top: 0;
-        right: 0;
-        cursor: pointer;
-        transition: .3s ease-out;
-        &:hover{
-            transform: scale(1.1);
-        }
-    }
     .dashboard{
         display: flex;
         flex-direction: column;
@@ -2743,6 +2744,7 @@ input, select {
             display: flex;
             align-items: center;
             gap: 1rem;
+            min-height: 28px;
             h3{
                 font-weight: 600;
                 font-size: 16px;
@@ -3606,14 +3608,14 @@ input, select {
             }
         }
         .clients-dt{
-            th:nth-child(1),
-            td:nth-child(1),
+            th:nth-child(2),
+            td:nth-child(2),
             th:nth-child(4),
             td:nth-child(4),
             th:nth-child(6),
             td:nth-child(6)
             {
-                display: none !important;
+                display: none;
             }
             th:nth-child(5),
             td:nth-child(5)
@@ -3665,7 +3667,7 @@ input, select {
     /* Business Page Company */
     .screen-overlay{
         .overlay-work{
-            padding: 40px 20px;
+            padding: 0;
             width: calc(95% - 40px);
             .dashboard{
                 .body{
@@ -3964,10 +3966,12 @@ input, select {
             }
         }
         .clients-dt{
-            th:nth-child(1),
-            td:nth-child(1),
+            th:nth-child(2),
+            td:nth-child(2),
             th:nth-child(3),
-            td:nth-child(3){
+            td:nth-child(3),
+            th:nth-child(4),
+            td:nth-child(4){
                 display: none;
             }
         }
@@ -4171,6 +4175,12 @@ input, select {
                 display: none;
             }
         }
+        .clients-dt{
+            th:last-child,
+            td:last-child{
+                width: 110px;
+            }
+        }
         .plan-dt{
             th:nth-child(3),
             td:nth-child(3),
@@ -4187,20 +4197,6 @@ input, select {
             td:nth-child(3)
             {
                 display: none;
-            }
-        }
-        .clients-dt{
-            th:nth-child(4),
-            td:nth-child(4),
-            th:nth-child(5),
-            td:nth-child(5)
-            {
-                display: none;
-            }
-            th:nth-child(3),
-            td:nth-child(3){
-                display: flex;
-                justify-content: flex-end;
             }
         }
         .config-paids-dt{
@@ -4222,6 +4218,24 @@ input, select {
 
     .dt-pagination{
         justify-content: center;
+    }
+
+    .screen-overlay{
+        .overlay-work{
+            .dashboard{
+                gap: .5rem;
+                .title{
+                    font-size: 28px;
+                }
+                .body{
+                    .form-dt{
+                        .header-form{
+                            font-size: 13px ;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /* Config Page */
