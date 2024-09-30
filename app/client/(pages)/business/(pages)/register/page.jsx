@@ -151,8 +151,14 @@ const Register = () => {
         const { clients } = await fetchClientsData(id)
         
         if(clients.length > 0) {
-            setClients(clients)
-            setFilteredCli(clients)
+            const sortedClients = [...clients].sort((a, b) => {
+                if (a.name < b.name) return -1;
+                if (a.name > b.name) return 1;
+                return 0;
+            })
+            setClients(sortedClients)
+            setFilteredCli(sortedClients)
+            console.log(sortedClients)
         }else{
             setClients([])
             setFilteredCli([])

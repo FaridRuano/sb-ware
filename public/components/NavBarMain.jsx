@@ -93,7 +93,13 @@ const NavBarMain = () => {
                         </li>
                     </ul>
                     <ul className="items-wrap">
-                        <li className="nav-item">
+                        <li className="nav-item" onClick={()=>{
+                            if(isLogged){
+                                router.push('/client')
+                            }else{
+                                router.push('/login')
+                            }
+                        }}>
                             Crear Cuenta
                         </li>
                         <li className="btn01" onClick={()=>{

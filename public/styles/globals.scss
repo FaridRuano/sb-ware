@@ -2068,13 +2068,20 @@ input, select {
                 height: 100%;
                 display: flex;
                 align-items: center;
-
                 &.primary{
                     background-color: $primary-color-light;
+                    color: $-color-white;
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    font-weight: 700;
+                }
+                &.secondary{
+                    background-color: $secondary-color-light;
                     color: $-color-white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     font-weight: 700;
                 }
                 &.gray{

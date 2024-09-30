@@ -34,21 +34,26 @@ export async function GET(request) {
         query.name = { $regex: term, $options: 'i' };
     }
 
-    const current = new Date()
-
     const totalCli = await Client.countDocuments({ user:email })
+
+    const startOfTomorrow = new Date();
+    startOfTomorrow.setUTCHours(0, 0, 0, 0);
+    startOfTomorrow.setUTCDate(startOfTomorrow.getUTCDate() - 1);
+
+    const startOfYesterday = new Date();
+    startOfYesterday.setUTCHours(0, 0, 0, 0);
 
     const totalCliActive = await Client.countDocuments({
         user: email,
         'plan.asis': { $gt: 0 },
-        'plan.end': { $gt: current }
+        'plan.end': { $gt: startOfTomorrow }
     })
-
+    
     const totalCliInactive = await Client.countDocuments({
         user: email,
         $or: [
             { 'plan.asis': { $eq: 0 } }, // No remaining attendance
-            { 'plan.end': { $lt: current } } // Plan end date has passed (strictly before today)
+            { 'plan.end': { $lt: startOfYesterday } } // Plan end date has passed (strictly before today)
         ]
     })
 
@@ -71,7 +76,7 @@ export async function GET(request) {
         clients = await Client.find({
             user: email,
             'plan.asis': { $gt: 0 },
-            'plan.end': { $gt: current }
+            'plan.end': { $gt: startOfTomorrow }
         }, 'name plan updatedAt')
             .sort({ updatedAt: -1 })
             .skip(skip)
@@ -87,7 +92,7 @@ export async function GET(request) {
             user: email,
             $or: [
                 { 'plan.asis': { $eq: 0 } }, 
-                { 'plan.end': { $lt: current } }
+                { 'plan.end': { $lt: startOfYesterday } }
             ]
         }, 'name plan updatedAt')
             .sort({ updatedAt: -1 })
@@ -141,11 +146,22 @@ export async function PUT(request) {
 
         const lastPlan = client.plan.id
 
-        const plan = await Plan.findOne({id: lastPlan});
+        const plan = await Plan.findOne({id: lastPlan})
 
-        const newIni = new Date(data);
-        const newEnd = new Date(newIni);
-        newEnd.setDate(newEnd.getDate() + plan.dura);
+        const { ini, end } = data
+
+        let newIni = new Date(ini)
+        let newEnd = new Date(end)
+        
+        if (plan.dura === 30) {
+
+            newEnd.setMonth(newEnd.getMonth() + 1)
+            newIni.setMonth(newIni.getMonth() + 1)
+            
+        } else {
+            newEnd = new Date(newIni)
+            newEnd.setDate(newEnd.getDate() + plan.dura)
+        }
 
         await Client.findOneAndUpdate(
             { _id: id },

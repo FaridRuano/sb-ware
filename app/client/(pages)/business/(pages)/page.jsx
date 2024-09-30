@@ -457,19 +457,24 @@ const Clients = () => {
   }
 
   const handleClientActive = (cli) => {
-    const isDate = new Date(cli.plan.end)
+    const endDate = new Date(cli.plan.end)
     const asis = cli.plan.asis
+    const dura = cli.plan.dura
 
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
 
-    if (isDate < currentDate) {
-      return false
-    } else if (asis < 1) {
-      return false
-    } else {
-      return true
+    if (endDate < currentDate || asis < 1) {
+        return <td className='gray' />
     }
+
+    const daysRemaining = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24))
+    const oneThirdDuration = dura / 3
+
+    if (daysRemaining < oneThirdDuration) {
+        return <td className='secondary' />;
+    }
+    return <td className='primary'/>
   }
 
   const handleSearchTerm = (event) => {
@@ -543,6 +548,8 @@ const Clients = () => {
       }
       if (clientsData.length > 0) {
         setClientData(clientsData)
+      }else{
+        setClientData([])
       }
       if (planData.length >= 0) {
         setPlanData(planData)
@@ -620,9 +627,12 @@ const Clients = () => {
       const data = {
         action: "renew",
         id: selRow._id,
-        data: startDate
+        data: {
+          ini: selRow.plan.ini,
+          end: selRow.plan.end
+        }
       }
-      
+
       await updateClient(data)
       await fetchAndLoadPersons()
 
@@ -932,11 +942,7 @@ if(isLoading){
                           clientData.map((cli, id) => (
                             <tr className={selRow._id === cli._id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
                               {
-                                handleClientActive(cli) ? (
-                                  <td className='primary' />
-                                ) : (
-                                  <td className='gray' />
-                                )
+                                handleClientActive(cli)
                               }
                               <td>
                                 {cli.name}
