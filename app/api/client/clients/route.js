@@ -36,24 +36,19 @@ export async function GET(request) {
 
     const totalCli = await Client.countDocuments({ user:email })
 
-    const startOfTomorrow = new Date();
-    startOfTomorrow.setUTCHours(0, 0, 0, 0);
-    startOfTomorrow.setUTCDate(startOfTomorrow.getUTCDate() - 1);
-
-    const startOfYesterday = new Date();
-    startOfYesterday.setUTCHours(0, 0, 0, 0);
+    const current = new Date();
 
     const totalCliActive = await Client.countDocuments({
         user: email,
         'plan.asis': { $gt: 0 },
-        'plan.end': { $gt: startOfTomorrow }
+        'plan.end': { $gt: current }
     })
     
     const totalCliInactive = await Client.countDocuments({
         user: email,
         $or: [
             { 'plan.asis': { $eq: 0 } }, // No remaining attendance
-            { 'plan.end': { $lt: startOfYesterday } } // Plan end date has passed (strictly before today)
+            { 'plan.end': { $lt: current } } // Plan end date has passed (strictly before today)
         ]
     })
 
@@ -76,7 +71,7 @@ export async function GET(request) {
         clients = await Client.find({
             user: email,
             'plan.asis': { $gt: 0 },
-            'plan.end': { $gt: startOfTomorrow }
+            'plan.end': { $gt: current }
         }, 'name plan updatedAt')
             .sort({ updatedAt: -1 })
             .skip(skip)
@@ -92,7 +87,7 @@ export async function GET(request) {
             user: email,
             $or: [
                 { 'plan.asis': { $eq: 0 } }, 
-                { 'plan.end': { $lt: startOfYesterday } }
+                { 'plan.end': { $lt: current } }
             ]
         }, 'name plan updatedAt')
             .sort({ updatedAt: -1 })
