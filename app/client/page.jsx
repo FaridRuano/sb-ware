@@ -195,7 +195,7 @@ const Client = () => {
       },textSpeed)
   
       let progressNoPaids = setInterval(() => {
-  
+        console.log(paids)
         if(nopaids === 0){
           clearInterval(progressNoPaids)
         }else{

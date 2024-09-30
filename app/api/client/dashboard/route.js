@@ -105,9 +105,9 @@ export async function GET(request) {
         .sort((a, b) => b.attentDate - a.attentDate)
         .slice(0, 3); 
 
-    const noPaids = clients.filter(client => (client.payments || []).length === 0).length
+    const noPaids = clients.filter(client => (client.plan.deud) > 0).length
 
-    const paids = clients.filter(client => (client.payments || []).length > 0).length
+    const paids = clients.filter(client => (client.plan.deud) === 0).length
 
     const totalClients = await Client.countDocuments({ user:email })
 
