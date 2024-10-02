@@ -2181,23 +2181,25 @@ input, select {
             &.plan-dt{
                 padding: 0 5px;
                 width: calc(100% - 10px);
+                th:nth-child(1),
+                td:nth-child(1){
+                    width: 240px; 
+                    white-space: nowrap;
+                }
                 th:nth-child(2),
                 td:nth-child(2){
-                    width: 150px; 
+                    width: 40px; 
                     white-space: nowrap;
                 }
                 th:nth-child(3),
                 td:nth-child(3){
                     width: 40px; 
                 }
-                th:nth-child(4),
-                td:nth-child(4){
-                    width: 40px; 
-                }
-                th:nth-child(5),
-                td:nth-child(5){
+                th:last-child,
+                td:last-child{
                     display: flex;
-                    width: 70px; 
+                    width: 40px;
+                    text-align: end;
                     justify-content: flex-end;
                 }
             }
@@ -2246,8 +2248,17 @@ input, select {
                 }
             }
             &.paids-dt{
+                th:nth-child(1),
+                td:nth-child(1){
+                    width: 240px;
+                }
+                th:nth-child(2),
+                td:nth-child(2){
+                    width: 80px;
+                }
                 th:last-child,
                 td:last-child{
+                    width: 40px;
                     display: flex;
                     justify-content: flex-end;
                 }
@@ -4199,13 +4210,6 @@ input, select {
             }
         }
         .paids-dt{
-            th:nth-child(1),
-            td:nth-child(1),
-            th:nth-child(3),
-            td:nth-child(3)
-            {
-                display: none;
-            }
         }
         .config-paids-dt{
             th:nth-child(3),

@@ -195,7 +195,7 @@ const Client = () => {
       },textSpeed)
   
       let progressNoPaids = setInterval(() => {
-        if(nopaids === 0){
+        if(nopaids === 0 ){
           clearInterval(progressNoPaids)
         }else{
           nopaidsStartValue++
@@ -203,7 +203,7 @@ const Client = () => {
   
         nopaidsText.textContent = `${nopaidsStartValue}`
   
-        if(paidsStartValue == nopaidsEndValue){
+        if(nopaidsStartValue == nopaidsEndValue){
           clearInterval(progressNoPaids)
         }
         
