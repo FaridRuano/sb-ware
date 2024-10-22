@@ -3,35 +3,31 @@ import Client from "@models/clientModel"
 import { NextResponse } from "next/server"
 
 function calculateMonthlyAverage(clients) {
-    const monthlyAverage = {}
+    let totalAmount = 0;
+    let monthsCounted = 3; // We will divide by 3 as per the requirement
+
+    // Get the current date and calculate the date 3 months ago
+    const currentDate = new Date();
+    const threeMonthsAgo = new Date(currentDate);
+    threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
 
     clients.forEach(client => {
-        if(client.payments !== null && Array.isArray(client.payments)){
+        if (client.payments !== null && Array.isArray(client.payments)) {
             client.payments.forEach(payment => {
-                const date = new Date(payment.date)
-                const monthYear = date.toISOString().slice(0, 7)
-    
-                if (!monthlyAverage[monthYear]) {
-                    monthlyAverage[monthYear] = {
-                        totalAmount: 0,
-                        count: 0
-                    }
+                const paymentDate = new Date(payment.date);
+
+                // Only sum payments that fall within the last 3 months
+                if (paymentDate >= threeMonthsAgo) {
+                    totalAmount += payment.amount;
                 }
-    
-                monthlyAverage[monthYear].totalAmount += payment.amount
-                monthlyAverage[monthYear].count++
-            })
+            });
         }
-    })
+    });
 
-    const keys = Object.keys(monthlyAverage)
-    if (keys.length > 0) {
-        const lastMonth = keys[keys.length - 1]
-        const average = monthlyAverage[lastMonth].totalAmount / monthlyAverage[lastMonth].count
-        return  average 
-    }
+    // Calculate the average by dividing by 3 (for the 3 months)
+    const average = totalAmount / monthsCounted;
 
-    return null
+    return average || null;
 }
 
 export async function GET(request) {
@@ -65,7 +61,13 @@ export async function GET(request) {
     
 
     const totalDebt = clients.reduce((sum, client) => {
-        return sum + (client.plan.deud || 0)
+        const currentMonth = new Date().getMonth()
+        const currentYear = new Date().getFullYear()
+    
+        const planEndDate = new Date(client.plan.end)
+        const isCurrentMonth = planEndDate.getMonth() === currentMonth && planEndDate.getFullYear() === currentYear
+    
+        return isCurrentMonth ? sum + (client.plan.deud || 0) : sum
     }, 0)
 
     allPayments = allPayments.sort((a, b) => b.paymentDate - a.paymentDate).slice(0, 4)
@@ -86,7 +88,7 @@ export async function GET(request) {
         plan: client.plan.name,  
     }))
 
-    const allAttents = [];
+    const allAttents = []
 
     clients.forEach(client => {
         if (Array.isArray(client.attent) && client.attent.length > 0) {
@@ -96,14 +98,14 @@ export async function GET(request) {
                     name: client.name,
                     plan: client.plan?.name || 'No Plan', 
                     attent: new Date(att), 
-                });
-            });
+                })
+            })
         }
-    });
+    })
 
     const recentAttent = allAttents
-        .sort((a, b) => b.attentDate - a.attentDate)
-        .slice(0, 3); 
+        .sort((a, b) => b.attent - a.attent)
+        .slice(0, 3)
 
     const noPaids = clients.filter(client => (client.plan.deud) > 0).length
 
@@ -113,7 +115,17 @@ export async function GET(request) {
 
     const totalAmount = clients.reduce((sum, client) => {
         const payments = client.payments || []
-        const clientTotal = payments.reduce((total, payment) => total + payment.amount, 0)
+        const currentMonth = new Date().getMonth()
+        const currentYear = new Date().getFullYear()
+    
+        // Filter payments to include only those made in the current month and year
+        const clientTotal = payments
+            .filter(payment => {
+                const paymentDate = new Date(payment.date)
+                return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear
+            })
+            .reduce((total, payment) => total + payment.amount, 0)
+    
         return sum + clientTotal
     }, 0)
 

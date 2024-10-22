@@ -140,8 +140,7 @@ const Client = () => {
       progressValue = document.querySelector(".total")
   
       let progressStartValue = 0,
-      progressEndValue = totalMoney,
-      speed = 1
+      progressEndValue = totalMoney
   
       let progress = setInterval(() => {
   
@@ -165,7 +164,7 @@ const Client = () => {
       clientsText = document.getElementById('clientsNumber'),
       averageText = document.getElementById('averageNumber')
   
-      let monthlyRealTimeAverage = totalMoney / 3
+      
   
       let paidsStartValue = 0,
       paidsEndValue = paids,
@@ -174,7 +173,7 @@ const Client = () => {
       clientsStartValue = 0,
       clientsEndValue = totalClients,
       averageStartValue = 0,
-      averageEndValue = monthlyRealTimeAverage,
+      averageEndValue = monthlyAverage,
       textSpeed = 1
   
       let progressPaids = setInterval(() => {
@@ -228,20 +227,24 @@ const Client = () => {
       let progressAverage = setInterval(() => {
         
         if(progressAverage === 0){
-          averageText.textContent = `$${monthlyRealTimeAverage.toFixed(2)}`
+          averageText.textContent = `$${monthlyAverage.toFixed(2)}`
           clearInterval(progressAverage)
         }else{
-          averageStartValue = averageStartValue + 1
+          if(averageStartValue <= averageEndValue * 0.999){
+            averageStartValue = averageStartValue + 10
+          }else{
+            averageStartValue = averageStartValue + 1
+          }
         }
         averageText.textContent = `$${averageStartValue.toFixed(2)}`
   
         if(averageStartValue >= averageEndValue){
           averageStartValue = averageEndValue
-          averageText.textContent = `$${monthlyRealTimeAverage.toFixed(2)}`
+          averageText.textContent = `$${monthlyAverage.toFixed(2)}`
           clearInterval(progressAverage)
         }
   
-      }, textSpeed)
+      }, .01)
   
       let progressBar = document.querySelector(".progress")
   

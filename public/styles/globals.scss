@@ -527,8 +527,8 @@ input, select {
 
 .client-page{
     background-color: $background-color-light;
-    height: calc(fit-content + 100px);
-    padding: 100px;
+    height: calc(fit-content + 200px);
+    padding: 70px 100px;
 }
 
 /* Globals */
@@ -2920,6 +2920,30 @@ input, select {
             }
         }
     }
+    .container{
+        display: flex;
+        position: relative;
+        width: calc(100% - 40px);
+        height: calc(100% - 40px);
+        border-radius: 20px;
+        &.loading{
+            background-color: rgba($-color-white, .7);
+        }
+        .closebtn{
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: .3s ease-out;
+            &:hover{
+                transform: scale(1.05);
+            }
+        }
+        
+    }
     &.hidden{
         display: none;
     }
@@ -3260,7 +3284,7 @@ input, select {
 
 @media (max-width: 1300px) {
     .client-page{
-        padding: 100px 40px 180px 40px;
+        padding: 75px 40px 180px 40px;
         height: auto;
     }
 }
@@ -3307,7 +3331,7 @@ input, select {
     /* Client Page */
 
     .client-page{
-        padding: 100px 40px 180px 40px;
+        padding: 75px 40px 180px 40px;
         height: auto;
     }
 
@@ -3412,7 +3436,7 @@ input, select {
     /* Client Page */
 
     .client-page{
-        padding: 80px 25px 180px 25px;
+        padding: 60px 25px 180px 25px;
         height: calc(fit-content - 260px);
         background-color: $-color-white;
     }

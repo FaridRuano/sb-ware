@@ -19,6 +19,7 @@ import RenewModal from '@public/components/client/RenewModal'
 import PayModal from '@public/components/client/PayModal'
 import StatusModal from '@public/components/client/StatusModal'
 import TrashBtn from '@public/assets/icons/trash-btn.png'
+import ClientModal from '@public/components/client/ClientModal'
 
 const mongoClientData = async (page, type, signal ) => {
 
@@ -728,6 +729,15 @@ const Clients = () => {
     return `${day}/${month}/${year}`;
   }
 
+  /* Client Modal */
+
+  const [clientModal, setClientModal] = useState(false)
+
+  const handleClientModal = () => {
+    setClientModal(current => !current)
+  }
+
+
   useEffect(() => {
     let storedUserStr = ''
 
@@ -940,7 +950,7 @@ if(isLoading){
                       <tbody>
                         {
                           clientData.map((cli, id) => (
-                            <tr className={selRow._id === cli._id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)}>
+                            <tr className={selRow._id === cli._id ? 'client-dt active' : 'client-dt'} key={id} onClick={() => setSelRow(cli)} onDoubleClick={()=>handleClientModal()}>
                               {
                                 handleClientActive(cli)
                               }
@@ -1078,7 +1088,8 @@ if(isLoading){
       <ConfirmModal isActive={confirmModal} handleModal={handleConfirm} handleResponse={handleConfirmResponse} dataModal={selRow} />
       <RenewModal isActive={renewModal} handleModal={handleRenew} handleResponse={handleRenewResponse} dataModal={selRow} dataModal2={planData} />
       <PayModal isActive={payModal} handleModal={handlePay} handleResponse={handlePayResponse} dataModal={selRow} />
-      <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose} />
+      <StatusModal isActive={statusModal} message={statusMsg} handleModal={handleStatusClose}/>
+      <ClientModal isActive={clientModal} handleModal={handleClientModal} dataModal={selRow._id}/>
     </div>
     )
   }

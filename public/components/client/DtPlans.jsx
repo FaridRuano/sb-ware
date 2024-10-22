@@ -440,7 +440,6 @@ const DtPlans = ({ isActive, handleActive }) => {
               }
           )
         }
-      
     }, [])
 
     return (
