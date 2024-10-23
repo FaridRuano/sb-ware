@@ -2028,8 +2028,19 @@ input, select {
             justify-content: center;
             align-items: center;
             transition: .3s ease-out;
-            &:hover{
-                transform: rotate(180deg);
+            gap: 1rem;
+            .openclient{
+                opacity: 0;
+                pointer-events: none;
+                @media (max-width: 800px) {
+                    opacity: 1;
+                    pointer-events: all;
+                }
+            }
+            .deselect{
+                &:hover{
+                    transform: rotate(180deg);
+                }
             }
         }
     }
@@ -2923,12 +2934,10 @@ input, select {
     .container{
         display: flex;
         position: relative;
+        flex-direction: column;
+        gap: 20px;
         width: calc(100% - 40px);
         height: calc(100% - 40px);
-        border-radius: 20px;
-        &.loading{
-            background-color: rgba($-color-white, .7);
-        }
         .closebtn{
             cursor: pointer;
             position: absolute;
@@ -2942,10 +2951,302 @@ input, select {
                 transform: scale(1.05);
             }
         }
-        
+        .name-holder{
+            min-height: 30px;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            color: $-color-black;
+            background-color: $-color-white;
+            width: fit-content;
+            border-radius: 5px;
+            padding: 10px 20px;
+            h1{
+                font-size: $font-xbig;
+            }
+        }
+        .info-holder{
+            width: 100%;
+            min-height: 300px;
+            height: fit-content;
+            border: solid 1px $primary-color-light;
+            border-radius: 20px;
+            position: relative;
+            margin-top: 20px;
+            .header-wrap{
+                position: absolute;
+                top: -28px;
+                left: 0;
+                height: 30px;
+                width: 300px;
+                display: flex;
+                gap: 1rem;
+                background-color: $primary-color-light;
+                border-radius: 25px 5px 5px 25px;
+                padding: 10px 10px;
+                align-items: center;
+                justify-content: flex-start;
+                .header-icon{
+                    background-color: $-color-black;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .header-title{
+                    font-size: $font-big;
+                    font-weight: 700;
+                }
+            }
+            .body-wrap{
+                display: flex;
+                padding: 40px 20px;
+                .col{
+                    display: flex;
+                    flex-direction: column;
+                    padding-left: 60px;
+                    padding-right: 60px;
+                    width: 100%;
+                    border-right: solid 1px $primary-color-light;
+                    gap: .4rem;
+                    .info{
+                        color: $-color-white;
+                        div{
+                            font-size: $font-small;
+                        }
+                        h3{
+                            font-size: $font-medium;
+                            &.deud{
+                                background-color: $primary-color-light;
+                                border-radius: 10px;
+                                padding: 5px 10px;
+                                &.more{
+                                    background-color: $secondary-color-light;
+                                }
+                            }
+                        }
+                    }
+                    .btn-option{
+                        border: none;
+                        font-size: $font-medium;
+                        font-weight: 700;
+                        padding: 10px;
+                        background-color: $secondary-color-light;
+                        color: $-color-white;
+                        width: 200px;
+                        cursor: pointer;
+                        transition: .3s ease-out;
+                        margin-bottom: 10px;
+                        text-align: start;
+                        &.dis{
+                            pointer-events: none;
+                            opacity: .5;
+                        }
+                        &.info{
+                            background-color: $info-color-light;
+                        }
+                        &:hover{
+                            transform: scale(1.03);
+                        }
+                    }
+                    &:first-child{
+                        padding-left: 0;
+                    }
+                    &:last-child{
+                        border: none;
+                        padding-right: 0;
+                    }
+                }
+                .col-f{
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    form{
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 1rem;
+                        .input-field{
+                            display: flex;
+                            gap: 1rem;
+                            align-items: center;
+                            justify-content: flex-start;
+                            span{
+                                font-size: $font-small;
+                                font-weight: 500;
+                                color: $-color-white;
+                            }
+                            input{
+                                background-color: $dark-color-light;
+                                border: none;
+                                outline: none;
+                                padding: 5px 10px;
+                                border-radius: 20px;
+                                color: $-color-white;
+                                font-weight: 700;
+                                font-size: $font-medium;
+                                width: 100px;
+                            }
+                            input[type='number']::-webkit-inner-spin-button,
+                            input[type='number']::-webkit-outer-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                            }
+                            input[type='number'] {
+                                -moz-appearance: textfield; 
+                            }
+                        }
+                        .btn-form{
+                            padding: 5px 15px;
+                            background-color: $primary-color-light;
+                            color: $-color-black;
+                            border: none;
+                            border-radius:  20px;
+                            font-size: $font-medium;
+                            font-weight: 700;
+                            cursor: pointer;
+                            transition: .3s ease-out;
+                            &:hover{
+                                transform: scale(1.04);
+                            }
+                        }
+                    }
+                    .dt{
+                        margin-top: 15px;
+                        width: 100%;
+                        max-height: 200px;
+                        overflow-y: auto;
+                        table{
+                            width: 100%;
+                            tbody{
+                                width: 100%;
+                                tr{
+                                    background-color: $dark-color-light;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    margin-bottom: 4px;
+                                    padding: 7px 15px;
+                                    border-radius: 20px;
+                                    height: 22px;
+                                    th{
+                                        color: $-color-white;
+                                        font-weight: 500;
+                                        font-size: $font-medium;
+                                        b{
+                                            margin-left: 4px;
+                                            font-weight: 200;
+                                        }
+                                        &:nth-child(1),
+                                        &:nth-child(2){
+                                            display: flex;
+                                            justify-content: flex-start;
+                                            width: 70px;
+                                        }
+                                        &:last-child{
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                        }
+                                        img{
+                                            cursor: pointer;
+                                            opacity: .7;
+                                            transition: .3s ease-out;
+                                            &:hover{
+                                                opacity: 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &.loading{
+            .name-holder{
+                border: solid 1px $-color-white;
+                background-color: transparent;
+            }
+        }
     }
     &.hidden{
         display: none;
+    }
+    @media (max-width: 800px) {
+        .container{
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            .info-holder{
+                min-height: fit-content;
+                .header-wrap{
+                    padding: 6px;
+                    .header-icon{
+                        width: 30px;
+                        height: 30px;
+                        img{
+                            width: 15px;
+                            height: auto;
+                        }
+                    }
+                    .header-title{
+                        font-size: $font-medium;
+                    }
+                }
+                .body-wrap{
+                    flex-direction: column;
+                    padding: 30px 10px 10px 10px;
+                    .col{
+                        padding-left: 0;
+                        padding-right: 0;
+                        border-right: none;
+                        border-top: solid 1px $primary-color-light;
+                        padding-top: 20px;
+                        padding-bottom: 20px;
+                        gap: .3rem;
+                        .info{
+                            display: flex;
+                            flex-direction: row;
+                            div{
+                                width: 120px;
+                            }
+                        }
+                        .btn-option{
+                            width: 100%;
+                        }
+                        &:first-child{
+                            padding-top: 0;
+                            border-top: none;
+                        }
+                        &:last-child{
+                            border-right: none;
+                            border-top: solid 1px $primary-color-light;
+                            padding-bottom: 0;
+                        }
+                    }
+                    .col-f{
+                        form{
+                            justify-content: flex-end;
+                            align-items: flex-end;
+                            .input-field{
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: .3rem;
+                            }
+                            .btn-form{
+                                width: 100%;
+                            }
+                        }
+                        .dt{
+                            max-height: 160px;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

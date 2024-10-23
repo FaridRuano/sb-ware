@@ -13,6 +13,7 @@ import RightTop from '@public/assets/icons/right-top.png'
 import LeftArrow from '@public/assets/icons/left-arrow.png'
 import LeftTop from '@public/assets/icons/left-top.png'
 import DeselectIcon from '@public/assets/icons/deselect-icon.png'
+import OpenClient from '@public/assets/icons/openclient-icon.webp'
 import WarningIcon from '@public/assets/icons/warning-icon.png'
 import ConfirmModal from '@public/components/client/ConfirmModal'
 import RenewModal from '@public/components/client/RenewModal'
@@ -914,7 +915,8 @@ if(isLoading){
                 {
                   selRow._id !== '' && (
                     <div className="header-deselect">
-                      <Image src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ _id: '' })} />
+                      <Image className='openclient' src={OpenClient} width={21} height={'auto'} alt='Deselect' onClick={() => handleClientModal()} />
+                      <Image className='deselect' src={DeselectIcon} width={21} height={'auto'} alt='Deselect' onClick={() => setSelRow({ _id: '' })} />
                     </div>
                   )
                 }

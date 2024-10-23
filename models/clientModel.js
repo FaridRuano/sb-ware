@@ -1,7 +1,4 @@
 import mongoose, { Schema, mongo } from "mongoose";
-require('mongoose-double')(mongoose);
-
-const SchemaTypes = mongoose.Schema.Types;
 
 const planCliSchema = new Schema({
     id: Number,
@@ -28,7 +25,8 @@ const clientSchema = new Schema(
     },
     {
         timestamps: true,
-    }
+        strict: false
+    },
 )
 
 
