@@ -3259,6 +3259,14 @@ input, select {
                     }
                 }
             }
+            &.loading{
+                .name-holder{
+                    height: 30px;
+                }
+                .info-holder{
+                    min-height: 300px;
+                }
+            }
         }
     }
 }
