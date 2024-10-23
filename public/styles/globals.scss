@@ -3180,6 +3180,13 @@ input, select {
         .container{
             width: calc(100% - 20px);
             height: calc(100% - 20px);
+            .name-holder{
+                padding: 5px 20px;
+                min-height: fit-content;
+                h1{
+                    font-size: $font-big;
+                }
+            }
             .info-holder{
                 min-height: fit-content;
                 .header-wrap{
@@ -3198,15 +3205,15 @@ input, select {
                 }
                 .body-wrap{
                     flex-direction: column;
-                    padding: 30px 10px 10px 10px;
+                    padding: 30px 20px 10px 20px;
                     .col{
                         padding-left: 0;
                         padding-right: 0;
                         border-right: none;
                         border-top: solid 1px $primary-color-light;
-                        padding-top: 20px;
-                        padding-bottom: 20px;
-                        gap: .3rem;
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        gap: .1rem;
                         .info{
                             display: flex;
                             flex-direction: row;
@@ -3225,6 +3232,12 @@ input, select {
                             border-right: none;
                             border-top: solid 1px $primary-color-light;
                             padding-bottom: 0;
+                        }
+                        &.btns-hold{
+                            flex-direction: row;
+                            .btn-option{
+                                font-size: $font-small;
+                            }
                         }
                     }
                     .col-f{

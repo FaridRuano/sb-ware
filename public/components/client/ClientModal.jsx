@@ -238,7 +238,7 @@ const ClientModal = ({isActive, handleModal, dataModal}) => {
                                     {handleDeudFormat(client.plan.deud)}
                                 </div>
                             </div>
-                            <div className="col">
+                            <div className="col btns-hold">
                                 <button className={client.weights ? "btn-option dis" : "btn-option"} onClick={()=>activeWeightControl()}>
                                     Habilitar control de peso
                                 </button>
