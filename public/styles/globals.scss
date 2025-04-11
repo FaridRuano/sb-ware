@@ -972,6 +972,10 @@ input, select {
                             font-weight: 700;
                             color: $text-color-bg-light;
                         }
+                        &.disabled{
+                            opacity: .5;
+                            pointer-events: none;
+                        }
                         &:hover{
                             background-color: $-color-white;
                             transform: scale(1.02);
