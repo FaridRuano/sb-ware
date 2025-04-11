@@ -1023,6 +1023,7 @@ input, select {
     align-items: center;
     overflow: hidden;
     position: relative;
+    transition: .3s ease-out;
     .return{
         position: absolute;
         cursor: pointer;
@@ -1035,6 +1036,7 @@ input, select {
         align-items: center;
         color: $text-color-bg-light;
         transition: .3s ease-out;
+        z-index: 10;
         animation: leftPos .6s forwards;
         .icon{
             display: flex;
@@ -1228,6 +1230,7 @@ input, select {
         }
         &.selected{
             transform: translateY(-100vh);
+            pointer-events: none;
             opacity: 0;
         }
     }
@@ -1373,6 +1376,45 @@ input, select {
                 }
             }
         }
+    }
+
+    @media (max-width: 850px) {
+        height: 1500px;
+        &.mob{
+            height: 100vh;
+        }
+        .warp{
+            padding: 100px 0;
+            width: 350px;
+            height: fit-content;
+            .switch-btn{
+                width: 100%;
+                .active{
+                    width: 145px;
+                    &.off{
+                        transform: translateX(175px);
+                    }
+                }
+            }
+            .plans{
+                flex-direction: column;
+            }
+        }
+        .warp-02{
+            width: 350px;
+            .methods{
+                .method{
+                    width: calc(100% - 40px - 2px);
+                    .name{
+                        width: 220px;
+                    }
+                }
+                .method-1{
+                    width: calc(100%);
+                }
+            }
+        }
+        
     }
 }
 

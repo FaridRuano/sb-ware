@@ -46,7 +46,7 @@ const Subscription = () => {
     }
 
   return (
-    <div className="subs-page">
+    <div className={`subs-page ${selPlan > 0 ? "mob" : ""}`}>
         {
             selPlan > 0 ? (
                 <div className='return-btn' onClick={()=>setSelPlan(0)}>

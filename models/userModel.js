@@ -1,5 +1,4 @@
 import mongoose, { Schema, mongo } from "mongoose";
-require('mongoose-double')(mongoose);
 
 const SchemaTypes = mongoose.Schema.Types;
 
