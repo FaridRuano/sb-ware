@@ -343,7 +343,7 @@ export default function LoginPage() {
                     </span>
                   </div>
                   <div className="login-options">
-                    <div className="google-btn">
+                    <div className="google-btn disabled">
                       <div className="icon">
                         <Image className="o" src={Google} width={20} height={'auto'} alt="Google"/>
                         <Image className="i" src={Google2} width={20} height={'auto'} alt="Google"/>
