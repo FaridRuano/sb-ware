@@ -1017,11 +1017,11 @@ if(isLoading){
                     </div>
                     <div className="input-form">
                       <div>Nombre</div>
-                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} autoComplete='off'/>
+                      <input type="text" name='name' onChange={handleNewClient} value={newClient.name} autoComplete='on'/>
                     </div>
                     <div className="input-form">
                       <div>Email</div>
-                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} autoComplete='off'/>
+                      <input type="text" name='email' onChange={handleNewClient} value={newClient.email} autoComplete='on'/>
                     </div>
                     <div className="input-form">
                       <div>Teléfono</div>
